@@ -25,6 +25,66 @@ export interface PostItem {
   description: string;
 }
 
+const SLIDESHOW_IMAGES = [
+  '/slideshow/slide1.jpg',
+  '/slideshow/slide2.jpg',
+  '/slideshow/slide3.jpg',
+  '/slideshow/slide4.jpg',
+  '/slideshow/slide5.jpg',
+  '/slideshow/slide6.jpg',
+];
+
+const REAL_INSTAGRAM_POSTS: PostItem[] = [
+  {
+    id: 'ig1',
+    title: 'Miami Night Shoot — Reel',
+    category: 'Music Videos',
+    type: 'image',
+    url: '/slideshow/slide1.jpg',
+    description: 'Cinematic night scene with hot pink & cyan reflections on location in Miami.'
+  },
+  {
+    id: 'ig2',
+    title: 'South Beach Model Editorial',
+    category: 'Photography',
+    type: 'image',
+    url: '/slideshow/slide2.jpg',
+    description: 'High-fashion portraiture with neon color grading & studio retouching.'
+  },
+  {
+    id: 'ig3',
+    title: 'Exotic Automotive Showcase',
+    category: 'Commercials',
+    type: 'image',
+    url: '/slideshow/slide3.jpg',
+    description: 'Supercar shoot with ultra-sharp reflections under Miami streetlights.'
+  },
+  {
+    id: 'ig4',
+    title: 'VIP Stage Performance',
+    category: 'Events',
+    type: 'image',
+    url: '/slideshow/slide4.jpg',
+    description: 'Live concert event recap shot with 4K cinema gear.'
+  },
+  {
+    id: 'ig5',
+    title: 'Urban Cyberpunk Aesthetic',
+    category: 'Photography',
+    type: 'image',
+    url: '/slideshow/slide5.jpg',
+    description: 'Synthwave color palette & sharp studio portraiture.'
+  },
+  {
+    id: 'ig6',
+    title: 'Downtown Skyline Shoot',
+    category: 'Commercials',
+    type: 'image',
+    url: '/slideshow/slide6.jpg',
+    description: 'Creative lifestyle production under ocean drive neon lights.'
+  }
+];
+
 const INITIAL_SERVICES = [
   {
     id: 's1',
@@ -81,14 +141,24 @@ const INITIAL_SERVICES = [
 ];
 
 export default function App() {
+  const [slideIndex, setSlideIndex] = useState(0);
+
   const [posts, setPosts] = useState<PostItem[]>(() => {
     try {
       const saved = localStorage.getItem('shotbyivis_real_posts');
-      return saved ? JSON.parse(saved) : [];
+      return saved && JSON.parse(saved).length > 0 ? JSON.parse(saved) : REAL_INSTAGRAM_POSTS;
     } catch {
-      return [];
+      return REAL_INSTAGRAM_POSTS;
     }
   });
+
+  // Slideshow Timer Loop
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSlideIndex((prev) => (prev + 1) % SLIDESHOW_IMAGES.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, []);
 
   const [activeCategory, setActiveCategory] = useState('All');
   const [activeMedia, setActiveMedia] = useState<PostItem | null>(null);
@@ -339,7 +409,7 @@ export default function App() {
         </AnimatePresence>
       </nav>
 
-      {/* ===== HERO SECTION — Reference Two-Column Layout ===== */}
+      {/* ===== HERO SECTION — Two-Column Split with Real Instagram Slideshow ===== */}
       <section id="home" className="relative min-h-[90vh] flex items-center overflow-hidden py-12 md:py-0">
         <div className="max-w-7xl mx-auto px-6 w-full relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           
@@ -401,28 +471,71 @@ export default function App() {
             </div>
           </motion.div>
 
-          {/* Right: Transparent 3D Floating Logo Emblem */}
+          {/* Right: REAL INSTAGRAM SLIDESHOW COMPONENT */}
           <motion.div 
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex items-center justify-center relative"
           >
-            <div className="relative w-72 h-72 sm:w-96 sm:h-96 md:w-[440px] md:h-[440px] flex items-center justify-center">
-              {/* Pulsing Back Ring */}
-              <div className="absolute inset-0 rounded-full border-2 border-[#ff007f]/40 animate-ping opacity-30" />
-              <div className="absolute inset-4 rounded-full border border-[#00f0ff]/40 animate-spin" style={{ animationDuration: '15s' }} />
+            <div className="relative w-full max-w-lg aspect-[4/5] rounded-3xl overflow-hidden glass-panel p-3 border-2 border-[#ff007f]/50 shadow-[0_0_50px_rgba(255,0,127,0.4)] group">
+              {/* Inner Glowing Container */}
+              <div className="relative w-full h-full rounded-2xl overflow-hidden bg-black">
+                
+                {/* Active Slide Image */}
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={slideIndex}
+                    src={SLIDESHOW_IMAGES[slideIndex]}
+                    alt={`ShotByIvis Real Work Slide ${slideIndex + 1}`}
+                    initial={{ opacity: 0, scale: 1.08 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.6 }}
+                    className="w-full h-full object-cover"
+                  />
+                </AnimatePresence>
 
-              {/* Glowing Background Glow */}
-              <div className="absolute inset-10 rounded-full bg-gradient-to-tr from-[#ff007f]/30 via-purple-600/20 to-[#00f0ff]/30 blur-3xl animate-neon-pulse" />
+                {/* Dark Vignette Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none" />
 
-              {/* Transparent 3D Floating Logo */}
-              <div className="relative z-10 w-full h-full p-6 animate-logo-float">
-                <img 
-                  src="/logo.png" 
-                  alt="ShotByIvis Transparent Logo" 
-                  className="w-full h-full object-contain filter drop-shadow-[0_0_35px_rgba(255,0,127,0.8)] drop-shadow-[0_0_70px_rgba(0,240,255,0.6)]" 
-                />
+                {/* Brand Overlay Tag */}
+                <div className="absolute top-4 left-4 glass-panel-pink px-3 py-1.5 rounded-full flex items-center gap-2 border border-[#ff007f]">
+                  <InstagramIcon size={14} className="text-[#ff007f]" />
+                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-white">
+                    @shotbyivis — Work {slideIndex + 1}/{SLIDESHOW_IMAGES.length}
+                  </span>
+                </div>
+
+                {/* Navigation Controls */}
+                <button
+                  onClick={() => setSlideIndex((prev) => (prev - 1 + SLIDESHOW_IMAGES.length) % SLIDESHOW_IMAGES.length)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full glass-panel text-white/80 hover:text-white hover:border-[#ff007f] transition-all opacity-0 group-hover:opacity-100"
+                >
+                  ‹
+                </button>
+                <button
+                  onClick={() => setSlideIndex((prev) => (prev + 1) % SLIDESHOW_IMAGES.length)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full glass-panel text-white/80 hover:text-white hover:border-[#00f0ff] transition-all opacity-0 group-hover:opacity-100"
+                >
+                  ›
+                </button>
+
+                {/* Dots Indicators */}
+                <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+                  {SLIDESHOW_IMAGES.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSlideIndex(idx)}
+                      className={`h-2 rounded-full transition-all ${
+                        slideIndex === idx 
+                          ? 'w-7 bg-[#00f0ff] shadow-[0_0_10px_#00f0ff]' 
+                          : 'w-2 bg-white/40 hover:bg-white'
+                      }`}
+                    />
+                  ))}
+                </div>
+
               </div>
             </div>
           </motion.div>
