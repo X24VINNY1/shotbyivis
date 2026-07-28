@@ -137,9 +137,7 @@ export interface BookingItem {
   name: string;
   email: string;
   service: string;
-  basePrice: number;
   addOns: string[];
-  totalPrice: number;
   date: string;
   notes: string;
   status: 'Pending' | 'Confirmed' | 'Completed' | 'Declined';
@@ -227,14 +225,14 @@ const DEFAULT_SITE_CONFIG: SiteConfig = {
   instagramHandle: '@shotbyivis',
 
   mvTitle: 'Music Videos',
-  mvPrice: 'Starting at $1,200',
+  mvPrice: '4K 60FPS CONTENT · WITH MIX + EFFECTS',
   mvDesc: 'Full 4K/6K cinema camera shooting, direction, editing & color grading for singles and albums.',
-  mvFeat1: '4K / 6K Cinema Cameras & Lighting',
-  mvFeat2: 'Full Video Direction & Shot List',
-  mvFeat3: 'Color Grading & Sound FX Editing',
+  mvFeat1: '4K 60FPS High Frame Rate Cinema Recording',
+  mvFeat2: 'WITH MIX + EFFECTS (Sound & Color VFX)',
+  mvFeat3: 'Full Video Direction & Shot List',
 
   photoTitle: 'Photoshoots',
-  photoPrice: 'Starting at $450',
+  photoPrice: 'Regular Shoot & Retouching',
   photoDesc: 'Fashion, portrait, and automotive photography sessions on location in Miami or indoor studio.',
   photoFeat1: '20 High-Res Professionally Edited Photos',
   photoFeat2: 'Studio or Miami Location Shooting',
@@ -325,12 +323,23 @@ const REAL_INSTAGRAM_POSTS: PostItem[] = [
   }
 ];
 
-const BOOKING_ADDONS = [
-  { id: 'drone', name: '4K Aerial Drone Footage', price: 300, desc: 'Licensed drone operator for cinematic overhead shots.' },
-  { id: 'express', name: '24-Hour Express Turnaround', price: 250, desc: 'Priority editing delivered within 24 hours of shoot.' },
-  { id: 'raw', name: 'Raw Uncut Video/Photo Files', price: 150, desc: 'Full high-res original footage files on SSD or drive.' },
-  { id: 'studio', name: 'Studio Location Booking', price: 200, desc: 'Private indoor studio rental in Miami.' },
-  { id: 'vfx', name: '3D VFX & Motion Effects', price: 400, desc: 'Custom CGI effects & trippy music video animations.' }
+// Production Features / Add-ons for Music Videos
+const MV_ADDONS = [
+  { id: 'mv1', name: '4K 60FPS CONTENT', desc: 'Ultra-smooth 4K 60fps high frame rate cinema recording.' },
+  { id: 'mv2', name: 'WITH MIX + EFFECTS', desc: 'Custom audio sync mix, neon color grading & trippy visual VFX.' },
+  { id: 'mv3', name: '4K Aerial Drone Footage', desc: 'Licensed overhead drone operator for aerial shots.' },
+  { id: 'mv4', name: '24-Hour Express Turnaround', desc: 'Priority video editing delivered within 24 hours of shoot.' },
+  { id: 'mv5', name: 'Raw Uncut Video Files', desc: 'Full high-res original unedited footage files on drive.' },
+  { id: 'mv6', name: 'Studio Location Booking', desc: 'Private indoor studio rental in Miami.' }
+];
+
+// Production Features / Add-ons for Photoshoots
+const PHOTO_ADDONS = [
+  { id: 'ph1', name: 'Regular Shoot & Retouching', desc: 'Standard photoshoot session with 20 high-res edited photos.' },
+  { id: 'ph2', name: 'Studio Location Rental', desc: 'Private indoor studio rental in Miami.' },
+  { id: 'ph3', name: '24-Hour Express Delivery', desc: 'Priority photo gallery delivery within 24 hours.' },
+  { id: 'ph4', name: 'All Raw High-Res Photos', desc: 'Full uncompressed camera RAW image files.' },
+  { id: 'ph5', name: 'Skin Retouching & Color Grading', desc: 'High-end fashion skin retouching & color correction.' }
 ];
 
 export default function App() {
@@ -386,9 +395,7 @@ export default function App() {
           name: 'Alex Johnson',
           email: 'alex@example.com',
           service: 'Music Videos',
-          basePrice: 1200,
-          addOns: ['4K Aerial Drone Footage', '24-Hour Express Turnaround'],
-          totalPrice: 1750,
+          addOns: ['4K 60FPS CONTENT', 'WITH MIX + EFFECTS', '4K Aerial Drone Footage'],
           date: '2026-08-15',
           notes: 'Shooting music video at South Beach rooftop location.',
           status: 'Confirmed',
@@ -399,9 +406,7 @@ export default function App() {
           name: 'Marcus Vance',
           email: 'marcus@visuals.com',
           service: 'Photoshoot Session',
-          basePrice: 450,
-          addOns: ['Studio Location Booking'],
-          totalPrice: 650,
+          addOns: ['Regular Shoot & Retouching', 'Studio Location Rental'],
           date: '2026-08-20',
           notes: 'Studio portrait shoot in Miami.',
           status: 'Confirmed',
@@ -474,6 +479,8 @@ export default function App() {
   const [bookedSuccess, setBookedSuccess] = useState(false);
 
   const categories = ['All', 'Music Videos', 'Photography'];
+
+  const currentAddonsList = selectedService === 'Music Videos' ? MV_ADDONS : PHOTO_ADDONS;
 
   const filteredPosts = posts.filter(item => 
     activeCategory === 'All' || item.category === activeCategory
@@ -577,32 +584,15 @@ export default function App() {
     }
   };
 
-  const calculateTotal = () => {
-    const base = selectedService === 'Music Videos' ? 1200 : 450;
-    const addonsTotal = selectedAddons.reduce((sum, name) => {
-      const item = BOOKING_ADDONS.find(a => a.name === name);
-      return sum + (item ? item.price : 0);
-    }, 0);
-    return base + addonsTotal;
-  };
-
-  const calculateTotalRevenue = () => {
-    return bookings.reduce((sum, b) => sum + (b.totalPrice || b.basePrice || 1200), 0);
-  };
-
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const basePrice = selectedService === 'Music Videos' ? 1200 : 450;
-    const totalPrice = calculateTotal();
 
     const newBooking: BookingItem = {
       id: 'bk_' + Math.random().toString(36).slice(2, 9),
       name: clientName,
       email: clientContact,
       service: selectedService,
-      basePrice,
       addOns: selectedAddons,
-      totalPrice,
       date: shootDate,
       notes: shootNotes,
       status: 'Pending',
@@ -798,7 +788,7 @@ export default function App() {
                     <h1 className="text-2xl font-black uppercase tracking-tight font-heading flex items-center gap-2">
                       EXECUTIVE ANALYTICS & OVERVIEW <Sparkles size={20} className="text-[#00f0ff]" />
                     </h1>
-                    <p className="text-xs text-white/50 mt-1">Real-time telemetry, transaction metrics, and revenue breakdown</p>
+                    <p className="text-xs text-white/50 mt-1">Real-time telemetry, transaction metrics, and production status</p>
                   </div>
 
                   <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono uppercase text-white/60 tracking-widest font-bold">
@@ -810,12 +800,12 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 space-y-4">
                     <div className="flex items-center justify-between text-xs font-mono uppercase text-white/50 font-bold">
-                      <span>TOTAL GROSS REVENUE</span>
+                      <span>SHOOT BOOKINGS</span>
                       <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/60">
                         <BarChart3 size={16} />
                       </div>
                     </div>
-                    <div className="text-3xl font-black text-white font-heading">${calculateTotalRevenue()}</div>
+                    <div className="text-3xl font-black text-white font-heading">{bookings.length}</div>
                     <div className="flex items-center gap-2">
                       <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold flex items-center gap-1">
                         ↗ +18.4%
@@ -825,7 +815,7 @@ export default function App() {
 
                   <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 space-y-4">
                     <div className="flex items-center justify-between text-xs font-mono uppercase text-white/50 font-bold">
-                      <span>COMPLETED SHOOTS</span>
+                      <span>COMPLETED PRODUCTIONS</span>
                       <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/60">
                         <Box size={16} />
                       </div>
@@ -875,12 +865,12 @@ export default function App() {
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="font-bold text-sm text-white uppercase tracking-wider font-heading flex items-center gap-2">
-                          📈 REVENUE TRAJECTORY ($ USD)
+                          📈 PRODUCTION TRAJECTORY
                         </h3>
-                        <p className="text-xs text-white/40">30-day cumulative revenue growth</p>
+                        <p className="text-xs text-white/40">30-day cumulative shoot activity</p>
                       </div>
                       <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[9px] font-mono uppercase text-white/60 font-bold">
-                        PEAK: $1,450/DAY
+                        PEAK: 4K 60FPS
                       </span>
                     </div>
 
@@ -966,9 +956,9 @@ export default function App() {
                 <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="font-bold text-sm text-white uppercase tracking-wider font-heading flex items-center gap-2">
-                      🔄 RECENT TRANSACTIONS
+                      🔄 RECENT SHOOT ORDERS
                     </h3>
-                    <span className="text-[10px] font-mono text-white/40 uppercase">Showing latest shoot orders</span>
+                    <span className="text-[10px] font-mono text-white/40 uppercase">Showing latest requests</span>
                   </div>
 
                   <div className="overflow-x-auto">
@@ -977,9 +967,9 @@ export default function App() {
                         <tr>
                           <th className="py-3 px-4">ORDER ID</th>
                           <th className="py-3 px-4">CLIENT</th>
+                          <th className="py-3 px-4">SERVICE</th>
                           <th className="py-3 px-4">DATE</th>
                           <th className="py-3 px-4">STATUS</th>
-                          <th className="py-3 px-4 text-right">AMOUNT</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
@@ -987,6 +977,7 @@ export default function App() {
                           <tr key={b.id} className="hover:bg-white/5 transition-colors">
                             <td className="py-3 px-4 font-mono font-bold text-white">#{b.id}</td>
                             <td className="py-3 px-4 font-bold text-white">{b.name}</td>
+                            <td className="py-3 px-4 font-mono text-[#00f0ff]">{b.service}</td>
                             <td className="py-3 px-4 font-mono">{b.date}</td>
                             <td className="py-3 px-4">
                               <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase ${
@@ -995,7 +986,6 @@ export default function App() {
                                 {b.status}
                               </span>
                             </td>
-                            <td className="py-3 px-4 text-right font-mono font-bold text-white">${b.totalPrice || b.basePrice}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -1029,6 +1019,15 @@ export default function App() {
                         <div className="text-xs text-white/60 font-mono">
                           Service: <span className="text-white font-bold">{b.service}</span> | Date: <span className="text-white">{b.date}</span>
                         </div>
+                        {b.addOns && b.addOns.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {b.addOns.map(addon => (
+                              <span key={addon} className="px-2.5 py-0.5 rounded-full bg-white/10 border border-white/15 text-[10px] font-mono text-[#00f0ff]">
+                                ✓ {addon}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                         <div className="text-xs text-white/50">Contact: {b.email}</div>
                         {b.notes && <div className="text-xs text-white/80 bg-white/5 p-3 rounded-lg border border-white/5">"{b.notes}"</div>}
                       </div>
@@ -1105,7 +1104,7 @@ export default function App() {
                 <div className="flex items-center justify-between border-b border-white/10 pb-4">
                   <div>
                     <h2 className="text-xl font-black uppercase tracking-tight font-heading">FULL SITE CONTENT EDITOR</h2>
-                    <p className="text-xs text-white/40 mt-1">Edit any text, headline, quote, price, badge, or section across the entire website.</p>
+                    <p className="text-xs text-white/40 mt-1">Edit any text, headline, feature, or section across the entire website.</p>
                   </div>
                   <button
                     type="submit"
@@ -1197,7 +1196,7 @@ export default function App() {
 
                 {/* Section 3: Packages & Services */}
                 <div className="space-y-4 border-b border-white/5 pb-6">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#00f0ff] font-heading">3. Shooting Packages & Rates</h3>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#00f0ff] font-heading">3. Shooting Packages & Specifications</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* MV Package */}
                     <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-3">
@@ -1212,7 +1211,7 @@ export default function App() {
                         />
                       </div>
                       <div>
-                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Price Tag</label>
+                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Package Tagline</label>
                         <input 
                           type="text" 
                           value={siteConfig.mvPrice}
@@ -1244,7 +1243,7 @@ export default function App() {
                         />
                       </div>
                       <div>
-                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Price Tag</label>
+                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Package Tagline</label>
                         <input 
                           type="text" 
                           value={siteConfig.photoPrice}
@@ -1837,7 +1836,7 @@ export default function App() {
                 <h3 className="text-2xl font-bold text-white mb-1 font-heading">
                   <EditableText value={siteConfig.mvTitle} onChange={(v) => updateConfigField('mvTitle', v)} isLiveEditing={isLiveEditing} />
                 </h3>
-                <div className="text-lg font-mono text-[#00f0ff] font-bold mb-4">
+                <div className="text-sm font-mono text-[#00f0ff] font-extrabold uppercase tracking-wider mb-4">
                   <EditableText value={siteConfig.mvPrice} onChange={(v) => updateConfigField('mvPrice', v)} isLiveEditing={isLiveEditing} />
                 </div>
                 <p className="text-xs text-white/80 leading-relaxed mb-6">
@@ -1881,7 +1880,7 @@ export default function App() {
                 <h3 className="text-2xl font-bold text-white mb-1 font-heading">
                   <EditableText value={siteConfig.photoTitle} onChange={(v) => updateConfigField('photoTitle', v)} isLiveEditing={isLiveEditing} />
                 </h3>
-                <div className="text-lg font-mono text-[#ff007f] font-bold mb-4">
+                <div className="text-sm font-mono text-[#ff007f] font-extrabold uppercase tracking-wider mb-4">
                   <EditableText value={siteConfig.photoPrice} onChange={(v) => updateConfigField('photoPrice', v)} isLiveEditing={isLiveEditing} />
                 </div>
                 <p className="text-xs text-white/80 leading-relaxed mb-6">
@@ -2026,7 +2025,7 @@ export default function App() {
               }`}>
                 2
               </div>
-              <span className="text-[10px] font-mono uppercase text-white/70 font-bold">Add-Ons</span>
+              <span className="text-[10px] font-mono uppercase text-white/70 font-bold">Features & Add-Ons</span>
             </div>
 
             <div className="relative z-10 flex flex-col items-center gap-2">
@@ -2048,7 +2047,7 @@ export default function App() {
                 </div>
                 <h3 className="text-2xl font-bold text-white font-heading">Shooting Request Confirmed!</h3>
                 <p className="text-xs text-white/90 max-w-md mx-auto leading-relaxed">
-                  Thank you, <span className="text-[#00f0ff] font-bold">{clientName}</span>. Your reservation for <span className="text-[#ff007f] font-bold">{selectedService}</span> on <span className="text-white font-bold">{shootDate}</span> has been logged! Total estimate: <span className="text-[#00f0ff] font-bold">${calculateTotal()}</span>. Ivis will reach out directly.
+                  Thank you, <span className="text-[#00f0ff] font-bold">{clientName}</span>. Your reservation for <span className="text-[#ff007f] font-bold">{selectedService}</span> on <span className="text-white font-bold">{shootDate}</span> has been logged! Ivis will reach out directly.
                 </p>
               </div>
             )}
@@ -2058,7 +2057,7 @@ export default function App() {
                 
                 {bookingStep === 1 && (
                   <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Step 1: Choose Shooting Service</h3>
+                    <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Step 1: Choose Production Service</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div 
                         onClick={() => setSelectedService('Music Videos')}
@@ -2071,7 +2070,7 @@ export default function App() {
                         <Film size={32} className="text-[#ff007f] mb-3" />
                         <h4 className="font-bold text-lg text-white font-heading">{siteConfig.mvTitle}</h4>
                         <p className="text-xs text-white/80 mt-1">{siteConfig.mvDesc}</p>
-                        <div className="text-sm font-mono font-bold text-[#00f0ff] mt-4">{siteConfig.mvPrice}</div>
+                        <div className="text-xs font-mono font-bold text-[#00f0ff] mt-4 uppercase">4K 60FPS CONTENT · WITH MIX + EFFECTS</div>
                       </div>
 
                       <div 
@@ -2085,7 +2084,7 @@ export default function App() {
                         <Camera size={32} className="text-[#00f0ff] mb-3" />
                         <h4 className="font-bold text-lg text-white font-heading">{siteConfig.photoTitle}</h4>
                         <p className="text-xs text-white/80 mt-1">{siteConfig.photoDesc}</p>
-                        <div className="text-sm font-mono font-bold text-[#ff007f] mt-4">{siteConfig.photoPrice}</div>
+                        <div className="text-xs font-mono font-bold text-[#ff007f] mt-4 uppercase">Regular Shoot & High-Res Retouching</div>
                       </div>
                     </div>
 
@@ -2094,7 +2093,7 @@ export default function App() {
                       onClick={() => setBookingStep(2)}
                       className="w-full py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
                     >
-                      Next: Choose Add-Ons & Gear <ChevronRight size={16} />
+                      Next: Choose Production Features <ChevronRight size={16} />
                     </button>
                   </div>
                 )}
@@ -2102,12 +2101,12 @@ export default function App() {
                 {bookingStep === 2 && (
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Step 2: Select Production Add-Ons</h3>
+                      <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Step 2: Select Features ({selectedService})</h3>
                       <span className="text-xs font-mono text-[#00f0ff] font-bold">Selected: {selectedAddons.length}</span>
                     </div>
 
                     <div className="grid grid-cols-1 gap-3">
-                      {BOOKING_ADDONS.map((addon) => {
+                      {currentAddonsList.map((addon) => {
                         const active = selectedAddons.includes(addon.name);
                         return (
                           <div 
@@ -2128,7 +2127,11 @@ export default function App() {
                                 <div className="text-xs text-white/70">{addon.desc}</div>
                               </div>
                             </div>
-                            <div className="text-xs font-mono font-bold text-[#ff007f]">+${addon.price}</div>
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
+                              active ? 'bg-[#00f0ff]/20 text-[#00f0ff]' : 'bg-white/5 text-white/40'
+                            }`}>
+                              {active ? 'Selected' : 'Select'}
+                            </span>
                           </div>
                         );
                       })}
@@ -2147,7 +2150,7 @@ export default function App() {
                         onClick={() => setBookingStep(3)}
                         className="w-2/3 py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg flex items-center justify-center gap-2"
                       >
-                        Next: Client Details (${calculateTotal()}) <ChevronRight size={16} />
+                        Next: Client Details & Date <ChevronRight size={16} />
                       </button>
                     </div>
                   </div>
@@ -2158,21 +2161,16 @@ export default function App() {
                     <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Step 3: Contact & Shoot Date</h3>
 
                     <div className="p-5 rounded-2xl bg-white/10 border border-white/15 space-y-2">
-                      <div className="text-xs font-mono uppercase text-white/70 font-bold">Summary</div>
+                      <div className="text-xs font-mono uppercase text-white/70 font-bold">Booking Request Summary</div>
                       <div className="flex justify-between text-sm font-bold text-white">
-                        <span>{selectedService}</span>
-                        <span className="text-[#00f0ff]">${selectedService === 'Music Videos' ? 1200 : 450}</span>
+                        <span>Selected Service:</span>
+                        <span className="text-[#00f0ff]">{selectedService}</span>
                       </div>
                       {selectedAddons.map(addon => (
                         <div key={addon} className="flex justify-between text-xs text-white/80 pl-2">
-                          <span>+ {addon}</span>
-                          <span className="text-[#ff007f]">+${BOOKING_ADDONS.find(a => a.name === addon)?.price}</span>
+                          <span>✓ {addon}</span>
                         </div>
                       ))}
-                      <div className="pt-2 border-t border-white/15 flex justify-between text-base font-bold text-white">
-                        <span>Total Estimated Investment:</span>
-                        <span className="text-[#00f0ff] font-mono">${calculateTotal()}</span>
-                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -2234,7 +2232,7 @@ export default function App() {
                         type="submit"
                         className="w-2/3 py-4 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-[0_0_25px_rgba(255,0,127,0.6)] hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
                       >
-                        Submit Reservation (${calculateTotal()}) <Send size={14} />
+                        Submit Reservation <Send size={14} />
                       </button>
                     </div>
                   </div>
