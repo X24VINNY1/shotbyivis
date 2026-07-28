@@ -440,12 +440,6 @@ export default function App() {
     setHasUnsavedLiveEdits(true);
   };
 
-  const handleSaveLiveEdits = () => {
-    localStorage.setItem('shotbyivis_site_config', JSON.stringify(siteConfig));
-    setHasUnsavedLiveEdits(false);
-    alert('✨ Live visual edits saved to website!');
-  };
-
   // Posts State
   const [posts, setPosts] = useState<PostItem[]>(() => {
     try {
@@ -553,6 +547,18 @@ export default function App() {
   const [shootNotes, setShootNotes] = useState('');
   const [bookedSuccess, setBookedSuccess] = useState(false);
   const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isSavingPost, setIsSavingPost] = useState(false);
+  const [isSavingCMS, setIsSavingCMS] = useState(false);
+  const [isSavingLiveEdits, setIsSavingLiveEdits] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsInitialLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const [categories, setCategories] = useState<string[]>(() => {
     try {
@@ -616,17 +622,22 @@ export default function App() {
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
-    const found = staffAccounts.find(s => s.username.toLowerCase() === loginUser.trim().toLowerCase() && s.pass === loginPass);
-    if (found) {
-      setCurrentStaff(found);
-      localStorage.setItem('shotbyivis_current_staff', JSON.stringify(found));
-      setView('site');
-      setIsLiveEditing(true);
-      setLoginUser('');
-      setLoginPass('');
-    } else {
-      setLoginError('Invalid Username or Password.');
-    }
+    setIsLoggingIn(true);
+
+    setTimeout(() => {
+      setIsLoggingIn(false);
+      const found = staffAccounts.find(s => s.username.toLowerCase() === loginUser.trim().toLowerCase() && s.pass === loginPass);
+      if (found) {
+        setCurrentStaff(found);
+        localStorage.setItem('shotbyivis_current_staff', JSON.stringify(found));
+        setView('site');
+        setIsLiveEditing(true);
+        setLoginUser('');
+        setLoginPass('');
+      } else {
+        setLoginError('Invalid Username or Password.');
+      }
+    }, 700);
   };
 
   const handleLogout = () => {
@@ -638,8 +649,12 @@ export default function App() {
 
   const handleSaveCMS = (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('shotbyivis_site_config', JSON.stringify(siteConfig));
-    alert('Full site content saved successfully!');
+    setIsSavingCMS(true);
+    setTimeout(() => {
+      localStorage.setItem('shotbyivis_site_config', JSON.stringify(siteConfig));
+      setIsSavingCMS(false);
+      alert('Full site content saved successfully!');
+    }, 700);
   };
 
   const handleCreateStaff = (e: React.FormEvent) => {
@@ -674,18 +689,22 @@ export default function App() {
   const handleAddPost = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPost.title || !newPost.url) return;
+    setIsSavingPost(true);
 
-    const created: PostItem = {
-      id: Math.random().toString(36).slice(2, 9),
-      ...newPost,
-      thumb: newPost.url
-    };
+    setTimeout(() => {
+      const created: PostItem = {
+        id: Math.random().toString(36).slice(2, 9),
+        ...newPost,
+        thumb: newPost.url
+      };
 
-    const updated = [created, ...posts];
-    setPosts(updated);
-    localStorage.setItem('shotbyivis_real_posts', JSON.stringify(updated));
-    setAddModalOpen(false);
-    setNewPost({ title: '', category: 'Portraits', type: 'image', url: '', description: '' });
+      const updated = [created, ...posts];
+      setPosts(updated);
+      localStorage.setItem('shotbyivis_real_posts', JSON.stringify(updated));
+      setIsSavingPost(false);
+      setAddModalOpen(false);
+      setNewPost({ title: '', category: selectCategoryList[0], type: 'image', url: '', description: '' });
+    }, 700);
   };
 
   const handleOpenEditPost = (item: PostItem, e?: React.MouseEvent) => {
@@ -697,12 +716,16 @@ export default function App() {
   const handleSaveEditPost = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingPost) return;
+    setIsSavingPost(true);
 
-    const updated = posts.map(p => p.id === editingPost.id ? { ...editingPost, thumb: editingPost.url } : p);
-    setPosts(updated);
-    localStorage.setItem('shotbyivis_real_posts', JSON.stringify(updated));
-    setEditModalOpen(false);
-    setEditingPost(null);
+    setTimeout(() => {
+      const updated = posts.map(p => p.id === editingPost.id ? { ...editingPost, thumb: editingPost.url } : p);
+      setPosts(updated);
+      localStorage.setItem('shotbyivis_real_posts', JSON.stringify(updated));
+      setIsSavingPost(false);
+      setEditModalOpen(false);
+      setEditingPost(null);
+    }, 700);
   };
 
   const updatePostTitleOrDesc = (id: string, field: 'title' | 'description', val: string) => {
@@ -710,6 +733,17 @@ export default function App() {
     setPosts(updated);
     localStorage.setItem('shotbyivis_real_posts', JSON.stringify(updated));
     setHasUnsavedLiveEdits(true);
+  };
+
+  const handleSaveLiveEdits = () => {
+    setIsSavingLiveEdits(true);
+    setTimeout(() => {
+      localStorage.setItem('shotbyivis_site_config', JSON.stringify(siteConfig));
+      localStorage.setItem('shotbyivis_real_posts', JSON.stringify(posts));
+      setHasUnsavedLiveEdits(false);
+      setIsSavingLiveEdits(false);
+      alert('Visual changes saved live!');
+    }, 700);
   };
 
   const handleDeletePost = (id: string, e: React.MouseEvent) => {
@@ -1505,9 +1539,19 @@ export default function App() {
 
                 <button
                   type="submit"
-                  className="w-full py-4 rounded-xl bg-white text-black font-extrabold text-xs uppercase tracking-widest hover:bg-white/90 transition-all shadow-md"
+                  disabled={isSavingCMS}
+                  className="w-full py-4 rounded-xl bg-white text-black font-extrabold text-xs uppercase tracking-widest hover:bg-white/90 transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
-                  Save Full Site Configuration
+                  {isSavingCMS ? (
+                    <>
+                      <Loader size={16} className="animate-spin text-black" />
+                      <span>SAVING CONFIGURATION...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save size={16} /> Save Full Site Configuration
+                    </>
+                  )}
                 </button>
               </form>
             )}
@@ -1710,9 +1754,19 @@ export default function App() {
 
                   <button 
                     type="submit"
-                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    disabled={isSavingPost}
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
-                    <Plus size={16} /> Save New Item
+                    {isSavingPost ? (
+                      <>
+                        <Loader size={16} className="animate-spin text-white" />
+                        <span>SAVING NEW ITEM...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Plus size={16} /> Save New Item
+                      </>
+                    )}
                   </button>
                 </form>
               </motion.div>
@@ -1810,9 +1864,17 @@ export default function App() {
 
                   <button 
                     type="submit"
-                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    disabled={isSavingPost}
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                   >
-                    Save Changes
+                    {isSavingPost ? (
+                      <>
+                        <Loader size={16} className="animate-spin text-white" />
+                        <span>UPDATING ITEM...</span>
+                      </>
+                    ) : (
+                      <span>Save Changes</span>
+                    )}
                   </button>
                 </form>
               </motion.div>
@@ -1868,9 +1930,19 @@ export default function App() {
 
             <button 
               type="submit"
-              className="w-full py-3.5 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+              disabled={isLoggingIn}
+              className="w-full py-3.5 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
-              <Shield size={16} /> Sign In to Panel
+              {isLoggingIn ? (
+                <>
+                  <Loader size={16} className="animate-spin text-white" />
+                  <span>AUTHENTICATING...</span>
+                </>
+              ) : (
+                <>
+                  <Shield size={16} /> Sign In to Panel
+                </>
+              )}
             </button>
           </form>
 
@@ -1889,6 +1961,25 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#050508] text-white selection:bg-[#ff007f] selection:text-white font-sans overflow-x-hidden relative">
       <ParticleCanvas />
+
+      {/* ===== GLOBAL FUTURISTIC PRELOADER SCREEN ===== */}
+      {isInitialLoading && (
+        <div className="fixed inset-0 z-[100] bg-[#050508] flex flex-col items-center justify-center space-y-6 text-center p-6">
+          <div className="relative">
+            <div className="w-20 h-20 rounded-full border-4 border-t-[#ff007f] border-r-[#00f0ff] border-b-[#ff007f] border-l-transparent animate-spin shadow-[0_0_40px_#00f0ff]" />
+            <img src="/logo.png" alt="ShotByIvis" className="h-10 w-auto absolute inset-0 m-auto animate-pulse object-contain" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-black text-white font-heading tracking-wider uppercase animate-pulse">
+              SHOTBY<span className="neon-text-pink">IVIS</span>
+            </h2>
+            <div className="flex items-center justify-center gap-2 text-xs font-mono text-[#00f0ff] font-bold uppercase tracking-widest">
+              <Loader size={14} className="animate-spin" />
+              <span>LOADING WEBSITE...</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ===== FLOATING VISUAL LIVE EDITOR TOP BAR (WHEN LOGGED IN) ===== */}
       {currentStaff && (
@@ -1918,9 +2009,19 @@ export default function App() {
             {hasUnsavedLiveEdits && (
               <button
                 onClick={handleSaveLiveEdits}
-                className="px-4 py-1.5 rounded-full bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-extrabold text-[10px] uppercase tracking-widest shadow-lg animate-bounce flex items-center gap-1.5"
+                disabled={isSavingLiveEdits}
+                className="px-4 py-1.5 rounded-full bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-extrabold text-[10px] uppercase tracking-widest shadow-lg animate-bounce flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
               >
-                <Save size={12} /> Save Live Changes
+                {isSavingLiveEdits ? (
+                  <>
+                    <Loader size={12} className="animate-spin text-white" />
+                    <span>SAVING VISUAL CHANGES...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save size={12} /> Save Live Changes
+                  </>
+                )}
               </button>
             )}
 
