@@ -958,12 +958,12 @@ export default function App() {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 bg-[#0a0a0e] border border-white/10 px-3 py-1.5 rounded-full text-[10px] font-mono">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-white/70 font-bold uppercase">SMS DISPATCH: +1 (305) 989-4700 ACTIVE</span>
+                  <span className="text-white/70 font-bold uppercase">EMAIL DISPATCH: rfmnisaiah@gmail.com ACTIVE</span>
                 </div>
 
                 <button 
                   onClick={() => setAddModalOpen(true)}
-                  className="px-5 py-2 rounded-full bg-white text-black font-extrabold text-xs uppercase tracking-wider hover:bg-white/90 transition-all flex items-center gap-1.5 shadow-md"
+                  className="px-5 py-2 rounded-full bg-white text-black font-extrabold text-xs uppercase tracking-wider hover:bg-white/90 transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
                 >
                   + Quick Action <ChevronDown size={14} />
                 </button>
@@ -995,7 +995,7 @@ export default function App() {
                   </div>
 
                   <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono uppercase text-white/60 tracking-widest font-bold">
-                    SMS PHONE: +1 (305) 989-4700
+                    NOTIFICATION EMAIL: rfmnisaiah@gmail.com
                   </span>
                 </div>
 
@@ -1207,10 +1207,10 @@ export default function App() {
                     <span className="w-3 h-3 rounded-full bg-[#00f0ff] animate-ping" />
                     <div>
                       <div className="font-bold text-xs text-white uppercase tracking-wider font-heading">
-                        INSTANT SMS DISPATCH: <span className="text-[#00f0ff] font-mono font-extrabold">+1 (305) 989-4700</span>
+                        INSTANT EMAIL NOTIFICATIONS: <span className="text-[#00f0ff] font-mono font-extrabold">rfmnisaiah@gmail.com</span>
                       </div>
                       <div className="text-[10px] font-mono text-white/60">
-                        All new client shoot submissions automatically send an SMS text alert to your phone number.
+                        All new client shoot submissions automatically send an email alert to rfmnisaiah@gmail.com via Formspree.
                       </div>
                     </div>
                   </div>
@@ -1253,12 +1253,6 @@ export default function App() {
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2">
-                        <a
-                          href={`sms:13059894700?body=${encodeURIComponent(`🎬 SHOOT BOOKING: Client ${b.name} (${b.email}) requested ${b.service} for date ${b.date}.`)}`}
-                          className="px-3 py-1.5 rounded-lg bg-[#00f0ff]/15 border border-[#00f0ff]/40 text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black text-xs font-bold uppercase transition-all flex items-center gap-1"
-                        >
-                          📱 Direct SMS Alert
-                        </a>
                         <button 
                           onClick={() => updateBookingStatus(b.id, 'Confirmed')}
                           className="px-3.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white text-xs font-bold uppercase transition-all"
@@ -1601,6 +1595,207 @@ export default function App() {
             SHOTBYIVIS ENTERPRISE ADMIN ENGINE © 2026. ALL RIGHTS RESERVED.
           </div>
         </main>
+
+        {/* ===== ADD REAL POST MODAL (INSIDE ADMIN VIEW) ===== */}
+        <AnimatePresence>
+          {addModalOpen && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4"
+              onClick={() => setAddModalOpen(false)}
+            >
+              <motion.div 
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-[#0c0c12] p-6 rounded-3xl border border-white/20 max-w-lg w-full relative space-y-4"
+              >
+                <button 
+                  onClick={() => setAddModalOpen(false)}
+                  className="absolute top-4 right-4 text-white/60 hover:text-white p-2"
+                >
+                  <X size={20} />
+                </button>
+
+                <h3 className="text-2xl font-bold text-white mb-1 font-heading">Add New Portfolio Item</h3>
+                <p className="text-white/60 text-xs mb-2">Fill out details below to add to live catalog.</p>
+
+                <form onSubmit={handleAddPost} className="space-y-4">
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Title</label>
+                    <input 
+                      type="text" 
+                      required 
+                      placeholder="e.g. Editorial Fashion Shoot"
+                      value={newPost.title}
+                      onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Category</label>
+                      <select 
+                        value={newPost.category}
+                        onChange={(e) => setNewPost({ ...newPost, category: e.target.value })}
+                        className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                      >
+                        {categories.filter(c => c !== 'All').map(c => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Type</label>
+                      <select 
+                        value={newPost.type}
+                        onChange={(e) => setNewPost({ ...newPost, type: e.target.value as 'video' | 'image' })}
+                        className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                      >
+                        <option value="image">Image</option>
+                        <option value="video">Video</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Direct Image/Video URL</label>
+                    <input 
+                      type="url" 
+                      required 
+                      placeholder="https://..."
+                      value={newPost.url}
+                      onChange={(e) => setNewPost({ ...newPost, url: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Description</label>
+                    <input 
+                      type="text" 
+                      placeholder="Short description..."
+                      value={newPost.description}
+                      onChange={(e) => setNewPost({ ...newPost, description: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                    />
+                  </div>
+
+                  <button 
+                    type="submit"
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Plus size={16} /> Save New Item
+                  </button>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ===== EDIT PORTFOLIO POST MODAL (INSIDE ADMIN VIEW) ===== */}
+        <AnimatePresence>
+          {editModalOpen && editingPost && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4"
+              onClick={() => setEditModalOpen(false)}
+            >
+              <motion.div 
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-[#0c0c12] p-6 rounded-3xl border border-white/20 max-w-lg w-full relative space-y-4"
+              >
+                <button 
+                  onClick={() => setEditModalOpen(false)}
+                  className="absolute top-4 right-4 text-white/60 hover:text-white p-2"
+                >
+                  <X size={20} />
+                </button>
+
+                <h3 className="text-2xl font-bold text-white mb-1 font-heading flex items-center gap-2">
+                  <Edit2 size={20} className="text-[#00f0ff]" /> Edit Portfolio Item
+                </h3>
+                <p className="text-white/60 text-xs mb-4">Update image URL, category, title, or description.</p>
+
+                <form onSubmit={handleSaveEditPost} className="space-y-4">
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Title</label>
+                    <input 
+                      type="text" 
+                      required 
+                      value={editingPost.title}
+                      onChange={(e) => setEditingPost({ ...editingPost, title: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Category</label>
+                      <select 
+                        value={editingPost.category}
+                        onChange={(e) => setEditingPost({ ...editingPost, category: e.target.value })}
+                        className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                      >
+                        {categories.filter(c => c !== 'All').map(c => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Type</label>
+                      <select 
+                        value={editingPost.type}
+                        onChange={(e) => setEditingPost({ ...editingPost, type: e.target.value as 'video' | 'image' })}
+                        className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                      >
+                        <option value="image">Image</option>
+                        <option value="video">Video</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Image / Video URL</label>
+                    <input 
+                      type="text" 
+                      required 
+                      value={editingPost.url}
+                      onChange={(e) => setEditingPost({ ...editingPost, url: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Description</label>
+                    <input 
+                      type="text" 
+                      value={editingPost.description}
+                      onChange={(e) => setEditingPost({ ...editingPost, description: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                    />
+                  </div>
+
+                  <button 
+                    type="submit"
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    Save Changes
+                  </button>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     );
   }
