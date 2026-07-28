@@ -116,31 +116,103 @@ export interface StaffAccount {
 }
 
 export interface SiteConfig {
-  heroTagline: string;
+  // Brand Header
+  brandPink: string;
+  brandBlue: string;
+  headerCtaText: string;
+  
+  // Hero Section
+  heroBadgeTagline: string;
+  heroHeadline1: string;
+  heroHeadline2: string;
   heroSubtext: string;
+  heroBtnPrimary: string;
+  heroBtnSecondary: string;
+
+  // Portfolio Section
+  portfolioTag: string;
+  portfolioTitle: string;
+  igBannerTitle: string;
+  igBannerSub: string;
+  instagramHandle: string;
+
+  // Music Videos Package
+  mvTitle: string;
+  mvPrice: string;
+  mvDesc: string;
+  mvFeat1: string;
+  mvFeat2: string;
+  mvFeat3: string;
+
+  // Photoshoot Package
+  photoTitle: string;
+  photoPrice: string;
+  photoDesc: string;
+  photoFeat1: string;
+  photoFeat2: string;
+  photoFeat3: string;
+
+  // About Section
+  aboutTag: string;
   aboutTitle: string;
   aboutBio: string;
-  instagramHandle: string;
   stat1Value: string;
   stat1Label: string;
   stat2Value: string;
   stat2Label: string;
-  musicVideoPrice: string;
-  photoshootPrice: string;
+
+  // Booking Wizard Section
+  bookingTag: string;
+  bookingTitle: string;
+
+  // Footer
+  footerCopyright: string;
 }
 
 const DEFAULT_SITE_CONFIG: SiteConfig = {
-  heroTagline: 'Miami Videography & Photography',
+  brandPink: 'SHOTBY',
+  brandBlue: 'IVIS',
+  headerCtaText: 'Book Shoot',
+
+  heroBadgeTagline: 'Miami Videography & Photography',
+  heroHeadline1: 'SHOT BY',
+  heroHeadline2: 'IVIS',
   heroSubtext: 'Music Videos · Photoshoots · Cinema Production',
+  heroBtnPrimary: 'View Portfolio',
+  heroBtnSecondary: 'Book a Shoot',
+
+  portfolioTag: 'Real Works',
+  portfolioTitle: 'PORTFOLIO GALLERY',
+  igBannerTitle: 'Follow @shotbyivis On Instagram',
+  igBannerSub: 'Daily music video clips, reels, and behind-the-scenes content.',
+  instagramHandle: '@shotbyivis',
+
+  mvTitle: 'Music Videos',
+  mvPrice: 'Starting at $1,200',
+  mvDesc: 'Full 4K/6K cinema camera shooting, direction, editing & color grading for singles and albums.',
+  mvFeat1: '4K / 6K Cinema Cameras & Lighting',
+  mvFeat2: 'Full Video Direction & Shot List',
+  mvFeat3: 'Color Grading & Sound FX Editing',
+
+  photoTitle: 'Photoshoots',
+  photoPrice: 'Starting at $450',
+  photoDesc: 'Fashion, portrait, and automotive photography sessions on location in Miami or indoor studio.',
+  photoFeat1: '20 High-Res Professionally Edited Photos',
+  photoFeat2: 'Studio or Miami Location Shooting',
+  photoFeat3: 'Skin Retouching & Color Correction',
+
+  aboutTag: 'Behind the Lens',
   aboutTitle: 'ABOUT IVIS',
   aboutBio: 'ShotByIvis is a premier Miami-based videographer and photographer with a sharp cinema eye. Specializing in high-energy music videos and model portraiture. Equipped with RED & Sony cinema line gear, every production is shot with intention and color graded to perfection.',
-  instagramHandle: '@shotbyivis',
   stat1Value: '150+',
   stat1Label: 'Sessions Shot',
   stat2Value: '4K 60fps',
   stat2Label: 'Cinema Quality',
-  musicVideoPrice: 'Starting at $1,200',
-  photoshootPrice: 'Starting at $450'
+
+  bookingTag: 'Interactive Reservation Engine',
+  bookingTitle: 'ADVANCED BOOKING WIZARD',
+
+  footerCopyright: '© 2026 ShotByIvis. All rights reserved. Miami, FL.'
 };
 
 const DEFAULT_STAFF: StaffAccount[] = [
@@ -231,7 +303,7 @@ export default function App() {
   const [siteConfig, setSiteConfig] = useState<SiteConfig>(() => {
     try {
       const saved = localStorage.getItem('shotbyivis_site_config');
-      return saved ? JSON.parse(saved) : DEFAULT_SITE_CONFIG;
+      return saved ? { ...DEFAULT_SITE_CONFIG, ...JSON.parse(saved) } : DEFAULT_SITE_CONFIG;
     } catch {
       return DEFAULT_SITE_CONFIG;
     }
@@ -383,7 +455,7 @@ export default function App() {
   const handleSaveCMS = (e: React.FormEvent) => {
     e.preventDefault();
     localStorage.setItem('shotbyivis_site_config', JSON.stringify(siteConfig));
-    alert('Site content updated successfully!');
+    alert('Full site content saved successfully!');
   };
 
   const handleCreateStaff = (e: React.FormEvent) => {
@@ -580,7 +652,7 @@ export default function App() {
                     : 'text-white/60 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <span className="flex items-center gap-2.5"><Settings size={15} /> System Configuration</span>
+                <span className="flex items-center gap-2.5"><Settings size={15} /> Edit Entire Site Content</span>
               </button>
 
               {currentStaff.role === 'owner' && (
@@ -622,8 +694,6 @@ export default function App() {
           <div>
             {/* Top Enterprise Command Bar */}
             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-              
-              {/* Command Search */}
               <div className="flex items-center gap-3 bg-[#0a0a0e] border border-white/10 px-4 py-2 rounded-full w-full max-w-md">
                 <Search size={16} className="text-white/40" />
                 <input 
@@ -634,7 +704,6 @@ export default function App() {
                 <span className="text-[10px] font-mono bg-white/10 px-2 py-0.5 rounded text-white/60">Ctrl + K</span>
               </div>
 
-              {/* Status & Quick Action */}
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 bg-[#0a0a0e] border border-white/10 px-3 py-1.5 rounded-full text-[10px] font-mono">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -666,7 +735,6 @@ export default function App() {
             {adminTab === 'overview' && (
               <div className="space-y-8">
                 
-                {/* Header Title & Period Filter */}
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
                     <h1 className="text-2xl font-black uppercase tracking-tight font-heading flex items-center gap-2">
@@ -680,10 +748,8 @@ export default function App() {
                   </span>
                 </div>
 
-                {/* 4 Metric Cards Grid (Matching Zen2K layout) */}
+                {/* 4 Metric Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  
-                  {/* Card 1: Gross Revenue */}
                   <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 space-y-4">
                     <div className="flex items-center justify-between text-xs font-mono uppercase text-white/50 font-bold">
                       <span>TOTAL GROSS REVENUE</span>
@@ -699,7 +765,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Card 2: Completed Orders */}
                   <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 space-y-4">
                     <div className="flex items-center justify-between text-xs font-mono uppercase text-white/50 font-bold">
                       <span>COMPLETED SHOOTS</span>
@@ -715,7 +780,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Card 3: Registered Clients */}
                   <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 space-y-4">
                     <div className="flex items-center justify-between text-xs font-mono uppercase text-white/50 font-bold">
                       <span>REGISTERED CLIENTS</span>
@@ -731,7 +795,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Card 4: Active Products */}
                   <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 space-y-4">
                     <div className="flex items-center justify-between text-xs font-mono uppercase text-white/50 font-bold">
                       <span>ACTIVE PORTFOLIO WORKS</span>
@@ -746,13 +809,10 @@ export default function App() {
                       </span>
                     </div>
                   </div>
-
                 </div>
 
                 {/* Middle Charts & Distribution Split */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                  
-                  {/* Left (2 Cols): Revenue Trajectory SVG Graph */}
                   <div className="lg:col-span-2 p-6 rounded-2xl bg-[#09090e] border border-white/10 flex flex-col justify-between space-y-6">
                     <div className="flex items-center justify-between">
                       <div>
@@ -766,7 +826,6 @@ export default function App() {
                       </span>
                     </div>
 
-                    {/* Interactive Curve SVG Graph */}
                     <div className="relative w-full h-48 flex items-end">
                       <svg className="w-full h-full overflow-visible" viewBox="0 0 500 150" fill="none">
                         <path 
@@ -798,7 +857,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Right (1 Col): Production Volume Distribution */}
                   <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 flex flex-col justify-between space-y-6">
                     <div>
                       <h3 className="font-bold text-sm text-white uppercase tracking-wider font-heading flex items-center gap-2 mb-1">
@@ -844,10 +902,9 @@ export default function App() {
                       <span className="font-mono font-extrabold text-emerald-400">99.98%</span>
                     </div>
                   </div>
-
                 </div>
 
-                {/* Bottom Recent Transactions Table */}
+                {/* Recent Transactions Table */}
                 <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="font-bold text-sm text-white uppercase tracking-wider font-heading flex items-center gap-2">
@@ -984,81 +1041,263 @@ export default function App() {
               </div>
             )}
 
-            {/* TAB 3: SYSTEM CONFIGURATION (CMS) */}
+            {/* TAB 3: FULL SITE EDITOR (EDIT ANYTHING ON WEBSITE) */}
             {adminTab === 'cms' && (
-              <form onSubmit={handleSaveCMS} className="space-y-6 bg-[#09090e] p-8 rounded-2xl border border-white/10">
+              <form onSubmit={handleSaveCMS} className="space-y-8 bg-[#09090e] p-8 rounded-2xl border border-white/10">
                 <div className="flex items-center justify-between border-b border-white/10 pb-4">
                   <div>
-                    <h2 className="text-xl font-black uppercase tracking-tight font-heading">System Configuration</h2>
-                    <p className="text-xs text-white/40 mt-1">Configure global site text, pricing rates & tags.</p>
+                    <h2 className="text-xl font-black uppercase tracking-tight font-heading">FULL SITE CONTENT EDITOR</h2>
+                    <p className="text-xs text-white/40 mt-1">Edit any text, headline, quote, price, badge, or section across the entire website.</p>
                   </div>
                   <button
                     type="submit"
                     className="px-6 py-2.5 rounded-full bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-white/90 transition-all shadow-md"
                   >
-                    Save Configuration
+                    Save All Changes
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Hero Tagline</label>
-                    <input 
-                      type="text" 
-                      value={siteConfig.heroTagline}
-                      onChange={(e) => setSiteConfig({ ...siteConfig, heroTagline: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Hero Subtext</label>
-                    <input 
-                      type="text" 
-                      value={siteConfig.heroSubtext}
-                      onChange={(e) => setSiteConfig({ ...siteConfig, heroSubtext: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Music Video Price Tag</label>
-                    <input 
-                      type="text" 
-                      value={siteConfig.musicVideoPrice}
-                      onChange={(e) => setSiteConfig({ ...siteConfig, musicVideoPrice: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Photoshoot Price Tag</label>
-                    <input 
-                      type="text" 
-                      value={siteConfig.photoshootPrice}
-                      onChange={(e) => setSiteConfig({ ...siteConfig, photoshootPrice: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
-                    />
+                {/* Section 1: Header & Brand */}
+                <div className="space-y-4 border-b border-white/5 pb-6">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#00f0ff] font-heading">1. Header & Brand Typography</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Brand Pink Name</label>
+                      <input 
+                        type="text" 
+                        value={siteConfig.brandPink}
+                        onChange={(e) => setSiteConfig({ ...siteConfig, brandPink: e.target.value })}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Brand Blue Name</label>
+                      <input 
+                        type="text" 
+                        value={siteConfig.brandBlue}
+                        onChange={(e) => setSiteConfig({ ...siteConfig, brandBlue: e.target.value })}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Header Button Label</label>
+                      <input 
+                        type="text" 
+                        value={siteConfig.headerCtaText}
+                        onChange={(e) => setSiteConfig({ ...siteConfig, headerCtaText: e.target.value })}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div>
-                  <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">About Biography</label>
-                  <textarea 
-                    rows={4}
-                    value={siteConfig.aboutBio}
-                    onChange={(e) => setSiteConfig({ ...siteConfig, aboutBio: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
-                  />
+                {/* Section 2: Hero Banner */}
+                <div className="space-y-4 border-b border-white/5 pb-6">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#ff007f] font-heading">2. Hero Banner Section</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Pill Badge Tagline</label>
+                      <input 
+                        type="text" 
+                        value={siteConfig.heroBadgeTagline}
+                        onChange={(e) => setSiteConfig({ ...siteConfig, heroBadgeTagline: e.target.value })}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Subtext Line</label>
+                      <input 
+                        type="text" 
+                        value={siteConfig.heroSubtext}
+                        onChange={(e) => setSiteConfig({ ...siteConfig, heroSubtext: e.target.value })}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Hero Main Title Line 1</label>
+                      <input 
+                        type="text" 
+                        value={siteConfig.heroHeadline1}
+                        onChange={(e) => setSiteConfig({ ...siteConfig, heroHeadline1: e.target.value })}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Hero Main Title Line 2 (Glowing)</label>
+                      <input 
+                        type="text" 
+                        value={siteConfig.heroHeadline2}
+                        onChange={(e) => setSiteConfig({ ...siteConfig, heroHeadline2: e.target.value })}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 3: Packages & Services */}
+                <div className="space-y-4 border-b border-white/5 pb-6">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#00f0ff] font-heading">3. Shooting Packages & Rates</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* MV Package */}
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-3">
+                      <div className="font-bold text-xs text-white">Music Video Package</div>
+                      <div>
+                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Package Title</label>
+                        <input 
+                          type="text" 
+                          value={siteConfig.mvTitle}
+                          onChange={(e) => setSiteConfig({ ...siteConfig, mvTitle: e.target.value })}
+                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Price Tag</label>
+                        <input 
+                          type="text" 
+                          value={siteConfig.mvPrice}
+                          onChange={(e) => setSiteConfig({ ...siteConfig, mvPrice: e.target.value })}
+                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Description</label>
+                        <textarea 
+                          rows={2}
+                          value={siteConfig.mvDesc}
+                          onChange={(e) => setSiteConfig({ ...siteConfig, mvDesc: e.target.value })}
+                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Photo Package */}
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-3">
+                      <div className="font-bold text-xs text-white">Photoshoot Package</div>
+                      <div>
+                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Package Title</label>
+                        <input 
+                          type="text" 
+                          value={siteConfig.photoTitle}
+                          onChange={(e) => setSiteConfig({ ...siteConfig, photoTitle: e.target.value })}
+                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Price Tag</label>
+                        <input 
+                          type="text" 
+                          value={siteConfig.photoPrice}
+                          onChange={(e) => setSiteConfig({ ...siteConfig, photoPrice: e.target.value })}
+                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Description</label>
+                        <textarea 
+                          rows={2}
+                          value={siteConfig.photoDesc}
+                          onChange={(e) => setSiteConfig({ ...siteConfig, photoDesc: e.target.value })}
+                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 4: About & Stats */}
+                <div className="space-y-4 border-b border-white/5 pb-6">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#ff007f] font-heading">4. About Section & Metrics</h3>
+                  <div>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">About Main Title</label>
+                    <input 
+                      type="text" 
+                      value={siteConfig.aboutTitle}
+                      onChange={(e) => setSiteConfig({ ...siteConfig, aboutTitle: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Biography</label>
+                    <textarea 
+                      rows={3}
+                      value={siteConfig.aboutBio}
+                      onChange={(e) => setSiteConfig({ ...siteConfig, aboutBio: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Stat 1 (Value | Label)</label>
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          value={siteConfig.stat1Value}
+                          onChange={(e) => setSiteConfig({ ...siteConfig, stat1Value: e.target.value })}
+                          className="w-1/3 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"
+                        />
+                        <input 
+                          type="text" 
+                          value={siteConfig.stat1Label}
+                          onChange={(e) => setSiteConfig({ ...siteConfig, stat1Label: e.target.value })}
+                          className="w-2/3 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Stat 2 (Value | Label)</label>
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          value={siteConfig.stat2Value}
+                          onChange={(e) => setSiteConfig({ ...siteConfig, stat2Value: e.target.value })}
+                          className="w-1/3 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"
+                        />
+                        <input 
+                          type="text" 
+                          value={siteConfig.stat2Label}
+                          onChange={(e) => setSiteConfig({ ...siteConfig, stat2Label: e.target.value })}
+                          className="w-2/3 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 5: Instagram & Footer */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#00f0ff] font-heading">5. Instagram & Footer</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Instagram Handle</label>
+                      <input 
+                        type="text" 
+                        value={siteConfig.instagramHandle}
+                        onChange={(e) => setSiteConfig({ ...siteConfig, instagramHandle: e.target.value })}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Footer Copyright Text</label>
+                      <input 
+                        type="text" 
+                        value={siteConfig.footerCopyright}
+                        onChange={(e) => setSiteConfig({ ...siteConfig, footerCopyright: e.target.value })}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-3.5 rounded-xl bg-white text-black font-extrabold text-xs uppercase tracking-widest hover:bg-white/90 transition-all shadow-md"
+                  className="w-full py-4 rounded-xl bg-white text-black font-extrabold text-xs uppercase tracking-widest hover:bg-white/90 transition-all shadow-md"
                 >
-                  Save Configuration Changes
+                  Save Full Site Configuration
                 </button>
               </form>
             )}
@@ -1246,7 +1485,7 @@ export default function App() {
           <a href="#" className="flex items-center gap-3 group">
             <img src="/logo.png" alt="ShotByIvis Logo" className="h-10 w-auto object-contain transition-transform group-hover:scale-105" />
             <span className="font-extrabold text-2xl tracking-wider text-white font-heading">
-              SHOTBY<span className="neon-text-pink">IVIS</span>
+              {siteConfig.brandPink}<span className="neon-text-pink">{siteConfig.brandBlue}</span>
             </span>
           </a>
 
@@ -1288,7 +1527,7 @@ export default function App() {
               onClick={() => scrollTo('contact')}
               className="px-6 py-2.5 rounded-full font-bold uppercase tracking-widest text-xs bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-[0_0_20px_rgba(255,0,127,0.5)] hover:scale-105 transition-all"
             >
-              Book Shoot
+              {siteConfig.headerCtaText}
             </button>
           </div>
 
@@ -1316,7 +1555,7 @@ export default function App() {
                 <Lock size={16} /> Staff / Owner Panel
               </button>
               <a href="https://www.instagram.com/shotbyivis/" target="_blank" rel="noreferrer" className="py-2 text-[#00f0ff] flex items-center gap-2">
-                <InstagramIcon size={16} /> Instagram @shotbyivis
+                <InstagramIcon size={16} /> Instagram {siteConfig.instagramHandle}
               </a>
             </motion.div>
           )}
@@ -1355,7 +1594,7 @@ export default function App() {
             <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full border border-[#ff007f]/50 bg-[#ff007f]/15 mb-6 backdrop-blur-md">
               <span className="w-2.5 h-2.5 rounded-full bg-[#ff007f] animate-ping" />
               <span className="text-[11px] font-mono uppercase tracking-[0.3em] text-[#ff007f] font-bold">
-                {siteConfig.heroTagline}
+                {siteConfig.heroBadgeTagline}
               </span>
             </div>
 
@@ -1363,7 +1602,7 @@ export default function App() {
               className="text-white leading-[1.02] mb-6 font-black uppercase tracking-tight font-heading"
               style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}
             >
-              SHOT BY <span className="neon-text-pink">IVIS</span>
+              {siteConfig.heroHeadline1} <span className="neon-text-pink">{siteConfig.heroHeadline2}</span>
             </h1>
 
             <div className="flex items-center gap-3 mb-10 flex-wrap justify-center text-white/80 text-[12px] font-mono uppercase tracking-[0.2em] font-medium">
@@ -1375,13 +1614,13 @@ export default function App() {
                 onClick={() => scrollTo('portfolio')}
                 className="px-9 py-4 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white tracking-[0.2em] uppercase text-xs font-bold rounded-full shadow-[0_0_25px_rgba(255,0,127,0.6)] hover:scale-105 transition-all"
               >
-                View Portfolio
+                {siteConfig.heroBtnPrimary}
               </button>
               <button
                 onClick={() => scrollTo('contact')}
                 className="px-9 py-4 border border-white/30 text-white/90 tracking-[0.2em] uppercase text-xs font-bold rounded-full hover:border-[#00f0ff] hover:text-[#00f0ff] hover:bg-[#00f0ff]/10 transition-all"
               >
-                Book a Shoot
+                {siteConfig.heroBtnSecondary}
               </button>
             </div>
           </motion.div>
@@ -1427,10 +1666,10 @@ export default function App() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
           <div>
             <span className="text-[11px] font-mono text-[#00f0ff] uppercase tracking-[0.4em] block mb-2 font-bold">
-              Real Works
+              {siteConfig.portfolioTag}
             </span>
             <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight font-heading">
-              PORTFOLIO <span className="neon-text-pink">GALLERY</span>
+              {siteConfig.portfolioTitle}
             </h2>
           </div>
 
@@ -1513,9 +1752,9 @@ export default function App() {
             </div>
             <div>
               <h3 className="font-bold text-xl text-white uppercase tracking-tight font-heading">
-                Follow <span className="neon-text-pink">{siteConfig.instagramHandle}</span> On Instagram
+                {siteConfig.igBannerTitle}
               </h3>
-              <p className="text-white/80 text-xs mt-1">Daily music video clips, reels, and behind-the-scenes content.</p>
+              <p className="text-white/80 text-xs mt-1">{siteConfig.igBannerSub}</p>
             </div>
           </div>
           <a
@@ -1559,16 +1798,16 @@ export default function App() {
                 <div className="w-14 h-14 rounded-2xl border border-[#ff007f] bg-[#ff007f]/15 flex items-center justify-center text-[#ff007f] mb-6 shadow-[0_0_15px_#ff007f]">
                   <Film size={28} />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-1 font-heading">Music Videos</h3>
-                <div className="text-lg font-mono text-[#00f0ff] font-bold mb-4">{siteConfig.musicVideoPrice}</div>
+                <h3 className="text-2xl font-bold text-white mb-1 font-heading">{siteConfig.mvTitle}</h3>
+                <div className="text-lg font-mono text-[#00f0ff] font-bold mb-4">{siteConfig.mvPrice}</div>
                 <p className="text-xs text-white/80 leading-relaxed mb-6">
-                  Full 4K/6K cinema camera shooting, direction, editing & color grading for singles and albums.
+                  {siteConfig.mvDesc}
                 </p>
 
                 <ul className="space-y-2.5 mb-6 text-xs text-white/90">
-                  <li className="flex items-center gap-2"><Check size={16} className="text-[#ff007f]" /> 4K / 6K Cinema Cameras & Lighting</li>
-                  <li className="flex items-center gap-2"><Check size={16} className="text-[#ff007f]" /> Full Video Direction & Shot List</li>
-                  <li className="flex items-center gap-2"><Check size={16} className="text-[#ff007f]" /> Color Grading & Sound FX Editing</li>
+                  <li className="flex items-center gap-2"><Check size={16} className="text-[#ff007f]" /> {siteConfig.mvFeat1}</li>
+                  <li className="flex items-center gap-2"><Check size={16} className="text-[#ff007f]" /> {siteConfig.mvFeat2}</li>
+                  <li className="flex items-center gap-2"><Check size={16} className="text-[#ff007f]" /> {siteConfig.mvFeat3}</li>
                 </ul>
               </div>
 
@@ -1590,16 +1829,16 @@ export default function App() {
                 <div className="w-14 h-14 rounded-2xl border border-[#00f0ff] bg-[#00f0ff]/15 flex items-center justify-center text-[#00f0ff] mb-6 shadow-[0_0_15px_#00f0ff]">
                   <Camera size={28} />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-1 font-heading">Photoshoots</h3>
-                <div className="text-lg font-mono text-[#ff007f] font-bold mb-4">{siteConfig.photoshootPrice}</div>
+                <h3 className="text-2xl font-bold text-white mb-1 font-heading">{siteConfig.photoTitle}</h3>
+                <div className="text-lg font-mono text-[#ff007f] font-bold mb-4">{siteConfig.photoPrice}</div>
                 <p className="text-xs text-white/80 leading-relaxed mb-6">
-                  Fashion, portrait, and automotive photography sessions on location in Miami or indoor studio.
+                  {siteConfig.photoDesc}
                 </p>
 
                 <ul className="space-y-2.5 mb-6 text-xs text-white/90">
-                  <li className="flex items-center gap-2"><Check size={16} className="text-[#00f0ff]" /> 20 High-Res Professionally Edited Photos</li>
-                  <li className="flex items-center gap-2"><Check size={16} className="text-[#00f0ff]" /> Studio or Miami Location Shooting</li>
-                  <li className="flex items-center gap-2"><Check size={16} className="text-[#00f0ff]" /> Skin Retouching & Color Correction</li>
+                  <li className="flex items-center gap-2"><Check size={16} className="text-[#00f0ff]" /> {siteConfig.photoFeat1}</li>
+                  <li className="flex items-center gap-2"><Check size={16} className="text-[#00f0ff]" /> {siteConfig.photoFeat2}</li>
+                  <li className="flex items-center gap-2"><Check size={16} className="text-[#00f0ff]" /> {siteConfig.photoFeat3}</li>
                 </ul>
               </div>
 
@@ -1648,7 +1887,7 @@ export default function App() {
 
           <div className="lg:pl-6">
             <span className="text-[11px] font-mono text-[#00f0ff] uppercase tracking-[0.4em] block mb-2 font-bold">
-              Behind the Lens
+              {siteConfig.aboutTag}
             </span>
             <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-8 font-heading">
               {siteConfig.aboutTitle}
@@ -1690,10 +1929,10 @@ export default function App() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
             <span className="text-[11px] font-mono text-[#ff007f] uppercase tracking-[0.4em] block mb-2 font-bold">
-              Interactive Reservation Engine
+              {siteConfig.bookingTag}
             </span>
             <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight font-heading">
-              ADVANCED <span className="neon-text-blue">BOOKING WIZARD</span>
+              {siteConfig.bookingTitle}
             </h2>
           </div>
 
@@ -1758,9 +1997,9 @@ export default function App() {
                         }`}
                       >
                         <Film size={32} className="text-[#ff007f] mb-3" />
-                        <h4 className="font-bold text-lg text-white font-heading">Music Videos</h4>
-                        <p className="text-xs text-white/80 mt-1">Full 4K/6K cinema camera shooting, direction, editing & color grading.</p>
-                        <div className="text-sm font-mono font-bold text-[#00f0ff] mt-4">Base Rate: $1,200</div>
+                        <h4 className="font-bold text-lg text-white font-heading">{siteConfig.mvTitle}</h4>
+                        <p className="text-xs text-white/80 mt-1">{siteConfig.mvDesc}</p>
+                        <div className="text-sm font-mono font-bold text-[#00f0ff] mt-4">{siteConfig.mvPrice}</div>
                       </div>
 
                       <div 
@@ -1772,9 +2011,9 @@ export default function App() {
                         }`}
                       >
                         <Camera size={32} className="text-[#00f0ff] mb-3" />
-                        <h4 className="font-bold text-lg text-white font-heading">Photoshoot Session</h4>
-                        <p className="text-xs text-white/80 mt-1">Fashion, model portraiture, or automotive photography in Miami.</p>
-                        <div className="text-sm font-mono font-bold text-[#ff007f] mt-4">Base Rate: $450</div>
+                        <h4 className="font-bold text-lg text-white font-heading">{siteConfig.photoTitle}</h4>
+                        <p className="text-xs text-white/80 mt-1">{siteConfig.photoDesc}</p>
+                        <div className="text-sm font-mono font-bold text-[#ff007f] mt-4">{siteConfig.photoPrice}</div>
                       </div>
                     </div>
 
@@ -2092,14 +2331,14 @@ export default function App() {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="ShotByIvis" className="h-7 w-auto object-contain" />
-            <span className="font-bold text-white tracking-wider font-heading">SHOTBY<span className="neon-text-pink">IVIS</span></span>
+            <span className="font-bold text-white tracking-wider font-heading">{siteConfig.brandPink}<span className="neon-text-pink">{siteConfig.brandBlue}</span></span>
           </div>
 
           <div className="flex items-center gap-4">
             <button onClick={() => setView('admin-login')} className="text-white/60 hover:text-white transition-colors flex items-center gap-1 font-mono">
               <Lock size={12} /> Staff / Owner Access
             </button>
-            <p>© 2026 ShotByIvis. All rights reserved. Miami, FL.</p>
+            <p>{siteConfig.footerCopyright}</p>
           </div>
 
           <a href="https://www.instagram.com/shotbyivis/" target="_blank" rel="noreferrer" className="text-white/80 hover:text-[#ff007f] flex items-center gap-1.5 transition-colors font-mono">
