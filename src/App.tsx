@@ -131,7 +131,7 @@ function EditableText({
         }}
         onClick={(e) => e.stopPropagation()}
         onTouchStart={(e) => e.stopPropagation()}
-        className={`${className} outline-none border-b-2 border-dashed border-[#00f0ff] bg-white/10 px-1 py-0.5 rounded cursor-text focus:border-[#ff007f] focus:bg-white/20 transition-all text-white bg-transparent`}
+        className={`${className} text-base sm:text-inherit outline-none border-b-2 border-dashed border-[#00f0ff] bg-white/10 px-1 py-0.5 rounded cursor-text focus:border-[#ff007f] focus:bg-white/20 transition-all text-white bg-transparent`}
         style={{
           width: `${Math.max((localValue || placeholder).length + 1, 3)}ch`,
           minWidth: '40px',
@@ -2092,67 +2092,53 @@ export default function App() {
 
       {/* ===== FLOATING VISUAL LIVE EDITOR TOP BAR (WHEN LOGGED IN) ===== */}
       {currentStaff && (
-        <div className="fixed top-0 inset-x-0 z-50 bg-[#07070c]/95 border-b border-[#00f0ff]/50 px-6 py-2.5 backdrop-blur-2xl flex items-center justify-between shadow-2xl text-xs font-mono">
-          <div className="flex items-center gap-3">
-            <span className={`w-2.5 h-2.5 rounded-full ${isLiveEditing ? 'bg-[#00f0ff] animate-ping' : 'bg-white/40'}`} />
-            <span className="font-extrabold uppercase text-white tracking-wider flex items-center gap-2">
-              <Edit size={14} className="text-[#00f0ff]" /> VISUAL LIVE EDITOR
-            </span>
-            <span className="text-white/60 hidden md:inline">
-              {isLiveEditing ? '⚡ Hover any element to delete or edit live!' : '(Editor currently paused)'}
+        <div className="fixed top-0 inset-x-0 z-50 bg-[#07070c]/95 border-b border-[#00f0ff]/50 px-3 sm:px-6 py-2 backdrop-blur-2xl flex flex-wrap items-center justify-between gap-2 shadow-2xl text-xs font-mono">
+          <div className="flex items-center gap-2">
+            <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isLiveEditing ? 'bg-[#00f0ff] animate-ping' : 'bg-white/40'}`} />
+            <span className="font-extrabold uppercase text-white tracking-wider flex items-center gap-1.5 text-[11px] sm:text-xs">
+              <Edit size={14} className="text-[#00f0ff] shrink-0" /> <span className="hidden sm:inline">VISUAL LIVE EDITOR</span><span className="sm:hidden">LIVE EDITOR</span>
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 flex-wrap">
             <button
+              type="button"
               onClick={() => setIsLiveEditing(!isLiveEditing)}
-              className={`px-4 py-1.5 rounded-full font-bold uppercase tracking-wider text-[10px] transition-all ${
+              className={`px-3 sm:px-4 py-1.5 rounded-full font-bold uppercase tracking-wider text-[10px] transition-all cursor-pointer ${
                 isLiveEditing 
                   ? 'bg-[#00f0ff] text-black shadow-[0_0_15px_#00f0ff]' 
                   : 'bg-white/10 text-white border border-white/20 hover:border-white'
               }`}
             >
-              {isLiveEditing ? 'Editor ACTIVE (Hover to Delete)' : 'Enable Live Editor'}
+              {isLiveEditing ? '⚡ EDITOR ON' : 'Enable Editor'}
             </button>
 
             {hasUnsavedLiveEdits && (
               <button
+                type="button"
                 onClick={handleSaveLiveEdits}
                 disabled={isSavingLiveEdits}
-                className="px-4 py-1.5 rounded-full bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-extrabold text-[10px] uppercase tracking-widest shadow-lg animate-bounce flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                className="px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-extrabold text-[10px] uppercase tracking-widest shadow-lg flex items-center gap-1 cursor-pointer disabled:opacity-50"
               >
                 {isSavingLiveEdits ? (
                   <>
                     <Loader size={12} className="animate-spin text-white" />
-                    <span>SAVING VISUAL CHANGES...</span>
+                    <span>SAVING...</span>
                   </>
                 ) : (
                   <>
-                    <Save size={12} /> Save Live Changes
+                    <Save size={12} /> Save Edits
                   </>
                 )}
               </button>
             )}
 
             <button
-              onClick={() => {
-                if (window.confirm('Restore default site content & text?')) {
-                  setSiteConfig(DEFAULT_SITE_CONFIG);
-                  localStorage.setItem('shotbyivis_site_config', JSON.stringify(DEFAULT_SITE_CONFIG));
-                  setHasUnsavedLiveEdits(false);
-                  alert('Restored all default elements!');
-                }
-              }}
-              className="px-3 py-1.5 rounded-full border border-red-500/40 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white text-[10px] uppercase font-bold transition-all"
-            >
-              Reset Layout
-            </button>
-
-            <button
+              type="button"
               onClick={() => setView('admin-panel')}
-              className="px-3 py-1.5 rounded-full border border-white/20 text-white/80 hover:text-white text-[10px] uppercase"
+              className="px-2.5 sm:px-3 py-1.5 rounded-full border border-white/20 text-white/80 hover:text-white text-[10px] uppercase cursor-pointer"
             >
-              Admin Dashboard →
+              Admin →
             </button>
           </div>
         </div>
