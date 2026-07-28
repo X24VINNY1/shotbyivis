@@ -5,7 +5,7 @@ import {
   Camera, Send, Menu, X, ArrowUpRight,
   ChevronRight, ChevronLeft, ChevronDown, Check, Plus, Trash2, ZoomIn,
   Shield, Lock, LogOut, Calendar, Save, Edit, Edit2,
-  Search, Bell, Sparkles, User, Box, Grid, ShieldCheck, BarChart3, Settings, Phone, Loader, Zap, Star
+  Search, Bell, Sparkles, User, Box, Grid, ShieldCheck, BarChart3, Settings, Phone, Loader, Zap
 } from 'lucide-react';
 
 function InstagramIcon({ size = 20, className = "" }: { size?: number; className?: string }) {
@@ -2717,74 +2717,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* ===== CDXX-INSPIRED TRUST & REVIEWS WALL ===== */}
-      <section className="py-20 px-6 bg-[#030305] border-t border-white/10 relative z-10">
-        <div className="max-w-7xl mx-auto space-y-12">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-6 border-b border-white/10">
-            <div>
-              <span className="text-[11px] font-mono text-[#ff007f] uppercase tracking-[0.4em] font-bold block mb-1">VERIFIED CLIENT VOUCHES</span>
-              <h2 className="text-3xl md:text-4xl font-black uppercase font-heading">TRUSTED BY ARTISTS & MODELS</h2>
-            </div>
-            <div className="flex items-center gap-6">
-              <div className="text-center">
-                <div className="text-3xl font-black text-white font-heading flex items-center gap-1">
-                  4.9 <Star size={20} className="fill-[#00f0ff] text-[#00f0ff]" />
-                </div>
-                <div className="text-[10px] font-mono text-white/60 uppercase font-bold">Average Rating</div>
-              </div>
-              <div className="h-8 w-px bg-white/15" />
-              <div className="text-center">
-                <div className="text-3xl font-black text-[#ff007f] font-heading">100+</div>
-                <div className="text-[10px] font-mono text-white/60 uppercase font-bold">Completed Shoots</div>
-              </div>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="glass-card p-6 rounded-2xl border border-white/15 space-y-4">
-              <div className="flex items-center gap-1 text-[#00f0ff]">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={14} className="fill-[#00f0ff]" />
-                ))}
-              </div>
-              <h4 className="font-bold text-base text-white font-heading">"Insane Music Video Quality"</h4>
-              <p className="text-xs text-white/80 leading-relaxed font-sans">"Ivis shot our music video in 4K with crazy lighting effects. Delivered the final cut in less than 3 days. Best videographer in Miami!"</p>
-              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-white/60">
-                <span className="font-bold text-white">Verified Client</span>
-                <span className="text-[#00f0ff]">Miami, FL</span>
-              </div>
-            </div>
-
-            <div className="glass-card p-6 rounded-2xl border border-white/15 space-y-4">
-              <div className="flex items-center gap-1 text-[#ff007f]">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={14} className="fill-[#ff007f]" />
-                ))}
-              </div>
-              <h4 className="font-bold text-base text-white font-heading">"Top Tier Retouching"</h4>
-              <p className="text-xs text-white/80 leading-relaxed font-sans">"The photoshoot session was super smooth. High-res retouched photos look like a magazine cover. Super professional."</p>
-              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-white/60">
-                <span className="font-bold text-white">Editorial Model</span>
-                <span className="text-[#ff007f]">Editorial Shoot</span>
-              </div>
-            </div>
-
-            <div className="glass-card p-6 rounded-2xl border border-white/15 space-y-4">
-              <div className="flex items-center gap-1 text-emerald-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={14} className="fill-emerald-400" />
-                ))}
-              </div>
-              <h4 className="font-bold text-base text-white font-heading">"Fast Email Dispatch & Booking"</h4>
-              <p className="text-xs text-white/80 leading-relaxed font-sans">"Booked online on Tuesday and got confirmation instantly. The shoot took place right on schedule. 10/10 service."</p>
-              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-white/60">
-                <span className="font-bold text-white">Automotive Brand</span>
-                <span className="text-emerald-400">Exotic Car Shoot</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ===== ADVANCED INTERACTIVE BOOKING WIZARD ===== */}
       <motion.section 
