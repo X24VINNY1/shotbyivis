@@ -552,6 +552,9 @@ export default function App() {
   const [isSavingCMS, setIsSavingCMS] = useState(false);
   const [isSavingLiveEdits, setIsSavingLiveEdits] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isSwitchingStep, setIsSwitchingStep] = useState(false);
+  const [isSwitchingTab, setIsSwitchingTab] = useState(false);
+  const [isSwitchingCategory, setIsSwitchingCategory] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -559,6 +562,33 @@ export default function App() {
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
+
+  const changeBookingStep = (targetStep: 1 | 2 | 3) => {
+    if (targetStep === bookingStep || isSwitchingStep) return;
+    setIsSwitchingStep(true);
+    setTimeout(() => {
+      setBookingStep(targetStep);
+      setIsSwitchingStep(false);
+    }, 400);
+  };
+
+  const changeAdminTab = (tab: 'overview' | 'bookings' | 'portfolio' | 'cms' | 'staff') => {
+    if (tab === adminTab || isSwitchingTab) return;
+    setIsSwitchingTab(true);
+    setTimeout(() => {
+      setAdminTab(tab);
+      setIsSwitchingTab(false);
+    }, 350);
+  };
+
+  const changeCategory = (cat: string) => {
+    if (cat === activeCategory || isSwitchingCategory) return;
+    setIsSwitchingCategory(true);
+    setTimeout(() => {
+      setActiveCategory(cat);
+      setIsSwitchingCategory(false);
+    }, 300);
+  };
 
   const [categories, setCategories] = useState<string[]>(() => {
     try {
@@ -917,8 +947,9 @@ export default function App() {
             {/* Navigation Tabs (Horizontal Scroll on Mobile, Vertical Stack on Desktop) */}
             <nav className="flex md:flex-col items-center md:items-stretch gap-2 overflow-x-auto no-scrollbar py-1 md:py-0 text-xs font-bold uppercase tracking-wider">
               <button
-                onClick={() => setAdminTab('overview')}
-                className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all ${
+                disabled={isSwitchingTab}
+                onClick={() => changeAdminTab('overview')}
+                className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all cursor-pointer ${
                   adminTab === 'overview'
                     ? 'bg-white text-black font-extrabold shadow-md'
                     : 'bg-white/5 md:bg-transparent text-white/60 hover:text-white hover:bg-white/10'
@@ -929,8 +960,9 @@ export default function App() {
               </button>
 
               <button
-                onClick={() => setAdminTab('bookings')}
-                className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all ${
+                disabled={isSwitchingTab}
+                onClick={() => changeAdminTab('bookings')}
+                className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all cursor-pointer ${
                   adminTab === 'bookings'
                     ? 'bg-white text-black font-extrabold shadow-md'
                     : 'bg-white/5 md:bg-transparent text-white/60 hover:text-white hover:bg-white/10'
@@ -941,8 +973,9 @@ export default function App() {
               </button>
 
               <button
-                onClick={() => setAdminTab('portfolio')}
-                className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all ${
+                disabled={isSwitchingTab}
+                onClick={() => changeAdminTab('portfolio')}
+                className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all cursor-pointer ${
                   adminTab === 'portfolio'
                     ? 'bg-white text-black font-extrabold shadow-md'
                     : 'bg-white/5 md:bg-transparent text-white/60 hover:text-white hover:bg-white/10'
@@ -953,8 +986,9 @@ export default function App() {
               </button>
 
               <button
-                onClick={() => setAdminTab('cms')}
-                className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all ${
+                disabled={isSwitchingTab}
+                onClick={() => changeAdminTab('cms')}
+                className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all cursor-pointer ${
                   adminTab === 'cms'
                     ? 'bg-white text-black font-extrabold shadow-md'
                     : 'bg-white/5 md:bg-transparent text-white/60 hover:text-white hover:bg-white/10'
@@ -965,8 +999,9 @@ export default function App() {
 
               {currentStaff.role === 'owner' && (
                 <button
-                  onClick={() => setAdminTab('staff')}
-                  className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all ${
+                  disabled={isSwitchingTab}
+                  onClick={() => changeAdminTab('staff')}
+                  className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all cursor-pointer ${
                     adminTab === 'staff'
                       ? 'bg-white text-black font-extrabold shadow-md'
                       : 'bg-white/5 md:bg-transparent text-white/60 hover:text-white hover:bg-white/10'
@@ -1038,6 +1073,16 @@ export default function App() {
                 </div>
               </div>
             </div>
+
+            {isSwitchingTab && (
+              <div className="p-12 rounded-2xl bg-[#09090e] border border-[#00f0ff]/40 text-center space-y-4 my-6">
+                <div className="w-12 h-12 rounded-full border-4 border-t-[#ff007f] border-r-[#00f0ff] border-b-[#ff007f] border-l-transparent animate-spin mx-auto shadow-[0_0_20px_#00f0ff]" />
+                <div className="text-xs font-mono text-[#00f0ff] font-bold uppercase tracking-widest flex items-center justify-center gap-2 animate-pulse">
+                  <Loader size={14} className="animate-spin" />
+                  <span>SWITCHING DASHBOARD TAB...</span>
+                </div>
+              </div>
+            )}
 
             {/* ===== TAB 0: EXECUTIVE ANALYTICS & OVERVIEW ===== */}
             {adminTab === 'overview' && (
@@ -2286,47 +2331,56 @@ export default function App() {
             </h2>
           </div>
 
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 max-w-full flex-nowrap md:flex-wrap justify-start md:justify-center">
-            {categories.map((cat, catIdx) => (
-              <div key={cat} className="relative inline-flex items-center group/cat">
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer select-none ${
-                    activeCategory === cat 
-                      ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-[0_0_20px_rgba(255,0,127,0.5)]' 
-                      : 'bg-white/5 border border-white/15 text-white/80 hover:text-white hover:border-white/40'
-                  }`}
-                >
-                  <EditableText 
-                    value={cat} 
-                    onChange={(v) => handleRenameCategory(catIdx, v)} 
-                    isLiveEditing={isLiveEditing} 
-                  />
-                  {isLiveEditing && cat !== 'All' && (
-                    <span
-                      role="button"
-                      tabIndex={0}
-                      onClick={(e) => handleDeleteCategory(cat, e)}
-                      className="opacity-0 group-hover/cat:opacity-100 p-1 rounded-full bg-red-500 text-white hover:bg-red-600 text-[9px] transition-opacity shrink-0 ml-1 border border-white/20 shadow-md cursor-pointer inline-flex items-center justify-center"
-                      title={`Delete ${cat} category`}
-                    >
-                      <Trash2 size={10} />
-                    </span>
-                  )}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 max-w-full flex-nowrap md:flex-wrap justify-start md:justify-center">
+              {categories.map((cat, catIdx) => (
+                <div key={cat} className="relative inline-flex items-center group/cat">
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => changeCategory(cat)}
+                    className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer select-none ${
+                      activeCategory === cat 
+                        ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-[0_0_20px_rgba(255,0,127,0.5)]' 
+                        : 'bg-white/5 border border-white/15 text-white/80 hover:text-white hover:border-white/40'
+                    }`}
+                  >
+                    <EditableText 
+                      value={cat} 
+                      onChange={(v) => handleRenameCategory(catIdx, v)} 
+                      isLiveEditing={isLiveEditing} 
+                    />
+                    {isLiveEditing && cat !== 'All' && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => handleDeleteCategory(cat, e)}
+                        className="opacity-0 group-hover/cat:opacity-100 p-1 rounded-full bg-red-500 text-white hover:bg-red-600 text-[9px] transition-opacity shrink-0 ml-1 border border-white/20 shadow-md cursor-pointer inline-flex items-center justify-center"
+                        title={`Delete ${cat} category`}
+                      >
+                        <Trash2 size={10} />
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
-            {isLiveEditing && (
-              <button
-                type="button"
-                onClick={handleAddCategory}
-                className="px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#00f0ff]/20 border border-[#00f0ff]/50 text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black transition-all flex items-center gap-1.5 shadow-lg cursor-pointer"
-              >
-                <Plus size={14} /> Add Category
-              </button>
+              {isLiveEditing && (
+                <button
+                  type="button"
+                  onClick={handleAddCategory}
+                  className="px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#00f0ff]/20 border border-[#00f0ff]/50 text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black transition-all flex items-center gap-1.5 shadow-lg cursor-pointer"
+                >
+                  <Plus size={14} /> Add Category
+                </button>
+              )}
+            </div>
+
+            {isSwitchingCategory && (
+              <div className="py-6 text-center text-xs font-mono text-[#00f0ff] font-bold uppercase tracking-widest flex items-center justify-center gap-2 animate-pulse">
+                <Loader size={14} className="animate-spin text-[#00f0ff]" />
+                <span>FILTERING PORTFOLIO...</span>
+              </div>
             )}
           </div>
         </div>
@@ -2635,7 +2689,10 @@ export default function App() {
           <div className="flex items-center justify-between max-w-xl mx-auto mb-12 relative">
             <div className="absolute top-1/2 inset-x-0 h-0.5 bg-white/15 -translate-y-1/2 z-0" />
             
-            <div className="relative z-10 flex flex-col items-center gap-2">
+            <div 
+              onClick={() => changeBookingStep(1)}
+              className="relative z-10 flex flex-col items-center gap-2 cursor-pointer"
+            >
               <div className={`w-10 h-10 rounded-full font-bold text-xs flex items-center justify-center transition-all ${
                 bookingStep === 1 ? 'bg-[#ff007f] text-white shadow-[0_0_15px_#ff007f]' : 'bg-[#0c0c12] border border-white/30 text-white/80'
               }`}>
@@ -2644,7 +2701,10 @@ export default function App() {
               <span className="text-[10px] font-mono uppercase text-white/70 font-bold">Service</span>
             </div>
 
-            <div className="relative z-10 flex flex-col items-center gap-2">
+            <div 
+              onClick={() => changeBookingStep(2)}
+              className="relative z-10 flex flex-col items-center gap-2 cursor-pointer"
+            >
               <div className={`w-10 h-10 rounded-full font-bold text-xs flex items-center justify-center transition-all ${
                 bookingStep === 2 ? 'bg-[#00f0ff] text-black shadow-[0_0_15px_#00f0ff]' : 'bg-[#0c0c12] border border-white/30 text-white/80'
               }`}>
@@ -2653,7 +2713,10 @@ export default function App() {
               <span className="text-[10px] font-mono uppercase text-white/70 font-bold">Features & Add-Ons</span>
             </div>
 
-            <div className="relative z-10 flex flex-col items-center gap-2">
+            <div 
+              onClick={() => changeBookingStep(3)}
+              className="relative z-10 flex flex-col items-center gap-2 cursor-pointer"
+            >
               <div className={`w-10 h-10 rounded-full font-bold text-xs flex items-center justify-center transition-all ${
                 bookingStep === 3 ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg' : 'bg-[#0c0c12] border border-white/30 text-white/80'
               }`}>
@@ -2665,6 +2728,21 @@ export default function App() {
 
           <div className="glass-card p-8 md:p-12 rounded-3xl border border-white/15 shadow-2xl relative overflow-hidden">
             
+            {isSwitchingStep && (
+              <div className="p-12 rounded-2xl bg-black/80 border border-[#00f0ff]/50 text-center space-y-6 backdrop-blur-2xl my-4">
+                <div className="w-14 h-14 rounded-full border-4 border-t-[#ff007f] border-r-[#00f0ff] border-b-[#ff007f] border-l-transparent animate-spin mx-auto shadow-[0_0_25px_#00f0ff]" />
+                <div className="space-y-1">
+                  <h4 className="text-xl font-black text-white font-heading tracking-wider uppercase animate-pulse">
+                    SWITCHING STEP...
+                  </h4>
+                  <p className="text-xs font-mono text-[#00f0ff] font-bold uppercase tracking-widest flex items-center justify-center gap-1.5">
+                    <Loader size={12} className="animate-spin" />
+                    <span>LOADING STEP DETAILS...</span>
+                  </p>
+                </div>
+              </div>
+            )}
+
             {isSubmittingBooking && (
               <div className="p-12 rounded-2xl bg-black/80 border border-[#00f0ff]/50 text-center space-y-6 backdrop-blur-2xl">
                 <div className="w-16 h-16 rounded-full border-4 border-t-[#ff007f] border-r-[#00f0ff] border-b-[#ff007f] border-l-transparent animate-spin mx-auto shadow-[0_0_30px_#00f0ff]" />
@@ -2729,10 +2807,20 @@ export default function App() {
 
                     <button
                       type="button"
-                      onClick={() => setBookingStep(2)}
-                      className="w-full py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                      disabled={isSwitchingStep}
+                      onClick={() => changeBookingStep(2)}
+                      className="w-full py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                     >
-                      Next: Choose Production Features <ChevronRight size={16} />
+                      {isSwitchingStep ? (
+                        <>
+                          <Loader size={16} className="animate-spin text-white" />
+                          <span>LOADING FEATURES...</span>
+                        </>
+                      ) : (
+                        <>
+                          Next: Choose Production Features <ChevronRight size={16} />
+                        </>
+                      )}
                     </button>
                   </div>
                 )}
@@ -2779,17 +2867,28 @@ export default function App() {
                     <div className="flex gap-4">
                       <button
                         type="button"
-                        onClick={() => setBookingStep(1)}
-                        className="w-1/3 py-4 rounded-xl border border-white/30 text-white/90 font-bold text-xs uppercase tracking-wider"
+                        disabled={isSwitchingStep}
+                        onClick={() => changeBookingStep(1)}
+                        className="w-1/3 py-4 rounded-xl border border-white/30 text-white/90 font-bold text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
                       >
                         Back
                       </button>
                       <button
                         type="button"
-                        onClick={() => setBookingStep(3)}
-                        className="w-2/3 py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg flex items-center justify-center gap-2"
+                        disabled={isSwitchingStep}
+                        onClick={() => changeBookingStep(3)}
+                        className="w-2/3 py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                       >
-                        Next: Client Details & Date <ChevronRight size={16} />
+                        {isSwitchingStep ? (
+                          <>
+                            <Loader size={16} className="animate-spin text-white" />
+                            <span>LOADING DETAILS...</span>
+                          </>
+                        ) : (
+                          <>
+                            Next: Client Details & Date <ChevronRight size={16} />
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
@@ -2862,8 +2961,9 @@ export default function App() {
                     <div className="flex gap-4">
                       <button
                         type="button"
-                        onClick={() => setBookingStep(2)}
-                        className="w-1/3 py-4 rounded-xl border border-white/30 text-white/90 font-bold text-xs uppercase tracking-wider"
+                        disabled={isSwitchingStep}
+                        onClick={() => changeBookingStep(2)}
+                        className="w-1/3 py-4 rounded-xl border border-white/30 text-white/90 font-bold text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
                       >
                         Back
                       </button>
