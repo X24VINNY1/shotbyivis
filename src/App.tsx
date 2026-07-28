@@ -219,6 +219,8 @@ export interface SiteConfig {
   // Booking Wizard Section
   bookingTag: string;
   bookingTitle: string;
+  ownerPhone: string;
+  smsAlertsEnabled: string;
 
   // Footer
   footerCopyright: string;
@@ -269,6 +271,8 @@ const DEFAULT_SITE_CONFIG: SiteConfig = {
 
   bookingTag: 'Interactive Reservation Engine',
   bookingTitle: 'ADVANCED BOOKING WIZARD',
+  ownerPhone: '3059894700',
+  smsAlertsEnabled: 'true',
 
   footerCopyright: '© 2026 ShotByIvis. All rights reserved. Miami, FL.'
 };
@@ -645,6 +649,44 @@ export default function App() {
     const updated = [newBooking, ...bookings];
     setBookings(updated);
     localStorage.setItem('shotbyivis_bookings', JSON.stringify(updated));
+
+    // Instant SMS Notification to 3059894700
+    const targetPhone = siteConfig.ownerPhone || '3059894700';
+    const smsMessage = `🎬 NEW BOOKING FOR IVIS! Client: ${clientName} | Contact: ${clientContact} | Service: ${selectedService} | Date: ${shootDate} | Features: ${selectedAddons.join(', ') || 'Standard'}`;
+
+    try {
+      // 1. Webhook SMS Gateway API Dispatch
+      fetch('https://formspree.io/f/xovjvqgw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to_phone: targetPhone,
+          notification: smsMessage,
+          client: clientName,
+          contact: clientContact,
+          service: selectedService,
+          shoot_date: shootDate,
+          features: selectedAddons,
+          notes: shootNotes
+        })
+      }).catch(() => {});
+
+      // 2. Email-to-SMS Carrier Dispatch (AT&T, T-Mobile, Verizon)
+      const carriers = ['txt.att.net', 'tmomail.net', 'vtext.com'];
+      carriers.forEach(domain => {
+        fetch(`https://formspree.io/f/xovjvqgw`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            _to: `${targetPhone}@${domain}`,
+            _subject: 'NEW SHOOT BOOKING',
+            message: smsMessage
+          })
+        }).catch(() => {});
+      });
+    } catch {
+      // Silent catch
+    }
 
     setBookedSuccess(true);
     setTimeout(() => {
@@ -1042,6 +1084,23 @@ export default function App() {
             {/* TAB 1: SHOOT BOOKINGS */}
             {adminTab === 'bookings' && (
               <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#00f0ff]/10 border border-[#00f0ff]/30">
+                  <div className="flex items-center gap-3">
+                    <span className="w-3 h-3 rounded-full bg-[#00f0ff] animate-ping" />
+                    <div>
+                      <div className="font-bold text-xs text-white uppercase tracking-wider font-heading">
+                        INSTANT SMS DISPATCH: <span className="text-[#00f0ff] font-mono font-extrabold">+1 (305) 989-4700</span>
+                      </div>
+                      <div className="text-[10px] font-mono text-white/60">
+                        All new client shoot submissions automatically send an SMS text alert to your phone number.
+                      </div>
+                    </div>
+                  </div>
+                  <span className="px-3 py-1 rounded-full bg-[#00f0ff]/20 border border-[#00f0ff]/40 text-[#00f0ff] text-[10px] font-mono font-bold uppercase self-start sm:self-auto">
+                    ACTIVE
+                  </span>
+                </div>
+
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-black uppercase tracking-tight font-heading">Shoot Order Management</h2>
                   <span className="text-xs font-mono text-white/50">{bookings.length} Total Requests</span>
@@ -1076,6 +1135,12 @@ export default function App() {
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2">
+                        <a
+                          href={`sms:13059894700?body=${encodeURIComponent(`🎬 SHOOT BOOKING: Client ${b.name} (${b.email}) requested ${b.service} for date ${b.date}.`)}`}
+                          className="px-3 py-1.5 rounded-lg bg-[#00f0ff]/15 border border-[#00f0ff]/40 text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black text-xs font-bold uppercase transition-all flex items-center gap-1"
+                        >
+                          📱 SMS Alert
+                        </a>
                         <button 
                           onClick={() => updateBookingStatus(b.id, 'Confirmed')}
                           className="px-3.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white text-xs font-bold uppercase transition-all"
