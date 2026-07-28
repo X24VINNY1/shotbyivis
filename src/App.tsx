@@ -724,6 +724,13 @@ export default function App() {
     localStorage.setItem('shotbyivis_bookings', JSON.stringify(updated));
   };
 
+  const handleDeleteBooking = (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const updated = bookings.filter(b => b.id !== id);
+    setBookings(updated);
+    localStorage.setItem('shotbyivis_bookings', JSON.stringify(updated));
+  };
+
   const scrollTo = (id: string) => {
     if (view !== 'site') setView('site');
     setTimeout(() => {
@@ -1063,6 +1070,7 @@ export default function App() {
                           <th className="py-3 px-4">SERVICE</th>
                           <th className="py-3 px-4">DATE</th>
                           <th className="py-3 px-4">STATUS</th>
+                          <th className="py-3 px-4 text-right">ACTION</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
@@ -1078,6 +1086,15 @@ export default function App() {
                               }`}>
                                 {b.status}
                               </span>
+                            </td>
+                            <td className="py-3 px-4 text-right">
+                              <button
+                                onClick={(e) => handleDeleteBooking(b.id, e)}
+                                className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all inline-flex items-center gap-1 text-[10px] font-mono font-bold uppercase border border-red-500/20"
+                                title="Delete Booking"
+                              >
+                                <Trash2 size={12} /> Delete
+                              </button>
                             </td>
                           </tr>
                         ))}
@@ -1163,9 +1180,16 @@ export default function App() {
                         </button>
                         <button 
                           onClick={() => updateBookingStatus(b.id, 'Declined')}
-                          className="px-3.5 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase transition-all"
+                          className="px-3.5 py-1.5 rounded-lg bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500 hover:text-white text-xs font-bold uppercase transition-all"
                         >
                           Decline
+                        </button>
+                        <button 
+                          onClick={(e) => handleDeleteBooking(b.id, e)}
+                          className="px-3.5 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase transition-all flex items-center gap-1 border border-red-500/30"
+                          title="Permanently delete booking"
+                        >
+                          <Trash2 size={13} /> Delete
                         </button>
                       </div>
                     </div>
