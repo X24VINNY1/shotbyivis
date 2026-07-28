@@ -3275,6 +3275,59 @@ export default function App() {
         </div>
       </footer>
 
+      {/* ===== ADVANCED FUTURISTIC CYBER TABLET DOCK ===== */}
+      <div className="fixed bottom-6 inset-x-0 z-40 flex items-center justify-center px-4 pointer-events-none">
+        <div className="cyber-dock-pill px-5 py-2.5 rounded-full flex items-center gap-3 sm:gap-6 pointer-events-auto shadow-[0_20px_50px_rgba(0,0,0,0.9)] border border-white/20">
+          <button
+            onClick={() => scrollTo('home')}
+            className="cyber-dock-item flex flex-col items-center gap-1 text-[10px] font-mono text-white/70 hover:text-white uppercase transition-all cursor-pointer"
+          >
+            <span className="p-2 rounded-full bg-white/5 hover:bg-white/15 text-[#ff007f] shadow-md">
+              <Box size={15} />
+            </span>
+            <span className="hidden sm:inline font-bold">Home</span>
+          </button>
+
+          <button
+            onClick={() => scrollTo('portfolio')}
+            className="cyber-dock-item flex flex-col items-center gap-1 text-[10px] font-mono text-white/70 hover:text-white uppercase transition-all cursor-pointer"
+          >
+            <span className="p-2 rounded-full bg-white/5 hover:bg-white/15 text-[#00f0ff] shadow-md">
+              <Grid size={15} />
+            </span>
+            <span className="hidden sm:inline font-bold">Portfolio</span>
+          </button>
+
+          <button
+            onClick={() => scrollTo('services')}
+            className="cyber-dock-item flex flex-col items-center gap-1 text-[10px] font-mono text-white/70 hover:text-white uppercase transition-all cursor-pointer"
+          >
+            <span className="p-2 rounded-full bg-white/5 hover:bg-white/15 text-white shadow-md">
+              <Camera size={15} />
+            </span>
+            <span className="hidden sm:inline font-bold">Services</span>
+          </button>
+
+          <button
+            onClick={() => scrollTo('contact')}
+            className="cyber-dock-item flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white text-[11px] font-extrabold uppercase tracking-wider shadow-[0_0_20px_#ff007f] hover:scale-105 transition-all cursor-pointer"
+          >
+            <Send size={14} />
+            <span>Book Shoot</span>
+          </button>
+
+          <button
+            onClick={() => setView(currentStaff ? 'admin-panel' : 'admin-login')}
+            className="cyber-dock-item flex flex-col items-center gap-1 text-[10px] font-mono text-white/70 hover:text-white uppercase transition-all cursor-pointer"
+          >
+            <span className="p-2 rounded-full bg-white/5 hover:bg-white/15 text-emerald-400 shadow-md">
+              <ShieldCheck size={15} />
+            </span>
+            <span className="hidden sm:inline font-bold">{currentStaff ? 'Portal' : 'Staff'}</span>
+          </button>
+        </div>
+      </div>
+
     </div>
   );
 }

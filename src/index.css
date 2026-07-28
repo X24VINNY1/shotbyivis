@@ -89,18 +89,40 @@ h1, h2, h3, h4, .font-heading {
 /* Glassmorphism */
 .glass-card {
   background: rgba(12, 12, 18, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .glass-card-hover {
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .glass-card-hover:hover {
-  border-color: rgba(255, 0, 127, 0.5);
-  transform: translateY(-6px);
-  box-shadow: 0 20px 40px -15px rgba(255, 0, 127, 0.2);
+  border-color: rgba(0, 240, 255, 0.4);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 240, 255, 0.15);
+  transform: translateY(-4px);
+}
+
+/* Futuristic Cyber Tablet OS Frame & Dock Styling */
+.tablet-os-container {
+  background: radial-gradient(circle at 50% 0%, rgba(255, 0, 127, 0.12), rgba(5, 5, 8, 1) 75%);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cyber-dock-pill {
+  background: rgba(10, 10, 16, 0.92);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 240, 255, 0.2);
+}
+
+.cyber-dock-item {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cyber-dock-item:hover {
+  transform: translateY(-5px) scale(1.1);
 }
 
 /* Floating particles background canvas */
