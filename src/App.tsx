@@ -100,24 +100,39 @@ function EditableText({
   const spanRef = useRef<HTMLSpanElement | null>(null);
 
   if (!isLiveEditing) {
+    if (!value || value.trim() === '') return null;
     return <span className={className}>{value}</span>;
   }
 
   return (
-    <span
-      ref={spanRef}
-      contentEditable
-      suppressContentEditableWarning
-      onBlur={() => {
-        if (spanRef.current) {
-          const text = spanRef.current.innerText;
-          onChange(text);
-        }
-      }}
-      className={`${className} outline-none border-b-2 border-dashed border-[#00f0ff] hover:bg-white/10 px-1 py-0.5 rounded cursor-text focus:border-[#ff007f] transition-all inline-block`}
-      title="Click to edit visually"
-    >
-      {value || placeholder}
+    <span className="relative inline-flex items-center gap-1 group/edit">
+      <span
+        ref={spanRef}
+        contentEditable
+        suppressContentEditableWarning
+        onBlur={() => {
+          if (spanRef.current) {
+            const text = spanRef.current.innerText;
+            onChange(text);
+          }
+        }}
+        className={`${className} outline-none border-b-2 border-dashed border-[#00f0ff] hover:bg-white/10 px-1 py-0.5 rounded cursor-text focus:border-[#ff007f] transition-all inline-block`}
+        title="Click to edit text"
+      >
+        {value || placeholder}
+      </span>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          onChange('');
+        }}
+        className="opacity-0 group-hover/edit:opacity-100 p-1 rounded bg-red-500/80 text-white hover:bg-red-600 text-[10px] transition-opacity shrink-0 border border-white/20 shadow-md cursor-pointer"
+        title="Delete this text/element"
+      >
+        <Trash2 size={11} />
+      </button>
     </span>
   );
 }
@@ -1508,7 +1523,7 @@ export default function App() {
                   : 'bg-white/10 text-white border border-white/20 hover:border-white'
               }`}
             >
-              {isLiveEditing ? 'Editor ACTIVE (Click Text)' : 'Enable Live Editor'}
+              {isLiveEditing ? 'Editor ACTIVE (Hover to Delete)' : 'Enable Live Editor'}
             </button>
 
             {hasUnsavedLiveEdits && (
@@ -1519,6 +1534,20 @@ export default function App() {
                 <Save size={12} /> Save Live Changes
               </button>
             )}
+
+            <button
+              onClick={() => {
+                if (window.confirm('Restore default site content & text?')) {
+                  setSiteConfig(DEFAULT_SITE_CONFIG);
+                  localStorage.setItem('shotbyivis_site_config', JSON.stringify(DEFAULT_SITE_CONFIG));
+                  setHasUnsavedLiveEdits(false);
+                  alert('Restored all default elements!');
+                }
+              }}
+              className="px-3 py-1.5 rounded-full border border-red-500/40 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white text-[10px] uppercase font-bold transition-all"
+            >
+              Reset Layout
+            </button>
 
             <button
               onClick={() => setView('admin-panel')}
