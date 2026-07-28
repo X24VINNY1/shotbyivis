@@ -335,7 +335,7 @@ const DEFAULT_STAFF: StaffAccount[] = [
 ];
 
 const SLIDESHOW_ITEMS = [
-  { url: '/slideshow/slide2.jpg', title: 'South Beach Model Editorial', category: 'Portraits' },
+  { url: '/slideshow/slide2.jpg', title: 'MIAMI HIGH 2026', category: 'Portraits' },
   { url: '/slideshow/slide3.jpg', title: 'Exotic Supercar Showcase', category: 'Automotive' },
   { url: '/slideshow/slide5.jpg', title: 'High-Fashion Studio Portraiture', category: 'Portraits' },
   { url: '/slideshow/slide6.jpg', title: 'Ocean Drive Lifestyle Content', category: 'Portraits' },
@@ -346,12 +346,12 @@ const SLIDESHOW_ITEMS = [
 const REAL_INSTAGRAM_POSTS: PostItem[] = [
   {
     id: 'ig1',
-    title: 'South Beach Editorial',
+    title: 'MIAMI HIGH 2026',
     category: 'Portraits',
     type: 'image',
     url: '/slideshow/slide2.jpg',
     thumb: '/slideshow/slide2.jpg',
-    description: 'High-fashion portraiture with neon color grading & studio retouching.'
+    description: 'Gainesville Florida.'
   },
   {
     id: 'ig2',
@@ -444,7 +444,16 @@ export default function App() {
   const [posts, setPosts] = useState<PostItem[]>(() => {
     try {
       const saved = localStorage.getItem('shotbyivis_real_posts');
-      return saved && JSON.parse(saved).length > 0 ? JSON.parse(saved) : REAL_INSTAGRAM_POSTS;
+      if (saved && JSON.parse(saved).length > 0) {
+        const parsed: PostItem[] = JSON.parse(saved);
+        return parsed.map((p) => {
+          if (p.id === 'ig1' && (p.title === 'South Beach Editorial' || p.title === 'South Beach Model Editorial')) {
+            return { ...p, title: 'MIAMI HIGH 2026', description: 'Gainesville Florida.' };
+          }
+          return p;
+        });
+      }
+      return REAL_INSTAGRAM_POSTS;
     } catch {
       return REAL_INSTAGRAM_POSTS;
     }
