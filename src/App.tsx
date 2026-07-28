@@ -83,7 +83,7 @@ function ParticleCanvas() {
   return <canvas ref={canvasRef} className="particle-canvas" />;
 }
 
-// Inline Editable Text Component for Live Editor Mode
+// Inline Editable Text Component for Live Editor Mode (Supports Mobile Touch Keyboard)
 function EditableText({
   value,
   onChange,
@@ -110,14 +110,29 @@ function EditableText({
         ref={spanRef}
         contentEditable
         suppressContentEditableWarning
+        tabIndex={0}
+        inputMode="text"
+        onClick={(e) => {
+          e.stopPropagation();
+          spanRef.current?.focus();
+        }}
+        onTouchStart={(e) => {
+          e.stopPropagation();
+          spanRef.current?.focus();
+        }}
         onBlur={() => {
           if (spanRef.current) {
             const text = spanRef.current.innerText;
             onChange(text);
           }
         }}
-        className={`${className} outline-none border-b-2 border-dashed border-[#00f0ff] hover:bg-white/10 px-1 py-0.5 rounded cursor-text focus:border-[#ff007f] transition-all inline-block`}
-        title="Click to edit text"
+        onInput={() => {
+          if (spanRef.current) {
+            onChange(spanRef.current.innerText);
+          }
+        }}
+        className={`${className} outline-none border-b-2 border-dashed border-[#00f0ff] hover:bg-white/10 px-1 py-0.5 rounded cursor-text focus:border-[#ff007f] focus:bg-white/15 transition-all inline-block min-w-[20px]`}
+        title="Tap to edit text"
       >
         {value || placeholder}
       </span>
@@ -129,7 +144,12 @@ function EditableText({
           e.preventDefault();
           onChange('');
         }}
-        className="opacity-0 group-hover/edit:opacity-100 p-1 rounded bg-red-500/80 text-white hover:bg-red-600 text-[10px] transition-opacity shrink-0 border border-white/20 shadow-md cursor-pointer inline-flex items-center justify-center"
+        onTouchEnd={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          onChange('');
+        }}
+        className="opacity-70 md:opacity-0 group-hover/edit:opacity-100 p-1 rounded bg-red-500/90 text-white hover:bg-red-600 text-[10px] transition-opacity shrink-0 border border-white/20 shadow-md cursor-pointer inline-flex items-center justify-center ml-0.5"
         title="Delete this text/element"
       >
         <Trash2 size={11} />
@@ -575,6 +595,9 @@ export default function App() {
     setCategories(updated);
     localStorage.setItem('shotbyivis_categories', JSON.stringify(updated));
   };
+
+  const availableCategories = categories.filter(c => c !== 'All');
+  const selectCategoryList = availableCategories.length > 0 ? availableCategories : ['Portraits', 'Automotive'];
 
   const currentAddonsList = selectedService === 'Standard Photoshoot' ? STANDARD_PHOTO_ADDONS : VIP_PHOTO_ADDONS;
 
@@ -1640,12 +1663,12 @@ export default function App() {
                     <div>
                       <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Category</label>
                       <select 
-                        value={newPost.category}
+                        value={newPost.category || selectCategoryList[0]}
                         onChange={(e) => setNewPost({ ...newPost, category: e.target.value })}
-                        className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                        className="w-full bg-[#181824] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff] cursor-pointer"
                       >
-                        {categories.filter(c => c !== 'All').map(c => (
-                          <option key={c} value={c}>{c}</option>
+                        {selectCategoryList.map(c => (
+                          <option key={c} value={c} className="bg-[#0c0c12] text-white py-2">{c}</option>
                         ))}
                       </select>
                     </div>
@@ -1742,12 +1765,12 @@ export default function App() {
                     <div>
                       <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Category</label>
                       <select 
-                        value={editingPost.category}
+                        value={editingPost.category || selectCategoryList[0]}
                         onChange={(e) => setEditingPost({ ...editingPost, category: e.target.value })}
-                        className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                        className="w-full bg-[#181824] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff] cursor-pointer"
                       >
-                        {categories.filter(c => c !== 'All').map(c => (
-                          <option key={c} value={c}>{c}</option>
+                        {selectCategoryList.map(c => (
+                          <option key={c} value={c} className="bg-[#0c0c12] text-white py-2">{c}</option>
                         ))}
                       </select>
                     </div>
@@ -2814,12 +2837,12 @@ export default function App() {
                   <div>
                     <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Category</label>
                     <select 
-                      value={newPost.category}
+                      value={newPost.category || selectCategoryList[0]}
                       onChange={(e) => setNewPost({ ...newPost, category: e.target.value })}
-                      className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                      className="w-full bg-[#181824] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff] cursor-pointer"
                     >
-                      {categories.filter(c => c !== 'All').map(c => (
-                        <option key={c} value={c}>{c}</option>
+                      {selectCategoryList.map(c => (
+                        <option key={c} value={c} className="bg-[#0c0c12] text-white py-2">{c}</option>
                       ))}
                     </select>
                   </div>
@@ -2916,12 +2939,12 @@ export default function App() {
                   <div>
                     <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Category</label>
                     <select 
-                      value={editingPost.category}
+                      value={editingPost.category || selectCategoryList[0]}
                       onChange={(e) => setEditingPost({ ...editingPost, category: e.target.value })}
-                      className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                      className="w-full bg-[#181824] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff] cursor-pointer"
                     >
-                      {categories.filter(c => c !== 'All').map(c => (
-                        <option key={c} value={c}>{c}</option>
+                      {selectCategoryList.map(c => (
+                        <option key={c} value={c} className="bg-[#0c0c12] text-white py-2">{c}</option>
                       ))}
                     </select>
                   </div>
