@@ -4,7 +4,7 @@ import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { 
   Camera, Film, Send, Menu, X, ArrowUpRight,
   ChevronRight, ChevronLeft, ChevronDown, Check, Plus, Trash2, ZoomIn,
-  Shield, Lock, LogOut, Users, Calendar, Edit3
+  Shield, Lock, LogOut, Users, Calendar, Edit3, LayoutDashboard, DollarSign, ExternalLink
 } from 'lucide-react';
 
 function InstagramIcon({ size = 20, className = "" }: { size?: number; className?: string }) {
@@ -38,14 +38,14 @@ function ParticleCanvas() {
     };
     window.addEventListener('resize', handleResize);
 
-    const particles = Array.from({ length: 35 }, () => ({
+    const particles = Array.from({ length: 30 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
       radius: Math.random() * 2 + 1,
       color: Math.random() > 0.5 ? '#ff007f' : '#00f0ff',
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      alpha: Math.random() * 0.5 + 0.2
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      alpha: Math.random() * 0.4 + 0.1
     }));
 
     const render = () => {
@@ -224,7 +224,7 @@ const BOOKING_ADDONS = [
 export default function App() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [view, setView] = useState<'site' | 'admin-login' | 'admin-panel'>('site');
-  const [adminTab, setAdminTab] = useState<'bookings' | 'portfolio' | 'cms' | 'staff'>('bookings');
+  const [adminTab, setAdminTab] = useState<'overview' | 'bookings' | 'portfolio' | 'cms' | 'staff'>('overview');
 
   // Site Configuration (CMS) State
   const [siteConfig, setSiteConfig] = useState<SiteConfig>(() => {
@@ -352,6 +352,7 @@ export default function App() {
       setCurrentStaff(found);
       localStorage.setItem('shotbyivis_current_staff', JSON.stringify(found));
       setView('admin-panel');
+      setAdminTab('overview');
       setLoginUser('');
       setLoginPass('');
     } else {
@@ -441,6 +442,10 @@ export default function App() {
     return base + addonsTotal;
   };
 
+  const calculateTotalRevenue = () => {
+    return bookings.reduce((sum, b) => sum + (b.totalPrice || b.basePrice || 1200), 0);
+  };
+
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const basePrice = selectedService === 'Music Videos' ? 1200 : 450;
@@ -490,110 +495,240 @@ export default function App() {
     setMobileMenuOpen(false);
   };
 
-  // ===== ADMIN DASHBOARD VIEW =====
+  // ===== ADVANCED PRO SIDEBAR ADMIN DASHBOARD =====
   if (view === 'admin-panel' && currentStaff) {
     return (
-      <div className="min-h-screen bg-[#060609] text-white selection:bg-[#ff007f] selection:text-white font-sans relative">
+      <div className="min-h-screen bg-[#07070c] text-white selection:bg-[#ff007f] selection:text-white font-sans flex relative overflow-hidden">
         <ParticleCanvas />
-        <header className="relative z-10 bg-[#0c0c12]/90 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="ShotByIvis Logo" className="h-8 w-auto object-contain" />
-            <div>
-              <div className="font-bold text-sm tracking-wider uppercase flex items-center gap-2 font-heading">
-                SHOTBY<span className="neon-text-pink">IVIS</span> FULL CMS & ADMIN PANEL
-              </div>
-              <div className="text-[10px] text-white/60 font-mono">
-                Logged in as <span className="text-[#00f0ff] font-bold">{currentStaff.name}</span> ({currentStaff.role.toUpperCase()})
+        
+        {/* ===== PERMANENT PRO SIDEBAR ===== */}
+        <aside className="w-64 bg-[#0a0a12]/95 border-r border-white/10 flex flex-col justify-between p-6 z-20 backdrop-blur-2xl shrink-0">
+          <div className="space-y-8">
+            {/* Brand Logo Header */}
+            <div className="flex items-center gap-3">
+              <img src="/logo.png" alt="ShotByIvis Logo" className="h-10 w-auto object-contain" />
+              <div>
+                <div className="font-extrabold text-lg tracking-wider font-heading">
+                  SHOTBY<span className="neon-text-pink">IVIS</span>
+                </div>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#00f0ff] bg-[#00f0ff]/10 px-2 py-0.5 rounded-full border border-[#00f0ff]/30">
+                  PRO CMS v2.0
+                </span>
               </div>
             </div>
+
+            {/* Staff User Avatar Card */}
+            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#ff007f] to-[#00f0ff] flex items-center justify-center font-bold text-lg text-white font-heading shadow-md">
+                {currentStaff.name[0]}
+              </div>
+              <div className="overflow-hidden">
+                <div className="font-bold text-sm text-white truncate font-heading">{currentStaff.name}</div>
+                <div className="text-[10px] font-mono uppercase text-white/60 font-bold flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full ${currentStaff.role === 'owner' ? 'bg-[#ff007f]' : 'bg-[#00f0ff]'}`} />
+                  {currentStaff.role}
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar Navigation */}
+            <nav className="space-y-2">
+              <button
+                onClick={() => setAdminTab('overview')}
+                className={`w-full px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-all ${
+                  adminTab === 'overview'
+                    ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg'
+                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <span className="flex items-center gap-2.5"><LayoutDashboard size={16} /> Overview</span>
+              </button>
+
+              <button
+                onClick={() => setAdminTab('bookings')}
+                className={`w-full px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-all ${
+                  adminTab === 'bookings'
+                    ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg'
+                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <span className="flex items-center gap-2.5"><Calendar size={16} /> Shoot Bookings</span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] bg-white/10 border border-white/15 font-mono">{bookings.length}</span>
+              </button>
+
+              <button
+                onClick={() => setAdminTab('portfolio')}
+                className={`w-full px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-all ${
+                  adminTab === 'portfolio'
+                    ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg'
+                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <span className="flex items-center gap-2.5"><Camera size={16} /> Portfolio</span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] bg-white/10 border border-white/15 font-mono">{posts.length}</span>
+              </button>
+
+              <button
+                onClick={() => setAdminTab('cms')}
+                className={`w-full px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-all ${
+                  adminTab === 'cms'
+                    ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg'
+                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <span className="flex items-center gap-2.5"><Edit3 size={16} /> Edit Site Content</span>
+              </button>
+
+              {currentStaff.role === 'owner' && (
+                <button
+                  onClick={() => setAdminTab('staff')}
+                  className={`w-full px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-all ${
+                    adminTab === 'staff'
+                      ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg'
+                      : 'text-white/70 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <span className="flex items-center gap-2.5"><Users size={16} /> Staff & Team</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] bg-white/10 border border-white/15 font-mono">{staffAccounts.length}</span>
+                </button>
+              )}
+            </nav>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Bottom Controls */}
+          <div className="space-y-3 pt-6 border-t border-white/10">
             <button 
               onClick={() => setView('site')} 
-              className="px-4 py-2 rounded-full border border-white/20 text-white/80 hover:text-white text-xs font-bold uppercase tracking-wider transition-all"
+              className="w-full py-3 rounded-xl border border-white/20 text-white/80 hover:text-white hover:bg-white/5 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
             >
-              View Website ↗
+              View Live Site <ExternalLink size={14} />
             </button>
             <button 
               onClick={handleLogout} 
-              className="px-4 py-2 rounded-full bg-red-500/20 border border-red-500/40 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
+              className="w-full py-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
             >
               <LogOut size={14} /> Log Out
             </button>
           </div>
-        </header>
+        </aside>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-10">
+        {/* ===== MAIN DASHBOARD CONTENT AREA ===== */}
+        <main className="flex-1 overflow-y-auto p-8 lg:p-12 relative z-10">
           
-          <div className="flex flex-wrap gap-3 mb-8 border-b border-white/10 pb-4">
-            <button
-              onClick={() => setAdminTab('bookings')}
-              className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
-                adminTab === 'bookings' 
-                  ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg' 
-                  : 'bg-white/5 border border-white/10 text-white/70 hover:text-white'
-              }`}
-            >
-              <Calendar size={14} /> Shoot Bookings ({bookings.length})
-            </button>
+          {/* Header Banner */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-10 pb-6 border-b border-white/10">
+            <div>
+              <h1 className="text-3xl font-black uppercase tracking-tight font-heading">
+                ADMIN <span className="neon-text-pink">CONTROL CENTER</span>
+              </h1>
+              <p className="text-xs text-white/70 mt-1">Manage client shoot inquiries, site content, portfolio photos, and staff credentials.</p>
+            </div>
 
             <button
-              onClick={() => setAdminTab('portfolio')}
-              className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
-                adminTab === 'portfolio' 
-                  ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg' 
-                  : 'bg-white/5 border border-white/10 text-white/70 hover:text-white'
-              }`}
+              onClick={() => setAddModalOpen(true)}
+              className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:scale-105 transition-all flex items-center gap-2"
             >
-              <Camera size={14} /> Manage Portfolio ({posts.length})
+              <Plus size={16} /> Add Real Post
             </button>
-
-            <button
-              onClick={() => setAdminTab('cms')}
-              className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
-                adminTab === 'cms' 
-                  ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg' 
-                  : 'bg-white/5 border border-white/10 text-white/70 hover:text-white'
-              }`}
-            >
-              <Edit3 size={14} /> Edit Entire Site Content
-            </button>
-
-            {currentStaff.role === 'owner' && (
-              <button
-                onClick={() => setAdminTab('staff')}
-                className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
-                  adminTab === 'staff' 
-                    ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg' 
-                    : 'bg-white/5 border border-white/10 text-white/70 hover:text-white'
-                }`}
-              >
-                <Users size={14} /> Staff & Owners ({staffAccounts.length})
-              </button>
-            )}
           </div>
+
+          {/* TAB 0: DASHBOARD OVERVIEW METRICS */}
+          {adminTab === 'overview' && (
+            <div className="space-y-10">
+              {/* Metric Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="p-6 rounded-3xl glass-card border border-[#ff007f]/40 space-y-2 shadow-[0_0_25px_rgba(255,0,127,0.15)]">
+                  <div className="text-xs font-mono uppercase text-white/70 font-bold flex items-center justify-between">
+                    <span>Shoot Inquiries</span>
+                    <Calendar size={18} className="text-[#ff007f]" />
+                  </div>
+                  <div className="text-4xl font-black text-white font-heading">{bookings.length}</div>
+                  <div className="text-[10px] font-mono text-[#00f0ff]">{bookings.filter(b => b.status === 'Confirmed').length} Confirmed Shoots</div>
+                </div>
+
+                <div className="p-6 rounded-3xl glass-card border border-[#00f0ff]/40 space-y-2 shadow-[0_0_25px_rgba(0,240,255,0.15)]">
+                  <div className="text-xs font-mono uppercase text-white/70 font-bold flex items-center justify-between">
+                    <span>Pipeline Value</span>
+                    <DollarSign size={18} className="text-[#00f0ff]" />
+                  </div>
+                  <div className="text-4xl font-black text-white font-heading">${calculateTotalRevenue()}</div>
+                  <div className="text-[10px] font-mono text-white/60">Estimated Total Revenue</div>
+                </div>
+
+                <div className="p-6 rounded-3xl glass-card border border-white/15 space-y-2">
+                  <div className="text-xs font-mono uppercase text-white/70 font-bold flex items-center justify-between">
+                    <span>Portfolio Posts</span>
+                    <Camera size={18} className="text-white/80" />
+                  </div>
+                  <div className="text-4xl font-black text-white font-heading">{posts.length}</div>
+                  <div className="text-[10px] font-mono text-[#ff007f]">Real Instagram Works</div>
+                </div>
+
+                <div className="p-6 rounded-3xl glass-card border border-white/15 space-y-2">
+                  <div className="text-xs font-mono uppercase text-white/70 font-bold flex items-center justify-between">
+                    <span>Staff Accounts</span>
+                    <Users size={18} className="text-white/80" />
+                  </div>
+                  <div className="text-4xl font-black text-white font-heading">{staffAccounts.length}</div>
+                  <div className="text-[10px] font-mono text-white/60">Owners & Team Members</div>
+                </div>
+              </div>
+
+              {/* Recent Shoot Inquiries Quick Table */}
+              <div className="glass-card p-8 rounded-3xl border border-white/15 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Recent Shoot Inquiries</h3>
+                  <button onClick={() => setAdminTab('bookings')} className="text-xs text-[#00f0ff] hover:underline font-bold">
+                    View All ({bookings.length}) →
+                  </button>
+                </div>
+
+                {bookings.length === 0 ? (
+                  <p className="text-xs text-white/60">No bookings logged yet.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {bookings.slice(0, 4).map((b) => (
+                      <div key={b.id} className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between gap-4">
+                        <div>
+                          <div className="font-bold text-sm text-white font-heading">{b.name}</div>
+                          <div className="text-xs text-white/60 font-mono">{b.service} | Date: {b.date}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-mono font-bold text-sm text-[#00f0ff]">${b.totalPrice || b.basePrice}</div>
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase ${
+                            b.status === 'Confirmed' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
+                          }`}>
+                            {b.status}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* TAB 1: SHOOT BOOKINGS */}
           {adminTab === 'bookings' && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-black uppercase tracking-tight font-heading">Client Shoot Inquiries</h2>
-                <span className="text-xs font-mono text-white/60">{bookings.length} Total Requests</span>
+                <span className="text-xs font-mono text-white/70 font-bold">{bookings.length} Total Requests</span>
               </div>
 
               {bookings.length === 0 ? (
-                <div className="p-10 rounded-2xl bg-[#0c0c12] border border-white/10 text-center text-white/60 text-sm">
+                <div className="p-12 rounded-3xl glass-card text-center text-white/60 text-sm">
                   No shoot booking requests yet.
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-4">
                   {bookings.map((b) => (
-                    <div key={b.id} className="p-6 rounded-2xl bg-[#0c0c12]/90 border border-white/15 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl">
+                    <div key={b.id} className="p-6 rounded-3xl glass-card border border-white/15 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl">
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
                           <span className="font-bold text-lg text-white font-heading">{b.name}</span>
-                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase ${
                             b.status === 'Confirmed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
                             b.status === 'Completed' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
                             b.status === 'Declined' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
@@ -610,7 +745,7 @@ export default function App() {
                         {b.addOns && b.addOns.length > 0 && (
                           <div className="flex flex-wrap gap-1.5 pt-1">
                             {b.addOns.map(addon => (
-                              <span key={addon} className="px-2 py-0.5 rounded-full bg-white/10 border border-white/15 text-[10px] font-mono text-white/90">
+                              <span key={addon} className="px-2.5 py-0.5 rounded-full bg-white/10 border border-white/15 text-[10px] font-mono text-white/90">
                                 + {addon}
                               </span>
                             ))}
@@ -624,19 +759,19 @@ export default function App() {
                       <div className="flex flex-wrap items-center gap-2">
                         <button 
                           onClick={() => updateBookingStatus(b.id, 'Confirmed')}
-                          className="px-3.5 py-2 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-white text-xs font-bold uppercase transition-all"
+                          className="px-4 py-2 rounded-xl bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-white text-xs font-bold uppercase transition-all"
                         >
                           Confirm
                         </button>
                         <button 
                           onClick={() => updateBookingStatus(b.id, 'Completed')}
-                          className="px-3.5 py-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white text-xs font-bold uppercase transition-all"
+                          className="px-4 py-2 rounded-xl bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white text-xs font-bold uppercase transition-all"
                         >
                           Completed
                         </button>
                         <button 
                           onClick={() => updateBookingStatus(b.id, 'Declined')}
-                          className="px-3.5 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase transition-all"
+                          className="px-4 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase transition-all"
                         >
                           Decline
                         </button>
@@ -663,22 +798,22 @@ export default function App() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {posts.map((item) => (
-                  <div key={item.id} className="p-4 rounded-2xl bg-[#0c0c12] border border-white/10 flex flex-col justify-between gap-4">
-                    <div className="relative aspect-video rounded-xl overflow-hidden bg-black">
+                  <div key={item.id} className="p-4 rounded-3xl glass-card border border-white/15 flex flex-col justify-between gap-4">
+                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-black">
                       <img src={item.url} alt={item.title} className="w-full h-full object-cover" />
-                      <span className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase bg-black/70 text-[#00f0ff]">
+                      <span className="absolute top-3 left-3 px-3 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase bg-black/80 text-[#00f0ff] border border-white/20">
                         {item.category}
                       </span>
                     </div>
 
                     <div>
                       <h3 className="font-bold text-sm text-white font-heading">{item.title}</h3>
-                      <p className="text-xs text-white/60 mt-0.5 truncate">{item.description}</p>
+                      <p className="text-xs text-white/70 mt-0.5 truncate">{item.description}</p>
                     </div>
 
                     <button
                       onClick={(e) => handleDeletePost(item.id, e)}
-                      className="w-full py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
+                      className="w-full py-2.5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
                     >
                       <Trash2 size={14} /> Remove Post
                     </button>
@@ -690,11 +825,11 @@ export default function App() {
 
           {/* TAB 3: FULL CMS SITE EDITING */}
           {adminTab === 'cms' && (
-            <form onSubmit={handleSaveCMS} className="space-y-6 bg-[#0c0c12]/95 p-8 rounded-3xl border border-white/15 shadow-2xl">
+            <form onSubmit={handleSaveCMS} className="space-y-6 glass-card p-8 md:p-10 rounded-3xl border border-white/15 shadow-2xl">
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div>
                   <h2 className="text-2xl font-black uppercase tracking-tight font-heading">Edit Website Content</h2>
-                  <p className="text-xs text-white/60 mt-1">Changes made here update the live website immediately.</p>
+                  <p className="text-xs text-white/70 mt-1">Changes made here update the live website immediately.</p>
                 </div>
                 <button
                   type="submit"
@@ -706,55 +841,55 @@ export default function App() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-[10px] font-mono font-bold uppercase text-white/70 block mb-1">Hero Tagline</label>
+                  <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Hero Tagline</label>
                   <input 
                     type="text" 
                     value={siteConfig.heroTagline}
                     onChange={(e) => setSiteConfig({ ...siteConfig, heroTagline: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                    className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-mono font-bold uppercase text-white/70 block mb-1">Hero Subtext</label>
+                  <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Hero Subtext</label>
                   <input 
                     type="text" 
                     value={siteConfig.heroSubtext}
                     onChange={(e) => setSiteConfig({ ...siteConfig, heroSubtext: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                    className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-[10px] font-mono font-bold uppercase text-white/70 block mb-1">Music Video Package Price Tag</label>
+                  <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Music Video Package Price Tag</label>
                   <input 
                     type="text" 
                     value={siteConfig.musicVideoPrice}
                     onChange={(e) => setSiteConfig({ ...siteConfig, musicVideoPrice: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                    className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-mono font-bold uppercase text-white/70 block mb-1">Photoshoot Package Price Tag</label>
+                  <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Photoshoot Package Price Tag</label>
                   <input 
                     type="text" 
                     value={siteConfig.photoshootPrice}
                     onChange={(e) => setSiteConfig({ ...siteConfig, photoshootPrice: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                    className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] font-mono font-bold uppercase text-white/70 block mb-1">About Section Biography</label>
+                <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">About Section Biography</label>
                 <textarea 
                   rows={4}
                   value={siteConfig.aboutBio}
                   onChange={(e) => setSiteConfig({ ...siteConfig, aboutBio: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                  className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
                 />
               </div>
 
@@ -773,54 +908,54 @@ export default function App() {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-2xl font-black uppercase tracking-tight font-heading">Staff & Team Logins</h2>
-                  <p className="text-xs text-white/60 mt-1">Create accounts to give access to staff members or co-owners.</p>
+                  <p className="text-xs text-white/70 mt-1">Create accounts to give access to staff members or co-owners.</p>
                 </div>
               </div>
 
-              <form onSubmit={handleCreateStaff} className="p-6 rounded-2xl bg-[#0c0c12] border border-white/10 space-y-4">
+              <form onSubmit={handleCreateStaff} className="p-6 rounded-3xl glass-card border border-white/15 space-y-4">
                 <h3 className="font-bold text-sm text-white uppercase tracking-wider flex items-center gap-2 font-heading">
                   <Plus size={16} className="text-[#00f0ff]" /> Add New Staff Member
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
-                    <label className="text-[10px] font-mono font-bold uppercase text-white/70 block mb-1">Username</label>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Username</label>
                     <input 
                       type="text" 
                       required 
                       placeholder="e.g. cameraman1"
                       value={newStaffUser}
                       onChange={(e) => setNewStaffUser(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                      className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-mono font-bold uppercase text-white/70 block mb-1">Full Name</label>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Full Name</label>
                     <input 
                       type="text" 
                       placeholder="Staff Member Name"
                       value={newStaffName}
                       onChange={(e) => setNewStaffName(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                      className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-mono font-bold uppercase text-white/70 block mb-1">Password</label>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Password</label>
                     <input 
                       type="text" 
                       required 
                       placeholder="Set Password"
                       value={newStaffPass}
                       onChange={(e) => setNewStaffPass(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                      className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-mono font-bold uppercase text-white/70 block mb-1">Role</label>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Role</label>
                     <select 
                       value={newStaffRole}
                       onChange={(e) => setNewStaffRole(e.target.value as 'owner' | 'staff')}
-                      className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                      className="w-full bg-[#14141d] border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
                     >
                       <option value="staff">Staff Member</option>
                       <option value="owner">Full Owner Access</option>
@@ -838,24 +973,24 @@ export default function App() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {staffAccounts.map((s) => (
-                  <div key={s.id} className="p-5 rounded-2xl bg-[#0c0c12] border border-white/10 flex items-center justify-between gap-4">
+                  <div key={s.id} className="p-5 rounded-2xl glass-card border border-white/15 flex items-center justify-between gap-4">
                     <div className="space-y-1">
                       <div className="font-bold text-base text-white flex items-center gap-2 font-heading">
                         {s.name}
-                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase ${
-                          s.role === 'owner' ? 'bg-[#ff007f]/20 text-[#ff007f] border border-[#ff007f]/30' : 'bg-[#00f0ff]/20 text-[#00f0ff] border border-[#00f0ff]/30'
+                        <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase ${
+                          s.role === 'owner' ? 'bg-[#ff007f]/20 text-[#ff007f] border border-[#ff007f]/40' : 'bg-[#00f0ff]/20 text-[#00f0ff] border border-[#00f0ff]/40'
                         }`}>
                           {s.role}
                         </span>
                       </div>
-                      <div className="text-xs text-white/60 font-mono">Username: <span className="text-white font-bold">{s.username}</span></div>
-                      <div className="text-xs text-white/50 font-mono">Password: <span className="text-white/80">{s.pass}</span></div>
+                      <div className="text-xs text-white/70 font-mono">Username: <span className="text-white font-bold">{s.username}</span></div>
+                      <div className="text-xs text-white/60 font-mono">Password: <span className="text-white/90">{s.pass}</span></div>
                     </div>
 
                     {staffAccounts.length > 1 && s.username !== 'ivis' && (
                       <button
                         onClick={() => handleDeleteStaff(s.id)}
-                        className="p-2.5 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all"
+                        className="p-2.5 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500 hover:text-white transition-all"
                         title="Delete account"
                       >
                         <Trash2 size={16} />
@@ -867,7 +1002,7 @@ export default function App() {
             </div>
           )}
 
-        </div>
+        </main>
       </div>
     );
   }
