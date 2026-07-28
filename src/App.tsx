@@ -533,7 +533,47 @@ export default function App() {
   const [bookedSuccess, setBookedSuccess] = useState(false);
   const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
 
-  const categories = ['All', 'Portraits', 'Automotive'];
+  const [categories, setCategories] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('shotbyivis_categories');
+      return saved && JSON.parse(saved).length > 0 ? JSON.parse(saved) : ['All', 'Portraits', 'Automotive'];
+    } catch {
+      return ['All', 'Portraits', 'Automotive'];
+    }
+  });
+
+  const handleAddCategory = () => {
+    const name = prompt('Enter new category name (e.g. Studio, Fashion, Events):');
+    if (name && name.trim()) {
+      const clean = name.trim();
+      if (!categories.includes(clean)) {
+        const updated = [...categories, clean];
+        setCategories(updated);
+        localStorage.setItem('shotbyivis_categories', JSON.stringify(updated));
+      }
+    }
+  };
+
+  const handleDeleteCategory = (catToDelete: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (categories.length <= 1 || catToDelete === 'All') return;
+    if (window.confirm(`Delete category "${catToDelete}"?`)) {
+      const updated = categories.filter(c => c !== catToDelete);
+      setCategories(updated);
+      localStorage.setItem('shotbyivis_categories', JSON.stringify(updated));
+      if (activeCategory === catToDelete) {
+        setActiveCategory('All');
+      }
+    }
+  };
+
+  const handleRenameCategory = (index: number, newName: string) => {
+    if (!newName || !newName.trim()) return;
+    const updated = [...categories];
+    updated[index] = newName.trim();
+    setCategories(updated);
+    localStorage.setItem('shotbyivis_categories', JSON.stringify(updated));
+  };
 
   const currentAddonsList = selectedService === 'Standard Photoshoot' ? STANDARD_PHOTO_ADDONS : VIP_PHOTO_ADDONS;
 
@@ -1913,27 +1953,44 @@ export default function App() {
             </h2>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {categories.map((cat, catIdx) => {
-              const configKey = catIdx === 0 ? 'catAll' : catIdx === 1 ? 'catMV' : 'catPhoto';
-              return (
+          <div className="flex flex-wrap items-center gap-2">
+            {categories.map((cat, catIdx) => (
+              <div key={cat} className="relative inline-flex items-center group/cat">
                 <button
-                  key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                  className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                     activeCategory === cat 
                       ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-[0_0_20px_rgba(255,0,127,0.5)]' 
                       : 'bg-white/5 border border-white/15 text-white/80 hover:text-white hover:border-white/40'
                   }`}
                 >
                   <EditableText 
-                    value={siteConfig[configKey as keyof SiteConfig] || cat} 
-                    onChange={(v) => updateConfigField(configKey as keyof SiteConfig, v)} 
+                    value={cat} 
+                    onChange={(v) => handleRenameCategory(catIdx, v)} 
                     isLiveEditing={isLiveEditing} 
                   />
+                  {isLiveEditing && cat !== 'All' && (
+                    <button
+                      type="button"
+                      onClick={(e) => handleDeleteCategory(cat, e)}
+                      className="opacity-0 group-hover/cat:opacity-100 p-1 rounded-full bg-red-500 text-white hover:bg-red-600 text-[9px] transition-opacity shrink-0 ml-1 border border-white/20 shadow-md cursor-pointer"
+                      title={`Delete ${cat} category`}
+                    >
+                      <Trash2 size={10} />
+                    </button>
+                  )}
                 </button>
-              );
-            })}
+              </div>
+            ))}
+
+            {isLiveEditing && (
+              <button
+                onClick={handleAddCategory}
+                className="px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#00f0ff]/20 border border-[#00f0ff]/50 text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black transition-all flex items-center gap-1.5 shadow-lg cursor-pointer"
+              >
+                <Plus size={14} /> Add Category
+              </button>
+            )}
           </div>
         </div>
 
@@ -2558,8 +2615,9 @@ export default function App() {
                       onChange={(e) => setNewPost({ ...newPost, category: e.target.value })}
                       className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
                     >
-                      <option value="Portraits">Portraits</option>
-                      <option value="Automotive">Automotive</option>
+                      {categories.filter(c => c !== 'All').map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
                     </select>
                   </div>
                   <div>
@@ -2659,8 +2717,9 @@ export default function App() {
                       onChange={(e) => setEditingPost({ ...editingPost, category: e.target.value })}
                       className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
                     >
-                      <option value="Portraits">Portraits</option>
-                      <option value="Automotive">Automotive</option>
+                      {categories.filter(c => c !== 'All').map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
                     </select>
                   </div>
                   <div>
