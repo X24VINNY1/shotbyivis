@@ -274,7 +274,7 @@ const DEFAULT_SITE_CONFIG: SiteConfig = {
   bookingTag: 'Interactive Reservation Engine',
   bookingTitle: 'ADVANCED BOOKING WIZARD',
   ownerPhone: '3059894700',
-  ownerEmail: 'shotbyivis@gmail.com',
+  ownerEmail: 'rfmnisaiah@gmail.com',
   smsAlertsEnabled: 'true',
   formspreeEndpoint: 'xeeynopq',
 
@@ -654,9 +654,9 @@ export default function App() {
     setBookings(updated);
     localStorage.setItem('shotbyivis_bookings', JSON.stringify(updated));
 
-    // FAILPROOF SMS & EMAIL NOTIFICATION MULTI-DISPATCH
+    // FAILPROOF EMAIL & SMS NOTIFICATION DISPATCH TO RFMNISAIAH@GMAIL.COM
     const targetPhone = siteConfig.ownerPhone || '3059894700';
-    const targetEmail = siteConfig.ownerEmail || 'shotbyivis@gmail.com';
+    const targetEmail = siteConfig.ownerEmail || 'rfmnisaiah@gmail.com';
     const endpoint = siteConfig.formspreeEndpoint || 'xeeynopq';
     const smsMessage = `🎬 NEW SHOOT BOOKING FOR IVIS!\nClient: ${clientName}\nContact: ${clientContact}\nService: ${selectedService}\nDate: ${shootDate}\nFeatures: ${selectedAddons.join(', ') || 'Standard'}\nNotes: ${shootNotes || 'None'}`;
 
