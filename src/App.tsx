@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { 
-  Send, Menu, X, ArrowUpRight,
-  ChevronRight, Check
+  Camera, Film, Music, Car, Send, Menu, X, ArrowUpRight,
+  ChevronRight, ChevronLeft, ChevronDown, Check, Plus, Trash2, ZoomIn
 } from 'lucide-react';
 
 function InstagramIcon({ size = 20, className = "" }: { size?: number; className?: string }) {
@@ -21,103 +22,117 @@ export interface PostItem {
   category: string;
   type: 'video' | 'image';
   url: string;
+  thumb?: string;
   description: string;
 }
 
-const SLIDESHOW_IMAGES = [
-  '/slideshow/slide1.jpg',
-  '/slideshow/slide2.jpg',
-  '/slideshow/slide3.jpg',
-  '/slideshow/slide4.jpg',
-  '/slideshow/slide5.jpg',
-  '/slideshow/slide6.jpg',
+const SLIDESHOW_ITEMS = [
+  { url: '/slideshow/slide1.jpg', title: 'Miami Night Music Video Shoot', category: 'Music Videos' },
+  { url: '/slideshow/slide2.jpg', title: 'South Beach Model Editorial', category: 'Photography' },
+  { url: '/slideshow/slide3.jpg', title: 'Exotic Supercar Showcase', category: 'Commercials' },
+  { url: '/slideshow/slide4.jpg', title: 'Live VIP Concert Experience', category: 'Events' },
+  { url: '/slideshow/slide5.jpg', title: 'High-Fashion Studio Portraiture', category: 'Photography' },
+  { url: '/slideshow/slide6.jpg', title: 'Ocean Drive Lifestyle Content', category: 'Commercials' },
 ];
 
 const REAL_INSTAGRAM_POSTS: PostItem[] = [
   {
     id: 'ig1',
-    title: 'Miami Night Shoot',
+    title: 'Miami Night Shoot — Reel',
     category: 'Music Videos',
     type: 'image',
     url: '/slideshow/slide1.jpg',
-    description: 'Music video production on location in Miami.'
+    thumb: '/slideshow/slide1.jpg',
+    description: 'Cinematic music video production on location in Miami.'
   },
   {
     id: 'ig2',
-    title: 'Editorial Photography',
+    title: 'South Beach Editorial',
     category: 'Photography',
     type: 'image',
     url: '/slideshow/slide2.jpg',
-    description: 'Model portraiture and fashion photoshoot.'
+    thumb: '/slideshow/slide2.jpg',
+    description: 'High-fashion portraiture with neon color grading & studio retouching.'
   },
   {
     id: 'ig3',
-    title: 'Automotive Showcase',
+    title: 'Exotic Automotive Showcase',
     category: 'Commercials',
     type: 'image',
     url: '/slideshow/slide3.jpg',
-    description: 'Exotic supercar visual production.'
+    thumb: '/slideshow/slide3.jpg',
+    description: 'Supercar shoot with ultra-sharp reflections under Miami streetlights.'
   },
   {
     id: 'ig4',
-    title: 'Live Event Coverage',
+    title: 'VIP Stage Performance',
     category: 'Events',
     type: 'image',
     url: '/slideshow/slide4.jpg',
-    description: 'Concert and stage performance recap.'
+    thumb: '/slideshow/slide4.jpg',
+    description: 'Live concert event recap shot with 4K cinema gear.'
   },
   {
     id: 'ig5',
-    title: 'Urban Portraiture',
+    title: 'Urban Cyberpunk Portraiture',
     category: 'Photography',
     type: 'image',
     url: '/slideshow/slide5.jpg',
-    description: 'Studio portrait shoot.'
+    thumb: '/slideshow/slide5.jpg',
+    description: 'Synthwave color palette & sharp studio portraiture.'
   },
   {
     id: 'ig6',
-    title: 'Miami Visual Production',
+    title: 'Downtown Skyline Shoot',
     category: 'Commercials',
     type: 'image',
     url: '/slideshow/slide6.jpg',
-    description: 'Ocean Drive content shoot.'
+    thumb: '/slideshow/slide6.jpg',
+    description: 'Creative lifestyle production under Ocean Drive neon lights.'
   }
 ];
 
 const SERVICES = [
   {
-    id: 's1',
+    icon: Film,
     title: 'Music Videos',
-    price: 'Starting at $1,200',
-    description: 'Full 4K/6K cinema camera shooting, direction, editing & color grading.',
-    features: ['Direction & Filming', '4K / 6K Cinema Gear', 'Full Editing & Color Grade', '3-Day Turnaround']
+    desc: 'Full 4K/6K cinema camera shooting, direction, editing & color grading for singles and albums.',
+    tags: ['Direction', '4K Cinema', 'VFX Edit', '3-Day Delivery'],
+    range: 'From $1,200',
   },
   {
-    id: 's2',
+    icon: Camera,
     title: 'Photoshoots',
-    price: 'Starting at $450',
-    description: 'Fashion, portrait, and automotive photography sessions in Miami.',
-    features: ['20 High-Res Edits', 'Studio or Location', 'Color Correction', 'Online Gallery']
+    desc: 'Fashion, portrait, and automotive photography sessions on location in Miami or studio.',
+    tags: ['Portraits', 'Fashion', 'Automotive', '20 High-Res Edits'],
+    range: 'From $450',
   },
   {
-    id: 's3',
-    title: 'Event Coverage',
-    price: 'Starting at $800',
-    description: 'High-energy recap videos and highlights for concerts, clubs & private events.',
-    features: ['1-2 Min Highlight Edit', 'Full Event Recap', 'Raw Footage Options', 'Fast Delivery']
+    icon: Music,
+    title: 'Events & Club Coverage',
+    desc: 'High-energy recap videos and highlights for concerts, clubs & private VIP occasions.',
+    tags: ['Concerts', 'Clubs', 'Highlight Reels', 'Raw Footage'],
+    range: 'From $800',
   },
   {
-    id: 's4',
-    title: 'Commercial / Brands',
-    price: 'Starting at $1,500',
-    description: 'Reels and content created for brands, products, and social media campaigns.',
-    features: ['Instagram/TikTok Specs', 'Audio & Sound Design', 'Commercial Usage Rights', 'Social Cuts']
-  }
+    icon: Car,
+    title: 'Commercial / Brand Content',
+    desc: 'Reels and promo content created for brands, exotic cars, and social media campaigns.',
+    tags: ['TikTok/Reels', 'Commercial Rights', 'Audio Design', 'Social Cuts'],
+    range: 'From $1,500',
+  },
+];
+
+const STATS = [
+  { value: '150+', label: 'Sessions Shot' },
+  { value: '4K 60fps', label: 'Cinema Quality' },
+  { value: 'Miami', label: 'Florida Location' },
+  { value: '100%', label: 'Client Satisfaction' },
 ];
 
 export default function App() {
-  const [slideIndex, setSlideIndex] = useState(0);
-  const [posts] = useState<PostItem[]>(() => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [posts, setPosts] = useState<PostItem[]>(() => {
     try {
       const saved = localStorage.getItem('shotbyivis_real_posts');
       return saved && JSON.parse(saved).length > 0 ? JSON.parse(saved) : REAL_INSTAGRAM_POSTS;
@@ -127,8 +142,24 @@ export default function App() {
   });
 
   const [activeCategory, setActiveCategory] = useState('All');
-  const [activeMedia, setActiveMedia] = useState<PostItem | null>(null);
+  const [selectedLightboxIndex, setSelectedLightboxIndex] = useState<number | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false);
+
+  const [newPost, setNewPost] = useState<{
+    title: string;
+    category: string;
+    type: 'video' | 'image';
+    url: string;
+    description: string;
+  }>({
+    title: '',
+    category: 'Music Videos',
+    type: 'video',
+    url: '',
+    description: ''
+  });
+
   const [bookingForm, setBookingForm] = useState({ name: '', email: '', service: 'Music Videos', date: '', notes: '' });
   const [bookedSuccess, setBookedSuccess] = useState(false);
 
@@ -138,12 +169,37 @@ export default function App() {
     activeCategory === 'All' || item.category === activeCategory
   );
 
+  // Fullscreen Slideshow Timer
   useEffect(() => {
     const timer = setInterval(() => {
-      setSlideIndex((prev) => (prev + 1) % SLIDESHOW_IMAGES.length);
-    }, 4000);
+      setCurrentSlide((prev) => (prev + 1) % SLIDESHOW_ITEMS.length);
+    }, 5500);
     return () => clearInterval(timer);
   }, []);
+
+  const handleAddPost = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPost.title || !newPost.url) return;
+
+    const created: PostItem = {
+      id: Math.random().toString(36).slice(2, 9),
+      ...newPost,
+      thumb: newPost.url
+    };
+
+    const updated = [created, ...posts];
+    setPosts(updated);
+    localStorage.setItem('shotbyivis_real_posts', JSON.stringify(updated));
+    setAddModalOpen(false);
+    setNewPost({ title: '', category: 'Music Videos', type: 'video', url: '', description: '' });
+  };
+
+  const handleDeletePost = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updated = posts.filter(p => p.id !== id);
+    setPosts(updated);
+    localStorage.setItem('shotbyivis_real_posts', JSON.stringify(updated));
+  };
 
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,161 +210,212 @@ export default function App() {
     }, 4000);
   };
 
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    setMobileMenuOpen(false);
+  };
+
   return (
-    <div className="min-h-screen bg-[#070709] text-white selection:bg-[#ff007f] selection:text-white font-sans">
+    <div className="min-h-screen bg-[#050505] text-white selection:bg-[#ff007f] selection:text-white font-sans overflow-x-hidden">
       
-      {/* ===== HEADER ===== */}
-      <header className="sticky top-0 z-50 bg-[#070709]/90 backdrop-blur-md border-b border-white/10">
+      {/* ===== HEADER / NAVBAR ===== */}
+      <header className="fixed top-0 inset-x-0 z-50 bg-[#050505]/80 backdrop-blur-xl border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <a href="#" className="flex items-center gap-3">
-            <img src="/logo.png" alt="ShotByIvis" className="h-9 w-auto object-contain" />
+          <a href="#" className="flex items-center gap-3 group">
+            <img src="/logo.png" alt="ShotByIvis Logo" className="h-10 w-auto object-contain transition-transform group-hover:scale-105" />
             <span className="font-extrabold text-xl tracking-wider text-white">
-              SHOTBY<span className="text-[#ff007f]">IVIS</span>
+              SHOTBY<span className="neon-text-pink">IVIS</span>
             </span>
           </a>
 
-          {/* Nav Links */}
-          <nav className="hidden md:flex items-center gap-8 text-xs uppercase tracking-widest font-semibold text-white/70">
-            <a href="#portfolio" className="hover:text-[#00f0ff] transition-colors">Portfolio</a>
-            <a href="#services" className="hover:text-[#00f0ff] transition-colors">Services</a>
-            <a href="#about" className="hover:text-[#00f0ff] transition-colors">About</a>
-            <a href="#contact" className="hover:text-[#00f0ff] transition-colors">Contact</a>
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.2em] font-medium text-white/70">
+            <button onClick={() => scrollTo('home')} className="hover:text-[#00f0ff] transition-colors">Home</button>
+            <button onClick={() => scrollTo('portfolio')} className="hover:text-[#00f0ff] transition-colors">Portfolio</button>
+            <button onClick={() => scrollTo('services')} className="hover:text-[#00f0ff] transition-colors">Services</button>
+            <button onClick={() => scrollTo('about')} className="hover:text-[#00f0ff] transition-colors">About</button>
+            <button onClick={() => scrollTo('contact')} className="hover:text-[#00f0ff] transition-colors">Contact</button>
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
+            <button
+              onClick={() => setAddModalOpen(true)}
+              className="px-4 py-2 rounded-full border border-[#ff007f]/50 text-[#ff007f] text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:bg-[#ff007f] hover:text-white transition-all"
+            >
+              <Plus size={14} /> Add Real Post
+            </button>
             <a 
               href="https://www.instagram.com/shotbyivis/" 
               target="_blank" 
               rel="noreferrer"
-              className="text-white/80 hover:text-[#ff007f] transition-colors p-2"
-              title="Instagram @shotbyivis"
+              className="p-2.5 rounded-full border border-white/10 text-white/80 hover:text-[#ff007f] hover:border-[#ff007f] transition-all"
             >
-              <InstagramIcon size={20} />
+              <InstagramIcon size={18} />
             </a>
-            <a 
-              href="#contact"
-              className="px-5 py-2.5 rounded-full border border-[#ff007f] text-white hover:bg-[#ff007f] text-xs font-bold uppercase tracking-wider transition-all"
+            <button 
+              onClick={() => scrollTo('contact')}
+              className="px-6 py-2.5 rounded-full font-bold uppercase tracking-widest text-xs bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-[0_0_20px_rgba(255,0,127,0.4)] hover:scale-105 transition-all"
             >
               Book Shoot
-            </a>
+            </button>
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <button 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-white/80"
-          >
+          {/* Mobile Menu Trigger */}
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 text-white/80">
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
         {/* Mobile Dropdown */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-[#070709] border-b border-white/10 px-6 py-4 flex flex-col gap-4 text-xs font-bold uppercase tracking-wider">
-            <a href="#portfolio" onClick={() => setMobileMenuOpen(false)} className="py-2 text-white/80">Portfolio</a>
-            <a href="#services" onClick={() => setMobileMenuOpen(false)} className="py-2 text-white/80">Services</a>
-            <a href="#about" onClick={() => setMobileMenuOpen(false)} className="py-2 text-white/80">About</a>
-            <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="py-2 text-white/80">Contact</a>
-            <a href="https://www.instagram.com/shotbyivis/" target="_blank" rel="noreferrer" className="text-[#ff007f] py-2 flex items-center gap-2">
-              <InstagramIcon size={16} /> Instagram @shotbyivis
-            </a>
-          </div>
-        )}
-      </header>
-
-      {/* ===== HERO SECTION ===== */}
-      <section className="relative pt-12 pb-20 md:py-24 px-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
-          {/* Left Column: Clean Editorial Typography */}
-          <div className="lg:col-span-7 flex flex-col items-start">
-            <div className="flex items-center gap-2 mb-4 text-xs font-mono tracking-widest text-[#00f0ff] uppercase">
-              <span className="w-2 h-2 rounded-full bg-[#ff007f]" />
-              <span>Miami, FL — Director & Photographer</span>
-            </div>
-
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tight leading-none mb-6">
-              SHOT BY <br />
-              <span className="text-[#ff007f]">IVIS</span>
-            </h1>
-
-            <p className="text-white/70 text-base sm:text-lg max-w-lg mb-8 leading-relaxed">
-              Official portfolio for <b>@shotbyivis</b>. Specializing in high-end music video production, editorial portrait photography, and automotive visuals.
-            </p>
-
-            <div className="flex flex-wrap gap-4">
-              <a 
-                href="#portfolio"
-                className="px-7 py-3.5 bg-[#ff007f] text-white text-xs font-extrabold uppercase tracking-wider rounded-lg hover:bg-[#ff007f]/90 transition-all flex items-center gap-2"
-              >
-                View Works <ChevronRight size={16} />
-              </a>
-              <a 
-                href="https://www.instagram.com/shotbyivis/"
-                target="_blank"
-                rel="noreferrer"
-                className="px-7 py-3.5 border border-white/20 hover:border-[#00f0ff] text-white hover:text-[#00f0ff] text-xs font-extrabold uppercase tracking-wider rounded-lg transition-all flex items-center gap-2"
-              >
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="md:hidden bg-[#0a0a0d] border-b border-white/10 px-6 py-4 flex flex-col gap-4 text-xs font-bold uppercase tracking-wider"
+            >
+              <button onClick={() => scrollTo('home')} className="text-left py-2 text-white/80">Home</button>
+              <button onClick={() => scrollTo('portfolio')} className="text-left py-2 text-white/80">Portfolio</button>
+              <button onClick={() => scrollTo('services')} className="text-left py-2 text-white/80">Services</button>
+              <button onClick={() => scrollTo('about')} className="text-left py-2 text-white/80">About</button>
+              <button onClick={() => scrollTo('contact')} className="text-left py-2 text-white/80">Contact</button>
+              <button onClick={() => { setMobileMenuOpen(false); setAddModalOpen(true); }} className="text-left py-2 text-[#ff007f] flex items-center gap-2">
+                <Plus size={16} /> Add Real Post
+              </button>
+              <a href="https://www.instagram.com/shotbyivis/" target="_blank" rel="noreferrer" className="py-2 text-[#00f0ff] flex items-center gap-2">
                 <InstagramIcon size={16} /> Instagram @shotbyivis
               </a>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+
+      {/* ===== HERO SECTION — Fullscreen Background Slideshow ===== */}
+      <section id="home" className="relative h-screen w-full overflow-hidden bg-[#050505] flex items-center justify-center">
+        {/* Background Image Slideshow */}
+        <AnimatePresence mode="sync">
+          <motion.div
+            key={currentSlide}
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.8, ease: [0.25, 0.1, 0.25, 1] }}
+            className="absolute inset-0"
+          >
+            <img
+              src={SLIDESHOW_ITEMS[currentSlide].url}
+              alt={SLIDESHOW_ITEMS[currentSlide].title}
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Multi-Layer Gradient Masks */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-[#050505]/60" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/60 via-transparent to-[#050505]/60" />
+
+        {/* Center Content */}
+        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center flex flex-col items-center pt-16">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, delay: 0.3 }}
+            className="flex flex-col items-center"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#ff007f]/40 bg-[#ff007f]/10 mb-6">
+              <span className="w-2 h-2 rounded-full bg-[#ff007f] animate-ping" />
+              <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-[#ff007f] font-bold">
+                Miami Videography & Photography
+              </span>
             </div>
-          </div>
 
-          {/* Right Column: Clean Slideshow Frame */}
-          <div className="lg:col-span-5 relative flex justify-center">
-            <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden bg-[#121217] border border-white/10 shadow-2xl">
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={slideIndex}
-                  src={SLIDESHOW_IMAGES[slideIndex]}
-                  alt="ShotByIvis Portfolio Work"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="w-full h-full object-cover"
-                />
-              </AnimatePresence>
+            <h1
+              className="text-white leading-[1.02] mb-6 font-black uppercase tracking-tight"
+              style={{ fontSize: 'clamp(2.8rem, 7.5vw, 6.5rem)' }}
+            >
+              SHOT BY <span className="neon-text-pink">IVIS</span>
+            </h1>
 
-              {/* Bottom Info Bar */}
-              <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-center justify-between">
-                <span className="text-xs font-mono text-white/80 uppercase">
-                  @shotbyivis ({slideIndex + 1}/{SLIDESHOW_IMAGES.length})
-                </span>
-                <div className="flex gap-1.5">
-                  {SLIDESHOW_IMAGES.map((_, i) => (
-                    <button 
-                      key={i}
-                      onClick={() => setSlideIndex(i)}
-                      className={`h-1.5 rounded-full transition-all ${slideIndex === i ? 'w-5 bg-[#00f0ff]' : 'w-1.5 bg-white/40'}`}
-                    />
-                  ))}
-                </div>
-              </div>
+            <div className="flex items-center gap-3 mb-10 flex-wrap justify-center text-white/50 text-[11px] font-mono uppercase tracking-[0.2em]">
+              <span>Music Videos</span>
+              <span>·</span>
+              <span>Photoshoots</span>
+              <span>·</span>
+              <span>Automotive</span>
+              <span>·</span>
+              <span>Events</span>
             </div>
-          </div>
 
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <button
+                onClick={() => scrollTo('portfolio')}
+                className="px-9 py-4 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white tracking-[0.2em] uppercase text-xs font-bold rounded-full shadow-[0_0_25px_rgba(255,0,127,0.5)] hover:scale-105 transition-all"
+              >
+                View Portfolio
+              </button>
+              <button
+                onClick={() => scrollTo('contact')}
+                className="px-9 py-4 border border-white/30 text-white/90 tracking-[0.2em] uppercase text-xs font-bold rounded-full hover:border-[#00f0ff] hover:text-[#00f0ff] hover:bg-[#00f0ff]/10 transition-all"
+              >
+                Book a Shoot
+              </button>
+            </div>
+          </motion.div>
         </div>
+
+        {/* Slide Indicators */}
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-2.5 z-20">
+          {SLIDESHOW_ITEMS.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentSlide(idx)}
+              className="h-1 rounded-full transition-all duration-500 cursor-pointer"
+              style={{
+                width: idx === currentSlide ? '36px' : '14px',
+                background: idx === currentSlide ? '#00f0ff' : 'rgba(255,255,255,0.3)',
+                boxShadow: idx === currentSlide ? '0 0 10px #00f0ff' : 'none'
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Slide Counter */}
+        <div className="absolute bottom-20 right-10 text-white/40 hidden md:block font-mono text-xs tracking-widest z-20">
+          0{currentSlide + 1} / 0{SLIDESHOW_ITEMS.length}
+        </div>
+
+        {/* Scroll Cue */}
+        <button
+          onClick={() => scrollTo('portfolio')}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/30 hover:text-white transition-colors duration-300 z-20 animate-bounce"
+        >
+          <ChevronDown size={24} />
+        </button>
       </section>
 
-      {/* ===== PORTFOLIO GRID ===== */}
-      <section id="portfolio" className="py-20 px-6 border-t border-white/10 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+      {/* ===== PORTFOLIO SECTION — Responsive Masonry & Lightbox ===== */}
+      <section id="portfolio" className="py-28 px-6 max-w-7xl mx-auto border-t border-white/10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
           <div>
-            <span className="text-xs font-mono text-[#00f0ff] uppercase tracking-widest block mb-1">Selected Works</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight">PORTFOLIO</h2>
+            <span className="text-[10px] font-mono text-[#00f0ff] uppercase tracking-[0.4em] block mb-2 font-bold">
+              Real Works
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight">
+              PORTFOLIO <span className="neon-text-pink">GALLERY</span>
+            </h2>
           </div>
 
-          {/* Filter Tabs */}
+          {/* Category Tabs */}
           <div className="flex flex-wrap gap-2">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${
+                className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
                   activeCategory === cat 
-                    ? 'bg-white text-black' 
-                    : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10'
+                    ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-[0_0_20px_rgba(255,0,127,0.5)]' 
+                    : 'bg-white/5 border border-white/10 text-white/60 hover:text-white hover:border-white/30'
                 }`}
               >
                 {cat}
@@ -317,223 +424,438 @@ export default function App() {
           </div>
         </div>
 
-        {/* Portfolio Masonry / Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPosts.map((item) => (
-            <motion.div
-              key={item.id}
-              layout
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileHover={{ y: -4 }}
-              className="group relative bg-[#0f0f14] border border-white/10 rounded-xl overflow-hidden cursor-pointer"
-              onClick={() => setActiveMedia(item)}
-            >
-              <div className="relative aspect-[4/3] overflow-hidden bg-black">
-                <img 
-                  src={item.url} 
-                  alt={item.title} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span className="px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-md">View Work</span>
-                </div>
-              </div>
+        {/* Masonry Responsive Grid */}
+        <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}>
+          <Masonry gutter="20px">
+            {filteredPosts.map((item, idx) => (
+              <motion.div
+                key={item.id}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -6 }}
+                className="group relative rounded-2xl overflow-hidden bg-[#0c0c12] border border-white/10 hover:border-[#ff007f]/60 transition-all cursor-pointer shadow-xl"
+                onClick={() => setSelectedLightboxIndex(idx)}
+              >
+                <div className="relative overflow-hidden bg-black">
+                  <img
+                    src={item.thumb || item.url}
+                    alt={item.title}
+                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
 
-              <div className="p-4 flex items-center justify-between border-t border-white/5">
-                <div>
-                  <h3 className="font-bold text-sm text-white">{item.title}</h3>
-                  <span className="text-xs text-white/50">{item.category}</span>
+                  {/* Hover Overlay Icon */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="w-12 h-12 rounded-full bg-[#ff007f]/80 text-white flex items-center justify-center shadow-[0_0_20px_#ff007f]">
+                      <ZoomIn size={20} />
+                    </div>
+                  </div>
+
+                  {/* Delete Button */}
+                  <button
+                    onClick={(e) => handleDeletePost(item.id, e)}
+                    className="absolute top-3 right-3 p-2 rounded-full bg-black/60 border border-white/20 text-white/50 hover:text-red-400 transition-all z-20"
+                    title="Delete post"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+
+                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[9px] font-mono font-bold uppercase tracking-widest bg-black/60 border border-white/20 text-[#00f0ff]">
+                    {item.category}
+                  </span>
                 </div>
-                <ArrowUpRight size={16} className="text-white/40 group-hover:text-[#ff007f] transition-colors" />
-              </div>
-            </motion.div>
-          ))}
-        </div>
+
+                <div className="p-5 flex items-center justify-between">
+                  <div>
+                    <h3 className="font-bold text-base text-white">{item.title}</h3>
+                    <p className="text-xs text-white/50 mt-1">{item.description}</p>
+                  </div>
+                  <ArrowUpRight size={18} className="text-white/40 group-hover:text-[#ff007f] transition-colors" />
+                </div>
+              </motion.div>
+            ))}
+          </Masonry>
+        </ResponsiveMasonry>
 
         {/* Instagram Direct Link Box */}
-        <div className="mt-12 p-8 rounded-2xl bg-[#0f0f14] border border-white/10 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <InstagramIcon size={32} className="text-[#ff007f]" />
+        <div className="mt-16 p-8 rounded-3xl bg-[#0c0c12] border border-[#00f0ff]/30 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_0_40px_rgba(0,240,255,0.1)]">
+          <div className="flex items-center gap-4 text-center md:text-left">
+            <div className="w-14 h-14 rounded-2xl border border-[#ff007f] bg-[#ff007f]/10 flex items-center justify-center text-[#ff007f] shrink-0">
+              <InstagramIcon size={28} />
+            </div>
             <div>
-              <h3 className="font-bold text-lg text-white">More recent work on Instagram</h3>
-              <p className="text-white/60 text-xs mt-0.5">Check out @shotbyivis for daily reels and behind the scenes footage.</p>
+              <h3 className="font-bold text-xl text-white uppercase tracking-tight">
+                Follow <span className="neon-text-pink">@shotbyivis</span> On Instagram
+              </h3>
+              <p className="text-white/60 text-xs mt-1">Daily music video clips, reels, and behind-the-scenes content.</p>
             </div>
           </div>
           <a
             href="https://www.instagram.com/shotbyivis/"
             target="_blank"
             rel="noreferrer"
-            className="px-6 py-3 bg-white text-black font-extrabold text-xs uppercase tracking-wider rounded-lg hover:bg-[#00f0ff] transition-all whitespace-nowrap"
+            className="px-8 py-4 rounded-full bg-[#00f0ff] text-black font-extrabold text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.6)] hover:scale-105 transition-all whitespace-nowrap"
           >
-            Visit @shotbyivis ↗
+            Visit Instagram Feed ↗
           </a>
         </div>
       </section>
 
-      {/* ===== SERVICES ===== */}
-      <section id="services" className="py-20 px-6 border-t border-white/10 max-w-7xl mx-auto">
-        <div className="mb-12">
-          <span className="text-xs font-mono text-[#ff007f] uppercase tracking-widest block mb-1">Rates & Booking</span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight">SERVICES</h2>
+      {/* ===== SERVICES SECTION ===== */}
+      <section id="services" className="py-28 px-6 bg-[#08080c] border-t border-white/10">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20">
+            <span className="text-[10px] font-mono text-[#ff007f] uppercase tracking-[0.4em] block mb-2 font-bold">
+              Rates & Offerings
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight">
+              SHOOTING <span className="neon-text-blue">SERVICES</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {SERVICES.map((service) => {
+              const Icon = service.icon;
+              return (
+                <div
+                  key={service.title}
+                  className="group relative p-8 rounded-3xl bg-[#0c0c12] border border-white/10 hover:border-[#ff007f]/60 transition-all duration-500 flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="w-12 h-12 rounded-2xl border border-white/15 bg-white/5 flex items-center justify-center text-white mb-6 group-hover:border-[#ff007f] group-hover:text-[#ff007f] transition-all">
+                      <Icon size={22} />
+                    </div>
+
+                    <h3 className="text-xl font-bold text-white mb-2">{service.title}</h3>
+                    <div className="text-base font-mono text-[#00f0ff] font-bold mb-4">{service.range}</div>
+                    <p className="text-xs text-white/50 leading-relaxed mb-6">{service.desc}</p>
+
+                    <div className="flex flex-wrap gap-2 mb-8">
+                      {service.tags.map((tag) => (
+                        <span key={tag} className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[9px] font-mono uppercase tracking-wider text-white/60">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => scrollTo('contact')}
+                    className="w-full py-3 rounded-full border border-white/20 hover:border-[#ff007f] hover:bg-[#ff007f] text-white text-xs font-bold uppercase tracking-widest text-center transition-all"
+                  >
+                    Inquire Booking →
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         </div>
+      </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {SERVICES.map((s) => (
-            <div 
-              key={s.id}
-              className="p-6 rounded-2xl bg-[#0f0f14] border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between"
-            >
-              <div>
-                <h3 className="text-lg font-bold text-white mb-1">{s.title}</h3>
-                <div className="text-sm font-mono text-[#00f0ff] mb-4">{s.price}</div>
-                <p className="text-xs text-white/60 leading-relaxed mb-6">{s.description}</p>
-                <ul className="space-y-2 mb-6">
-                  {s.features.map((feat) => (
-                    <li key={feat} className="text-xs text-white/70 flex items-center gap-2">
-                      <Check size={12} className="text-[#ff007f]" /> {feat}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+      {/* ===== ABOUT SECTION ===== */}
+      <section id="about" className="py-28 px-6 max-w-7xl mx-auto border-t border-white/10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Left — Image */}
+          <div className="relative">
+            <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-[3/4] max-h-[600px]">
+              <img
+                src="/slideshow/slide2.jpg"
+                alt="ShotByIvis Director & Photographer"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-60" />
+            </div>
 
-              <a 
-                href="#contact"
-                className="w-full py-2.5 rounded-lg border border-white/20 hover:border-[#ff007f] hover:bg-[#ff007f] text-white text-xs font-bold uppercase tracking-wider text-center transition-all"
+            {/* Floating Stats */}
+            <div className="absolute -bottom-8 -right-4 lg:-right-8 p-6 rounded-2xl bg-[#0c0c12]/90 backdrop-blur-xl border border-white/10 grid grid-cols-2 gap-6 min-w-[260px]">
+              {STATS.map((s) => (
+                <div key={s.label}>
+                  <div className="text-xl font-bold text-white neon-text-pink">{s.value}</div>
+                  <div className="text-[9px] font-mono uppercase text-white/50 tracking-wider mt-0.5">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right — Bio */}
+          <div className="lg:pl-6">
+            <span className="text-[10px] font-mono text-[#00f0ff] uppercase tracking-[0.4em] block mb-2 font-bold">
+              Behind the Lens
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-8">
+              ABOUT <span className="neon-text-pink">IVIS</span>
+            </h2>
+
+            <div className="space-y-4 text-white/70 text-sm leading-relaxed mb-10">
+              <p>
+                <b>ShotByIvis</b> is a premier Miami-based videographer and photographer with a sharp cinema eye. Specializing in high-energy music videos, model portraiture, and luxury automotive visuals.
+              </p>
+              <p>
+                Equipped with RED & Sony cinema line gear, every production is shot with intention and color graded to perfection.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-4">
+              <button
+                onClick={() => scrollTo('contact')}
+                className="px-8 py-4 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg hover:scale-105 transition-all"
               >
-                Inquire Rates
+                Work With Ivis
+              </button>
+              <a
+                href="https://www.instagram.com/shotbyivis/"
+                target="_blank"
+                rel="noreferrer"
+                className="px-8 py-4 border border-white/20 text-white hover:border-[#00f0ff] hover:text-[#00f0ff] text-xs font-bold uppercase tracking-wider rounded-full transition-all flex items-center gap-2"
+              >
+                <InstagramIcon size={16} /> @shotbyivis
               </a>
             </div>
-          ))}
+          </div>
         </div>
       </section>
 
-      {/* ===== CONTACT / BOOKING FORM ===== */}
-      <section id="contact" className="py-20 px-6 border-t border-white/10 max-w-3xl mx-auto">
-        <div className="text-center mb-10">
-          <span className="text-xs font-mono text-[#00f0ff] uppercase tracking-widest block mb-1">Get In Touch</span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold uppercase tracking-tight">BOOK A SHOOT</h2>
+      {/* ===== BOOKING / CONTACT SECTION ===== */}
+      <section id="contact" className="py-28 px-6 bg-[#08080c] border-t border-white/10">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-14">
+            <span className="text-[10px] font-mono text-[#ff007f] uppercase tracking-[0.4em] block mb-2 font-bold">
+              Reserve Your Date
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight">
+              BOOK A <span className="neon-text-blue">SHOOT</span>
+            </h2>
+          </div>
+
+          <form onSubmit={handleBookingSubmit} className="bg-[#0c0c12] p-8 md:p-10 rounded-3xl border border-white/10 space-y-6 shadow-2xl">
+            {bookedSuccess && (
+              <div className="p-4 rounded-xl bg-[#00f0ff]/10 border border-[#00f0ff]/30 text-[#00f0ff] text-xs font-bold text-center flex items-center justify-center gap-2">
+                <Check size={18} /> Shooting Request Sent! Ivis will reach out directly.
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/60 block mb-2">Name</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="Full Name"
+                  value={bookingForm.name}
+                  onChange={(e) => setBookingForm({ ...bookingForm, name: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/60 block mb-2">Email / Phone</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="Contact Number or Email"
+                  value={bookingForm.email}
+                  onChange={(e) => setBookingForm({ ...bookingForm, email: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/60 block mb-2">Service</label>
+                <select 
+                  value={bookingForm.service}
+                  onChange={(e) => setBookingForm({ ...bookingForm, service: e.target.value })}
+                  className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                >
+                  <option value="Music Videos">Music Videos</option>
+                  <option value="Photoshoots">Photoshoots</option>
+                  <option value="Event Coverage">Event Coverage</option>
+                  <option value="Commercial / Brands">Commercial / Brands</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/60 block mb-2">Shoot Date</label>
+                <input 
+                  type="date" 
+                  required
+                  value={bookingForm.date}
+                  onChange={(e) => setBookingForm({ ...bookingForm, date: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/60 block mb-2">Notes / Shoot Details</label>
+              <textarea 
+                rows={4}
+                placeholder="Tell Ivis about your song, location or shoot vision..."
+                value={bookingForm.notes}
+                onChange={(e) => setBookingForm({ ...bookingForm, notes: e.target.value })}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+              />
+            </div>
+
+            <button 
+              type="submit"
+              className="w-full py-4 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-[0_0_25px_rgba(255,0,127,0.5)] hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+            >
+              Submit Request <Send size={14} />
+            </button>
+          </form>
         </div>
-
-        <form onSubmit={handleBookingSubmit} className="bg-[#0f0f14] p-8 rounded-2xl border border-white/10 space-y-6">
-          {bookedSuccess && (
-            <div className="p-4 rounded-lg bg-[#00f0ff]/10 border border-[#00f0ff]/30 text-[#00f0ff] text-xs font-bold text-center">
-              Request Sent! Ivis will reach out to you directly via text/email.
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="text-xs font-bold uppercase text-white/60 block mb-2">Name</label>
-              <input 
-                type="text" 
-                required
-                placeholder="Full Name"
-                value={bookingForm.name}
-                onChange={(e) => setBookingForm({ ...bookingForm, name: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-bold uppercase text-white/60 block mb-2">Email or Phone</label>
-              <input 
-                type="text" 
-                required
-                placeholder="Contact Details"
-                value={bookingForm.email}
-                onChange={(e) => setBookingForm({ ...bookingForm, email: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="text-xs font-bold uppercase text-white/60 block mb-2">Service</label>
-              <select 
-                value={bookingForm.service}
-                onChange={(e) => setBookingForm({ ...bookingForm, service: e.target.value })}
-                className="w-full bg-[#16161d] border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-              >
-                <option value="Music Videos">Music Videos</option>
-                <option value="Photoshoots">Photoshoots</option>
-                <option value="Event Coverage">Event Coverage</option>
-                <option value="Commercial / Brands">Commercial / Brands</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-xs font-bold uppercase text-white/60 block mb-2">Shoot Date</label>
-              <input 
-                type="date" 
-                required
-                value={bookingForm.date}
-                onChange={(e) => setBookingForm({ ...bookingForm, date: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="text-xs font-bold uppercase text-white/60 block mb-2">Notes / Vision</label>
-            <textarea 
-              rows={4}
-              placeholder="Tell Ivis about your song, location or shoot details..."
-              value={bookingForm.notes}
-              onChange={(e) => setBookingForm({ ...bookingForm, notes: e.target.value })}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-            />
-          </div>
-
-          <button 
-            type="submit"
-            className="w-full py-4 bg-[#ff007f] hover:bg-[#ff007f]/90 text-white font-extrabold text-xs uppercase tracking-wider rounded-lg transition-all flex items-center justify-center gap-2"
-          >
-            Submit Request <Send size={14} />
-          </button>
-        </form>
       </section>
 
-      {/* ===== MEDIA FULLSCREEN MODAL ===== */}
+      {/* ===== ADD REAL POST MODAL ===== */}
       <AnimatePresence>
-        {activeMedia && (
+        {addModalOpen && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
-            onClick={() => setActiveMedia(null)}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4"
+            onClick={() => setAddModalOpen(false)}
           >
-            <div 
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-[#0f0f14] p-4 rounded-2xl border border-white/20 max-w-3xl w-full relative"
+              className="bg-[#0c0c12] p-6 rounded-3xl border border-white/20 max-w-lg w-full relative"
             >
               <button 
-                onClick={() => setActiveMedia(null)}
+                onClick={() => setAddModalOpen(false)}
                 className="absolute top-4 right-4 text-white/60 hover:text-white p-2"
               >
                 <X size={20} />
               </button>
 
-              <h3 className="text-xl font-bold text-white mb-3 pr-8">{activeMedia.title}</h3>
+              <h3 className="text-2xl font-bold text-white mb-1">Add Real Post</h3>
+              <p className="text-white/50 text-xs mb-6">Paste image URL or video link below.</p>
 
-              <div className="relative rounded-lg overflow-hidden bg-black aspect-video mb-4">
+              <form onSubmit={handleAddPost} className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-mono uppercase text-white/60 block mb-1">Title</label>
+                  <input 
+                    type="text" 
+                    required 
+                    placeholder="e.g. South Beach Shoot"
+                    value={newPost.title}
+                    onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-white/60 block mb-1">Category</label>
+                    <select 
+                      value={newPost.category}
+                      onChange={(e) => setNewPost({ ...newPost, category: e.target.value })}
+                      className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                    >
+                      <option value="Music Videos">Music Videos</option>
+                      <option value="Photography">Photography</option>
+                      <option value="Commercials">Commercials</option>
+                      <option value="Events">Events</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-white/60 block mb-1">Type</label>
+                    <select 
+                      value={newPost.type}
+                      onChange={(e) => setNewPost({ ...newPost, type: e.target.value as 'video' | 'image' })}
+                      className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                    >
+                      <option value="image">Image</option>
+                      <option value="video">Video</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono uppercase text-white/60 block mb-1">Direct Image/Video URL</label>
+                  <input 
+                    type="url" 
+                    required 
+                    placeholder="https://..."
+                    value={newPost.url}
+                    onChange={(e) => setNewPost({ ...newPost, url: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono uppercase text-white/60 block mb-1">Description</label>
+                  <input 
+                    type="text" 
+                    placeholder="Short description..."
+                    value={newPost.description}
+                    onChange={(e) => setNewPost({ ...newPost, description: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                  />
+                </div>
+
+                <button 
+                  type="submit"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                >
+                  <Plus size={16} /> Save Post
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== LIGHTBOX GALLERY MODAL ===== */}
+      <AnimatePresence>
+        {selectedLightboxIndex !== null && filteredPosts[selectedLightboxIndex] && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex items-center justify-center p-4"
+            onClick={() => setSelectedLightboxIndex(null)}
+          >
+            <button 
+              onClick={() => setSelectedLightboxIndex(null)}
+              className="absolute top-6 right-6 text-white/70 hover:text-white p-3 rounded-full bg-white/10 transition-all z-50"
+            >
+              <X size={24} />
+            </button>
+
+            <button 
+              onClick={(e) => { e.stopPropagation(); setSelectedLightboxIndex((prev) => (prev! - 1 + filteredPosts.length) % filteredPosts.length); }}
+              className="absolute left-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-3 rounded-full bg-white/10 transition-all z-50"
+            >
+              <ChevronLeft size={28} />
+            </button>
+
+            <button 
+              onClick={(e) => { e.stopPropagation(); setSelectedLightboxIndex((prev) => (prev! + 1) % filteredPosts.length); }}
+              className="absolute right-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-3 rounded-full bg-white/10 transition-all z-50"
+            >
+              <ChevronRight size={28} />
+            </button>
+
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className="max-w-5xl w-full flex flex-col items-center"
+            >
+              <div className="relative rounded-2xl overflow-hidden max-h-[75vh] w-auto bg-black border border-white/10 shadow-2xl">
                 <img 
-                  src={activeMedia.url} 
-                  alt={activeMedia.title} 
-                  className="w-full h-full object-cover"
+                  src={filteredPosts[selectedLightboxIndex].url} 
+                  alt={filteredPosts[selectedLightboxIndex].title} 
+                  className="max-h-[75vh] w-auto object-contain"
                 />
               </div>
 
-              <div className="flex items-center justify-between text-xs text-white/60">
-                <p>{activeMedia.description}</p>
-                <a 
-                  href="https://www.instagram.com/shotbyivis/" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="text-[#ff007f] font-bold flex items-center gap-1"
-                >
-                  <InstagramIcon size={14} /> Instagram @shotbyivis
-                </a>
+              <div className="mt-4 text-center">
+                <h3 className="text-2xl font-bold text-white">{filteredPosts[selectedLightboxIndex].title}</h3>
+                <p className="text-white/60 text-xs mt-1">{filteredPosts[selectedLightboxIndex].description}</p>
               </div>
             </div>
           </motion.div>
@@ -541,15 +863,15 @@ export default function App() {
       </AnimatePresence>
 
       {/* ===== FOOTER ===== */}
-      <footer className="border-t border-white/10 py-10 px-6 text-center text-xs text-white/40">
+      <footer className="border-t border-white/10 py-12 px-6 bg-[#030305] text-xs text-white/40">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="ShotByIvis" className="h-6 w-auto" />
-            <span className="font-bold text-white tracking-wider">SHOTBY<span className="text-[#ff007f]">IVIS</span></span>
+          <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="ShotByIvis" className="h-7 w-auto object-contain" />
+            <span className="font-bold text-white tracking-wider">SHOTBY<span className="neon-text-pink">IVIS</span></span>
           </div>
           <p>© 2026 ShotByIvis. All rights reserved. Miami, FL.</p>
-          <a href="https://www.instagram.com/shotbyivis/" target="_blank" rel="noreferrer" className="text-white/60 hover:text-[#ff007f]">
-            Instagram @shotbyivis
+          <a href="https://www.instagram.com/shotbyivis/" target="_blank" rel="noreferrer" className="text-white/60 hover:text-[#ff007f] flex items-center gap-1.5 transition-colors">
+            <InstagramIcon size={16} /> @shotbyivis
           </a>
         </div>
       </footer>
