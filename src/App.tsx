@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { 
   Camera, Film, Music, Car, Send, Menu, X, ArrowUpRight,
-  ChevronRight, ChevronLeft, ChevronDown, Check, Plus, Trash2, ZoomIn
+  ChevronRight, ChevronLeft, ChevronDown, Check, Plus, Trash2, ZoomIn,
+  Shield, Lock, LogOut, Users, Calendar
 } from 'lucide-react';
 
 function InstagramIcon({ size = 20, className = "" }: { size?: number; className?: string }) {
@@ -25,6 +26,30 @@ export interface PostItem {
   thumb?: string;
   description: string;
 }
+
+export interface BookingItem {
+  id: string;
+  name: string;
+  email: string;
+  service: string;
+  date: string;
+  notes: string;
+  status: 'Pending' | 'Confirmed' | 'Completed' | 'Declined';
+  timestamp: string;
+}
+
+export interface StaffAccount {
+  id: string;
+  username: string;
+  name: string;
+  role: 'owner' | 'staff';
+  pass: string;
+}
+
+const DEFAULT_STAFF: StaffAccount[] = [
+  { id: 'usr_owner1', username: 'ivis', name: 'Ivis (Owner)', role: 'owner', pass: 'ivis2026' },
+  { id: 'usr_staff1', username: 'staff1', name: 'Staff Member', role: 'staff', pass: 'staff123' },
+];
 
 const SLIDESHOW_ITEMS = [
   { url: '/slideshow/slide1.jpg', title: 'Miami Night Music Video Shoot', category: 'Music Videos' },
@@ -132,6 +157,10 @@ const STATS = [
 
 export default function App() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [view, setView] = useState<'site' | 'admin-login' | 'admin-panel'>('site');
+  const [adminTab, setAdminTab] = useState<'bookings' | 'portfolio' | 'staff'>('bookings');
+
+  // Posts State
   const [posts, setPosts] = useState<PostItem[]>(() => {
     try {
       const saved = localStorage.getItem('shotbyivis_real_posts');
@@ -140,6 +169,58 @@ export default function App() {
       return REAL_INSTAGRAM_POSTS;
     }
   });
+
+  // Bookings State
+  const [bookings, setBookings] = useState<BookingItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('shotbyivis_bookings');
+      return saved ? JSON.parse(saved) : [
+        {
+          id: 'bk_sample1',
+          name: 'Alex Johnson',
+          email: 'alex@example.com',
+          service: 'Music Videos',
+          date: '2026-08-15',
+          notes: 'Shooting music video at South Beach rooftop location.',
+          status: 'Confirmed',
+          timestamp: '10:30 AM'
+        }
+      ];
+    } catch {
+      return [];
+    }
+  });
+
+  // Staff Accounts State
+  const [staffAccounts, setStaffAccounts] = useState<StaffAccount[]>(() => {
+    try {
+      const saved = localStorage.getItem('shotbyivis_staff');
+      return saved && JSON.parse(saved).length > 0 ? JSON.parse(saved) : DEFAULT_STAFF;
+    } catch {
+      return DEFAULT_STAFF;
+    }
+  });
+
+  // Current Logged In Staff
+  const [currentStaff, setCurrentStaff] = useState<StaffAccount | null>(() => {
+    try {
+      const saved = localStorage.getItem('shotbyivis_current_staff');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  // Login Form State
+  const [loginUser, setLoginUser] = useState('');
+  const [loginPass, setLoginPass] = useState('');
+  const [loginError, setLoginError] = useState('');
+
+  // New Staff Account Form State
+  const [newStaffUser, setNewStaffUser] = useState('');
+  const [newStaffName, setNewStaffName] = useState('');
+  const [newStaffPass, setNewStaffPass] = useState('');
+  const [newStaffRole, setNewStaffRole] = useState<'owner' | 'staff'>('staff');
 
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedLightboxIndex, setSelectedLightboxIndex] = useState<number | null>(null);
@@ -177,6 +258,56 @@ export default function App() {
     return () => clearInterval(timer);
   }, []);
 
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    const found = staffAccounts.find(s => s.username.toLowerCase() === loginUser.trim().toLowerCase() && s.pass === loginPass);
+    if (found) {
+      setCurrentStaff(found);
+      localStorage.setItem('shotbyivis_current_staff', JSON.stringify(found));
+      setView('admin-panel');
+      setLoginUser('');
+      setLoginPass('');
+    } else {
+      setLoginError('Invalid Username or Password.');
+    }
+  };
+
+  const handleLogout = () => {
+    setCurrentStaff(null);
+    localStorage.removeItem('shotbyivis_current_staff');
+    setView('site');
+  };
+
+  const handleCreateStaff = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newStaffUser.trim() || !newStaffPass.trim()) return;
+
+    const created: StaffAccount = {
+      id: 'usr_' + Math.random().toString(36).slice(2, 9),
+      username: newStaffUser.trim().toLowerCase(),
+      name: newStaffName.trim() || newStaffUser.trim(),
+      role: newStaffRole,
+      pass: newStaffPass.trim()
+    };
+
+    const updated = [...staffAccounts, created];
+    setStaffAccounts(updated);
+    localStorage.setItem('shotbyivis_staff', JSON.stringify(updated));
+
+    setNewStaffUser('');
+    setNewStaffName('');
+    setNewStaffPass('');
+    setNewStaffRole('staff');
+  };
+
+  const handleDeleteStaff = (id: string) => {
+    if (staffAccounts.length <= 1) return;
+    const updated = staffAccounts.filter(s => s.id !== id);
+    setStaffAccounts(updated);
+    localStorage.setItem('shotbyivis_staff', JSON.stringify(updated));
+  };
+
   const handleAddPost = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPost.title || !newPost.url) return;
@@ -203,6 +334,17 @@ export default function App() {
 
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const newBooking: BookingItem = {
+      id: 'bk_' + Math.random().toString(36).slice(2, 9),
+      ...bookingForm,
+      status: 'Pending',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    const updated = [newBooking, ...bookings];
+    setBookings(updated);
+    localStorage.setItem('shotbyivis_bookings', JSON.stringify(updated));
+
     setBookedSuccess(true);
     setTimeout(() => {
       setBookedSuccess(false);
@@ -210,11 +352,368 @@ export default function App() {
     }, 4000);
   };
 
+  const updateBookingStatus = (id: string, status: BookingItem['status']) => {
+    const updated = bookings.map(b => b.id === id ? { ...b, status } : b);
+    setBookings(updated);
+    localStorage.setItem('shotbyivis_bookings', JSON.stringify(updated));
+  };
+
   const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    if (view !== 'site') setView('site');
+    setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
     setMobileMenuOpen(false);
   };
 
+  // ===== ADMIN DASHBOARD VIEW =====
+  if (view === 'admin-panel' && currentStaff) {
+    return (
+      <div className="min-h-screen bg-[#060609] text-white selection:bg-[#ff007f] selection:text-white font-sans">
+        {/* Admin Header */}
+        <header className="bg-[#0c0c12] border-b border-white/10 px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="ShotByIvis Logo" className="h-8 w-auto object-contain" />
+            <div>
+              <div className="font-bold text-sm tracking-wider uppercase flex items-center gap-2">
+                SHOTBY<span className="neon-text-pink">IVIS</span> ADMIN PANEL
+              </div>
+              <div className="text-[10px] text-white/50 font-mono">
+                Logged in as <span className="text-[#00f0ff]">{currentStaff.name}</span> ({currentStaff.role.toUpperCase()})
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setView('site')} 
+              className="px-4 py-2 rounded-full border border-white/20 text-white/80 hover:text-white text-xs font-bold uppercase tracking-wider transition-all"
+            >
+              View Website ↗
+            </button>
+            <button 
+              onClick={handleLogout} 
+              className="px-4 py-2 rounded-full bg-red-500/20 border border-red-500/40 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5"
+            >
+              <LogOut size={14} /> Log Out
+            </button>
+          </div>
+        </header>
+
+        {/* Main Dashboard Container */}
+        <div className="max-w-7xl mx-auto px-6 py-10">
+          
+          {/* Admin Navigation Tabs */}
+          <div className="flex flex-wrap gap-3 mb-8 border-b border-white/10 pb-4">
+            <button
+              onClick={() => setAdminTab('bookings')}
+              className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
+                adminTab === 'bookings' 
+                  ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg' 
+                  : 'bg-white/5 border border-white/10 text-white/60 hover:text-white'
+              }`}
+            >
+              <Calendar size={14} /> Shoot Bookings ({bookings.length})
+            </button>
+
+            <button
+              onClick={() => setAdminTab('portfolio')}
+              className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
+                adminTab === 'portfolio' 
+                  ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg' 
+                  : 'bg-white/5 border border-white/10 text-white/60 hover:text-white'
+              }`}
+            >
+              <Camera size={14} /> Manage Portfolio ({posts.length})
+            </button>
+
+            {currentStaff.role === 'owner' && (
+              <button
+                onClick={() => setAdminTab('staff')}
+                className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
+                  adminTab === 'staff' 
+                    ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg' 
+                    : 'bg-white/5 border border-white/10 text-white/60 hover:text-white'
+                }`}
+              >
+                <Users size={14} /> Staff & Owners ({staffAccounts.length})
+              </button>
+            )}
+          </div>
+
+          {/* TAB 1: SHOOT BOOKINGS */}
+          {adminTab === 'bookings' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-black uppercase tracking-tight">Client Shoot Inquiries</h2>
+                <span className="text-xs font-mono text-white/50">{bookings.length} Total Requests</span>
+              </div>
+
+              {bookings.length === 0 ? (
+                <div className="p-10 rounded-2xl bg-[#0c0c12] border border-white/10 text-center text-white/40 text-sm">
+                  No shoot booking requests yet.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-4">
+                  {bookings.map((b) => (
+                    <div key={b.id} className="p-6 rounded-2xl bg-[#0c0c12] border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-3">
+                          <span className="font-bold text-lg text-white">{b.name}</span>
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
+                            b.status === 'Confirmed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                            b.status === 'Completed' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                            b.status === 'Declined' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                            'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                          }`}>
+                            {b.status}
+                          </span>
+                        </div>
+
+                        <div className="text-xs text-white/60 font-mono">
+                          Service: <span className="text-[#00f0ff]">{b.service}</span> | Preferred Date: <span className="text-[#ff007f]">{b.date}</span>
+                        </div>
+                        <div className="text-xs text-white/50">Contact: {b.email}</div>
+                        {b.notes && <div className="text-xs text-white/80 mt-2 bg-white/5 p-3 rounded-lg border border-white/5">"{b.notes}"</div>}
+                      </div>
+
+                      {/* Status Toggle Buttons */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button 
+                          onClick={() => updateBookingStatus(b.id, 'Confirmed')}
+                          className="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-white text-xs font-bold uppercase transition-all"
+                        >
+                          Confirm
+                        </button>
+                        <button 
+                          onClick={() => updateBookingStatus(b.id, 'Completed')}
+                          className="px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white text-xs font-bold uppercase transition-all"
+                        >
+                          Completed
+                        </button>
+                        <button 
+                          onClick={() => updateBookingStatus(b.id, 'Declined')}
+                          className="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase transition-all"
+                        >
+                          Decline
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 2: PORTFOLIO MANAGEMENT */}
+          {adminTab === 'portfolio' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-black uppercase tracking-tight">Portfolio & Real Works</h2>
+                <button
+                  onClick={() => setAddModalOpen(true)}
+                  className="px-5 py-2.5 rounded-full bg-[#ff007f] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:scale-105 transition-all"
+                >
+                  <Plus size={16} /> Add Real Post
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {posts.map((item) => (
+                  <div key={item.id} className="p-4 rounded-2xl bg-[#0c0c12] border border-white/10 flex flex-col justify-between gap-4">
+                    <div className="relative aspect-video rounded-xl overflow-hidden bg-black">
+                      <img src={item.url} alt={item.title} className="w-full h-full object-cover" />
+                      <span className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase bg-black/70 text-[#00f0ff]">
+                        {item.category}
+                      </span>
+                    </div>
+
+                    <div>
+                      <h3 className="font-bold text-sm text-white">{item.title}</h3>
+                      <p className="text-xs text-white/50 mt-0.5 truncate">{item.description}</p>
+                    </div>
+
+                    <button
+                      onClick={(e) => handleDeletePost(item.id, e)}
+                      className="w-full py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <Trash2 size={14} /> Remove Post
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: STAFF & OWNER MANAGEMENT */}
+          {adminTab === 'staff' && currentStaff.role === 'owner' && (
+            <div className="space-y-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-black uppercase tracking-tight">Staff & Team Logins</h2>
+                  <p className="text-xs text-white/50 mt-1">Create accounts to give access to staff members or co-owners.</p>
+                </div>
+              </div>
+
+              {/* Add New Staff Form */}
+              <form onSubmit={handleCreateStaff} className="p-6 rounded-2xl bg-[#0c0c12] border border-white/10 space-y-4">
+                <h3 className="font-bold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                  <Plus size={16} className="text-[#00f0ff]" /> Add New Staff Member
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">Username</label>
+                    <input 
+                      type="text" 
+                      required 
+                      placeholder="e.g. cameraman1"
+                      value={newStaffUser}
+                      onChange={(e) => setNewStaffUser(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">Full Name</label>
+                    <input 
+                      type="text" 
+                      placeholder="Staff Member Name"
+                      value={newStaffName}
+                      onChange={(e) => setNewStaffName(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">Password</label>
+                    <input 
+                      type="text" 
+                      required 
+                      placeholder="Set Password"
+                      value={newStaffPass}
+                      onChange={(e) => setNewStaffPass(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">Role</label>
+                    <select 
+                      value={newStaffRole}
+                      onChange={(e) => setNewStaffRole(e.target.value as 'owner' | 'staff')}
+                      className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                    >
+                      <option value="staff">Staff Member</option>
+                      <option value="owner">Full Owner Access</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button 
+                  type="submit"
+                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:scale-[1.01] transition-all"
+                >
+                  Create Staff Account
+                </button>
+              </form>
+
+              {/* Staff Accounts List */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {staffAccounts.map((s) => (
+                  <div key={s.id} className="p-5 rounded-2xl bg-[#0c0c12] border border-white/10 flex items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="font-bold text-base text-white flex items-center gap-2">
+                        {s.name}
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase ${
+                          s.role === 'owner' ? 'bg-[#ff007f]/20 text-[#ff007f] border border-[#ff007f]/30' : 'bg-[#00f0ff]/20 text-[#00f0ff] border border-[#00f0ff]/30'
+                        }`}>
+                          {s.role}
+                        </span>
+                      </div>
+                      <div className="text-xs text-white/50 font-mono">Username: <span className="text-white">{s.username}</span></div>
+                      <div className="text-xs text-white/40 font-mono">Password: <span className="text-white/80">{s.pass}</span></div>
+                    </div>
+
+                    {staffAccounts.length > 1 && s.username !== 'ivis' && (
+                      <button
+                        onClick={() => handleDeleteStaff(s.id)}
+                        className="p-2.5 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all"
+                        title="Delete account"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+        </div>
+      </div>
+    );
+  }
+
+  // ===== ADMIN LOGIN VIEW =====
+  if (view === 'admin-login') {
+    return (
+      <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center p-6 relative">
+        <div className="w-full max-w-md p-8 rounded-3xl bg-[#0c0c12] border border-white/10 shadow-2xl space-y-6 relative z-10">
+          <div className="text-center space-y-2">
+            <img src="/logo.png" alt="ShotByIvis Logo" className="h-14 w-auto object-contain mx-auto" />
+            <h2 className="text-2xl font-black uppercase tracking-tight">Staff & Owner Portal</h2>
+            <p className="text-xs text-white/50">Log in to manage bookings, portfolio & staff accounts.</p>
+          </div>
+
+          {loginError && (
+            <div className="p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-400 text-xs font-bold text-center">
+              {loginError}
+            </div>
+          )}
+
+          <form onSubmit={handleLoginSubmit} className="space-y-4">
+            <div>
+              <label className="text-[10px] font-mono uppercase font-bold text-white/60 block mb-1">Username</label>
+              <input 
+                type="text" 
+                required 
+                placeholder="Username (e.g. ivis)"
+                value={loginUser}
+                onChange={(e) => setLoginUser(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+              />
+            </div>
+
+            <div>
+              <label className="text-[10px] font-mono uppercase font-bold text-white/60 block mb-1">Password</label>
+              <input 
+                type="password" 
+                required 
+                placeholder="Password"
+                value={loginPass}
+                onChange={(e) => setLoginPass(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+              />
+            </div>
+
+            <button 
+              type="submit"
+              className="w-full py-3.5 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+            >
+              <Shield size={16} /> Sign In to Panel
+            </button>
+          </form>
+
+          <button 
+            onClick={() => setView('site')}
+            className="w-full text-center text-xs text-white/40 hover:text-white transition-colors block pt-2"
+          >
+            ← Return to Website
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ===== MAIN PUBLIC WEBSITE VIEW =====
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-[#ff007f] selection:text-white font-sans overflow-x-hidden">
       
@@ -238,12 +737,22 @@ export default function App() {
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
-            <button
-              onClick={() => setAddModalOpen(true)}
-              className="px-4 py-2 rounded-full border border-[#ff007f]/50 text-[#ff007f] text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:bg-[#ff007f] hover:text-white transition-all"
-            >
-              <Plus size={14} /> Add Real Post
-            </button>
+            {currentStaff ? (
+              <button
+                onClick={() => setView('admin-panel')}
+                className="px-4 py-2 rounded-full border border-[#00f0ff]/50 text-[#00f0ff] text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:bg-[#00f0ff] hover:text-black transition-all"
+              >
+                <Shield size={14} /> Admin Dashboard
+              </button>
+            ) : (
+              <button
+                onClick={() => setView('admin-login')}
+                className="px-4 py-2 rounded-full border border-white/20 text-white/70 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:border-white hover:text-white transition-all"
+              >
+                <Lock size={14} /> Staff Login
+              </button>
+            )}
+
             <a 
               href="https://www.instagram.com/shotbyivis/" 
               target="_blank" 
@@ -280,8 +789,8 @@ export default function App() {
               <button onClick={() => scrollTo('services')} className="text-left py-2 text-white/80">Services</button>
               <button onClick={() => scrollTo('about')} className="text-left py-2 text-white/80">About</button>
               <button onClick={() => scrollTo('contact')} className="text-left py-2 text-white/80">Contact</button>
-              <button onClick={() => { setMobileMenuOpen(false); setAddModalOpen(true); }} className="text-left py-2 text-[#ff007f] flex items-center gap-2">
-                <Plus size={16} /> Add Real Post
+              <button onClick={() => setView('admin-login')} className="text-left py-2 text-[#ff007f] flex items-center gap-2">
+                <Lock size={16} /> Staff / Owner Panel
               </button>
               <a href="https://www.instagram.com/shotbyivis/" target="_blank" rel="noreferrer" className="py-2 text-[#00f0ff] flex items-center gap-2">
                 <InstagramIcon size={16} /> Instagram @shotbyivis
@@ -293,7 +802,6 @@ export default function App() {
 
       {/* ===== HERO SECTION — Fullscreen Background Slideshow ===== */}
       <section id="home" className="relative h-screen w-full overflow-hidden bg-[#050505] flex items-center justify-center">
-        {/* Background Image Slideshow */}
         <AnimatePresence mode="sync">
           <motion.div
             key={currentSlide}
@@ -311,11 +819,9 @@ export default function App() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Multi-Layer Gradient Masks */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-[#050505]/60" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/60 via-transparent to-[#050505]/60" />
 
-        {/* Center Content */}
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center flex flex-col items-center pt-16">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -380,12 +886,10 @@ export default function App() {
           ))}
         </div>
 
-        {/* Slide Counter */}
         <div className="absolute bottom-20 right-10 text-white/40 hidden md:block font-mono text-xs tracking-widest z-20">
           0{currentSlide + 1} / 0{SLIDESHOW_ITEMS.length}
         </div>
 
-        {/* Scroll Cue */}
         <button
           onClick={() => scrollTo('portfolio')}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/30 hover:text-white transition-colors duration-300 z-20 animate-bounce"
@@ -446,21 +950,21 @@ export default function App() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
 
-                  {/* Hover Overlay Icon */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="w-12 h-12 rounded-full bg-[#ff007f]/80 text-white flex items-center justify-center shadow-[0_0_20px_#ff007f]">
                       <ZoomIn size={20} />
                     </div>
                   </div>
 
-                  {/* Delete Button */}
-                  <button
-                    onClick={(e) => handleDeletePost(item.id, e)}
-                    className="absolute top-3 right-3 p-2 rounded-full bg-black/60 border border-white/20 text-white/50 hover:text-red-400 transition-all z-20"
-                    title="Delete post"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+                  {currentStaff && (
+                    <button
+                      onClick={(e) => handleDeletePost(item.id, e)}
+                      className="absolute top-3 right-3 p-2 rounded-full bg-black/60 border border-white/20 text-white/50 hover:text-red-400 transition-all z-20"
+                      title="Delete post"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
 
                   <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[9px] font-mono font-bold uppercase tracking-widest bg-black/60 border border-white/20 text-[#00f0ff]">
                     {item.category}
@@ -557,7 +1061,6 @@ export default function App() {
       {/* ===== ABOUT SECTION ===== */}
       <section id="about" className="py-28 px-6 max-w-7xl mx-auto border-t border-white/10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left — Image */}
           <div className="relative">
             <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-[3/4] max-h-[600px]">
               <img
@@ -568,7 +1071,6 @@ export default function App() {
               <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-60" />
             </div>
 
-            {/* Floating Stats */}
             <div className="absolute -bottom-8 -right-4 lg:-right-8 p-6 rounded-2xl bg-[#0c0c12]/90 backdrop-blur-xl border border-white/10 grid grid-cols-2 gap-6 min-w-[260px]">
               {STATS.map((s) => (
                 <div key={s.label}>
@@ -579,7 +1081,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Right — Bio */}
           <div className="lg:pl-6">
             <span className="text-[10px] font-mono text-[#00f0ff] uppercase tracking-[0.4em] block mb-2 font-bold">
               Behind the Lens
@@ -869,7 +1370,14 @@ export default function App() {
             <img src="/logo.png" alt="ShotByIvis" className="h-7 w-auto object-contain" />
             <span className="font-bold text-white tracking-wider">SHOTBY<span className="neon-text-pink">IVIS</span></span>
           </div>
-          <p>© 2026 ShotByIvis. All rights reserved. Miami, FL.</p>
+
+          <div className="flex items-center gap-4">
+            <button onClick={() => setView('admin-login')} className="text-white/40 hover:text-white transition-colors flex items-center gap-1">
+              <Lock size={12} /> Staff / Owner Access
+            </button>
+            <p>© 2026 ShotByIvis. All rights reserved. Miami, FL.</p>
+          </div>
+
           <a href="https://www.instagram.com/shotbyivis/" target="_blank" rel="noreferrer" className="text-white/60 hover:text-[#ff007f] flex items-center gap-1.5 transition-colors">
             <InstagramIcon size={16} /> @shotbyivis
           </a>
