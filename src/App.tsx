@@ -121,18 +121,19 @@ function EditableText({
       >
         {value || placeholder}
       </span>
-      <button
-        type="button"
+      <span
+        role="button"
+        tabIndex={0}
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
           onChange('');
         }}
-        className="opacity-0 group-hover/edit:opacity-100 p-1 rounded bg-red-500/80 text-white hover:bg-red-600 text-[10px] transition-opacity shrink-0 border border-white/20 shadow-md cursor-pointer"
+        className="opacity-0 group-hover/edit:opacity-100 p-1 rounded bg-red-500/80 text-white hover:bg-red-600 text-[10px] transition-opacity shrink-0 border border-white/20 shadow-md cursor-pointer inline-flex items-center justify-center"
         title="Delete this text/element"
       >
         <Trash2 size={11} />
-      </button>
+      </span>
     </span>
   );
 }
@@ -1956,9 +1957,11 @@ export default function App() {
           <div className="flex flex-wrap items-center gap-2">
             {categories.map((cat, catIdx) => (
               <div key={cat} className="relative inline-flex items-center group/cat">
-                <button
+                <div
+                  role="button"
+                  tabIndex={0}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+                  className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer select-none ${
                     activeCategory === cat 
                       ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-[0_0_20px_rgba(255,0,127,0.5)]' 
                       : 'bg-white/5 border border-white/15 text-white/80 hover:text-white hover:border-white/40'
@@ -1970,21 +1973,23 @@ export default function App() {
                     isLiveEditing={isLiveEditing} 
                   />
                   {isLiveEditing && cat !== 'All' && (
-                    <button
-                      type="button"
+                    <span
+                      role="button"
+                      tabIndex={0}
                       onClick={(e) => handleDeleteCategory(cat, e)}
-                      className="opacity-0 group-hover/cat:opacity-100 p-1 rounded-full bg-red-500 text-white hover:bg-red-600 text-[9px] transition-opacity shrink-0 ml-1 border border-white/20 shadow-md cursor-pointer"
+                      className="opacity-0 group-hover/cat:opacity-100 p-1 rounded-full bg-red-500 text-white hover:bg-red-600 text-[9px] transition-opacity shrink-0 ml-1 border border-white/20 shadow-md cursor-pointer inline-flex items-center justify-center"
                       title={`Delete ${cat} category`}
                     >
                       <Trash2 size={10} />
-                    </button>
+                    </span>
                   )}
-                </button>
+                </div>
               </div>
             ))}
 
             {isLiveEditing && (
               <button
+                type="button"
                 onClick={handleAddCategory}
                 className="px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#00f0ff]/20 border border-[#00f0ff]/50 text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black transition-all flex items-center gap-1.5 shadow-lg cursor-pointer"
               >
