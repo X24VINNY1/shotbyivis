@@ -558,7 +558,30 @@ export default function App() {
     const timer = setTimeout(() => {
       setIsInitialLoading(false);
     }, 1000);
-    return () => clearTimeout(timer);
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'shotbyivis_site_config' && e.newValue) {
+        try { setSiteConfig(JSON.parse(e.newValue)); } catch {}
+      }
+      if (e.key === 'shotbyivis_categories' && e.newValue) {
+        try { setCategories(JSON.parse(e.newValue)); } catch {}
+      }
+      if (e.key === 'shotbyivis_real_posts' && e.newValue) {
+        try { setPosts(JSON.parse(e.newValue)); } catch {}
+      }
+      if (e.key === 'shotbyivis_bookings' && e.newValue) {
+        try { setBookings(JSON.parse(e.newValue)); } catch {}
+      }
+      if (e.key === 'shotbyivis_staff' && e.newValue) {
+        try { setStaffAccounts(JSON.parse(e.newValue)); } catch {}
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const changeBookingStep = (targetStep: 1 | 2 | 3) => {
@@ -2203,23 +2226,33 @@ export default function App() {
               className="md:hidden bg-[#0a0a0d] border-b border-white/10 px-6 py-4 flex flex-col gap-4 text-xs font-bold uppercase tracking-wider"
             >
               <button onClick={() => { scrollTo('home'); setMobileMenuOpen(false); }} className="text-left py-3 text-white/90 border-b border-white/5 flex items-center justify-between font-heading text-sm">
-                <span>Home</span>
+                <span>
+                  <EditableText value={siteConfig.navHome} onChange={(v) => updateConfigField('navHome', v)} isLiveEditing={isLiveEditing} />
+                </span>
                 <ChevronRight size={14} className="text-[#00f0ff]" />
               </button>
               <button onClick={() => { scrollTo('portfolio'); setMobileMenuOpen(false); }} className="text-left py-3 text-white/90 border-b border-white/5 flex items-center justify-between font-heading text-sm">
-                <span>Portfolio</span>
+                <span>
+                  <EditableText value={siteConfig.navPortfolio} onChange={(v) => updateConfigField('navPortfolio', v)} isLiveEditing={isLiveEditing} />
+                </span>
                 <ChevronRight size={14} className="text-[#00f0ff]" />
               </button>
               <button onClick={() => { scrollTo('services'); setMobileMenuOpen(false); }} className="text-left py-3 text-white/90 border-b border-white/5 flex items-center justify-between font-heading text-sm">
-                <span>Services</span>
+                <span>
+                  <EditableText value={siteConfig.navServices} onChange={(v) => updateConfigField('navServices', v)} isLiveEditing={isLiveEditing} />
+                </span>
                 <ChevronRight size={14} className="text-[#00f0ff]" />
               </button>
               <button onClick={() => { scrollTo('about'); setMobileMenuOpen(false); }} className="text-left py-3 text-white/90 border-b border-white/5 flex items-center justify-between font-heading text-sm">
-                <span>About</span>
+                <span>
+                  <EditableText value={siteConfig.navAbout} onChange={(v) => updateConfigField('navAbout', v)} isLiveEditing={isLiveEditing} />
+                </span>
                 <ChevronRight size={14} className="text-[#00f0ff]" />
               </button>
               <button onClick={() => { scrollTo('contact'); setMobileMenuOpen(false); }} className="text-left py-3 text-white/90 border-b border-white/5 flex items-center justify-between font-heading text-sm">
-                <span>Contact</span>
+                <span>
+                  <EditableText value={siteConfig.navContact} onChange={(v) => updateConfigField('navContact', v)} isLiveEditing={isLiveEditing} />
+                </span>
                 <ChevronRight size={14} className="text-[#00f0ff]" />
               </button>
               <button onClick={() => { setView('admin-login'); setMobileMenuOpen(false); }} className="text-left py-3 text-[#ff007f] flex items-center gap-2 text-sm font-bold pt-2">
