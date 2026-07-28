@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Camera, Play, Film, Music, Car, Send, Menu, X, ArrowUpRight,
-  ChevronRight, CheckCircle2, Shield, Sparkles
+  Camera, Film, Music, Car, Send, Menu, X, ArrowUpRight,
+  ChevronRight, CheckCircle2, Shield, Sparkles, Plus, Trash2
 } from 'lucide-react';
 
 function InstagramIcon({ size = 20, className = "" }: { size?: number; className?: string }) {
@@ -15,75 +15,17 @@ function InstagramIcon({ size = 20, className = "" }: { size?: number; className
   );
 }
 
-// Data Arrays for Portfolio and Services
-const PORTFOLIO_ITEMS = [
-  {
-    id: 'p1',
-    title: 'Miami Nights — Music Video',
-    category: 'Music Videos',
-    type: 'video',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-party-lights-in-a-nightclub-43362-large.mp4',
-    thumbnail: '/cyberpunk_miami_videography_1785202641353.jpg',
-    description: 'Directed & shot cinematic visuals with hot pink & electric blue lighting for Miami hip hop single.',
-    tag: 'Trending',
-    views: '125K+'
-  },
-  {
-    id: 'p2',
-    title: 'South Beach Fashion Portraiture',
-    category: 'Photography',
-    type: 'image',
-    thumbnail: '/model_photoshoot_1785202660894.jpg',
-    description: 'High-fashion editorial night photoshoot under neon glow aesthetics on Ocean Drive.',
-    tag: 'Editorial',
-    views: '45K+'
-  },
-  {
-    id: 'p3',
-    title: 'Exotic Lambo Supercar Reel',
-    category: 'Commercials',
-    type: 'video',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-sports-car-driving-on-a-road-at-night-41555-large.mp4',
-    thumbnail: '/exotic_car_shoot_1785202672117.jpg',
-    description: '4K 60fps dynamic gimbal automotive showcase video with custom color grading.',
-    tag: 'Featured',
-    views: '210K+'
-  },
-  {
-    id: 'p4',
-    title: 'Vip Concert Stage Experience',
-    category: 'Events',
-    type: 'video',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-dj-playing-music-at-a-club-41527-large.mp4',
-    thumbnail: '/music_video_shoot_1785202650901.jpg',
-    description: 'Live performance recap featuring stage pyro, crowd energy, and multi-cam setup.',
-    tag: 'Live Event',
-    views: '88K+'
-  },
-  {
-    id: 'p5',
-    title: 'Luxury Brand Campaign',
-    category: 'Photography',
-    type: 'image',
-    thumbnail: '/cyberpunk_miami_videography_1785202641353.jpg',
-    description: 'Studio commercial product photography with vibrant cyberpunk reflections.',
-    tag: 'Commercial',
-    views: '62K+'
-  },
-  {
-    id: 'p6',
-    title: 'Cyberpunk Drone Cinema',
-    category: 'Cinematography',
-    type: 'video',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-lights-at-night-41524-large.mp4',
-    thumbnail: '/cyberpunk_miami_videography_1785202641353.jpg',
-    description: 'FPV drone aerial shots through downtown Miami skyscrapers under neon light.',
-    tag: 'FPV Drone',
-    views: '310K+'
-  }
-];
+export interface PostItem {
+  id: string;
+  title: string;
+  category: string;
+  type: 'video' | 'image';
+  url: string;
+  thumbnail?: string;
+  description: string;
+}
 
-const SERVICES = [
+const INITIAL_SERVICES = [
   {
     id: 's1',
     title: 'Music Video Production',
@@ -139,20 +81,79 @@ const SERVICES = [
 ];
 
 export default function App() {
+  const [posts, setPosts] = useState<PostItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('shotbyivis_real_posts');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [activeCategory, setActiveCategory] = useState('All');
-  const [activeMedia, setActiveMedia] = useState<typeof PORTFOLIO_ITEMS[0] | null>(null);
+  const [activeMedia, setActiveMedia] = useState<PostItem | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false);
+
+  // New Post Form State
+  const [newPost, setNewPost] = useState<{
+    title: string;
+    category: string;
+    type: 'video' | 'image';
+    url: string;
+    thumbnail: string;
+    description: string;
+  }>({
+    title: '',
+    category: 'Music Videos',
+    type: 'video',
+    url: '',
+    thumbnail: '',
+    description: ''
+  });
+
   const [bookingForm, setBookingForm] = useState({ name: '', email: '', service: 'Music Video Production', date: '', notes: '' });
   const [bookedSuccess, setBookedSuccess] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const categories = ['All', 'Music Videos', 'Photography', 'Commercials', 'Events'];
 
-  const filteredPortfolio = PORTFOLIO_ITEMS.filter(item => 
+  const filteredPosts = posts.filter(item => 
     activeCategory === 'All' || item.category === activeCategory
   );
 
-  // Background Particles canvas (Hot Pink & Blue dots)
+  const handleAddPost = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPost.title || !newPost.url) return;
+
+    const created: PostItem = {
+      id: Math.random().toString(36).slice(2, 9),
+      ...newPost,
+      thumbnail: newPost.thumbnail || (newPost.type === 'image' ? newPost.url : '')
+    };
+
+    const updated = [created, ...posts];
+    setPosts(updated);
+    localStorage.setItem('shotbyivis_real_posts', JSON.stringify(updated));
+
+    setNewPost({
+      title: '',
+      category: 'Music Videos',
+      type: 'video',
+      url: '',
+      thumbnail: '',
+      description: ''
+    });
+    setAddModalOpen(false);
+  };
+
+  const handleDeletePost = (id: string) => {
+    const updated = posts.filter(p => p.id !== id);
+    setPosts(updated);
+    localStorage.setItem('shotbyivis_real_posts', JSON.stringify(updated));
+  };
+
+  // Background Particle Canvas (Electric Blue & Hot Pink)
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -236,7 +237,7 @@ export default function App() {
       {/* ===== NAVBAR ===== */}
       <nav className="sticky top-0 z-50 glass-panel border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          {/* Logo with Transparent User Image */}
+          {/* Transparent Logo */}
           <a href="#" className="flex items-center gap-3 group">
             <div className="relative w-12 h-12 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#ff007f] to-[#00f0ff] blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
@@ -268,6 +269,13 @@ export default function App() {
 
           {/* Action Buttons */}
           <div className="hidden md:flex items-center gap-4">
+            <button
+              onClick={() => setAddModalOpen(true)}
+              className="px-4 py-2 rounded-full glass-panel-pink text-[#ff007f] text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:scale-105 transition-all"
+            >
+              <Plus size={14} /> Add Real Post
+            </button>
+
             <a 
               href="https://www.instagram.com/shotbyivis/" 
               target="_blank" 
@@ -312,11 +320,17 @@ export default function App() {
                   {item}
                 </a>
               ))}
+              <button
+                onClick={() => { setMobileMenuOpen(false); setAddModalOpen(true); }}
+                className="flex items-center gap-2 text-[#ff007f] py-2"
+              >
+                <Plus size={18} /> Add Real Post
+              </button>
               <a 
                 href="https://www.instagram.com/shotbyivis/" 
                 target="_blank" 
                 rel="noreferrer"
-                className="flex items-center gap-2 text-[#ff007f] py-2"
+                className="flex items-center gap-2 text-[#00f0ff] py-2"
               >
                 <InstagramIcon size={18} /> Instagram @shotbyivis
               </a>
@@ -349,22 +363,22 @@ export default function App() {
             </h1>
 
             <p className="text-white/70 text-base sm:text-lg max-w-lg mb-8 leading-relaxed mx-auto md:mx-0">
-              High-end cinematic music videos, high fashion portrait photography, and Miami lifestyle visuals. Crafted with neon aesthetic and 4K cinema precision.
+              Official portfolio for <b>@shotbyivis</b>. Cinematic music videos, model portraiture, and Miami lifestyle visual productions in 4K.
             </p>
 
             {/* Stats Counter Bar */}
             <div className="grid grid-cols-3 gap-4 p-4 rounded-2xl glass-panel border border-white/10 max-w-md mx-auto md:mx-0 mb-8">
               <div className="text-center">
-                <div className="text-2xl font-black neon-text-pink">150+</div>
-                <div className="text-[11px] text-white/50 uppercase tracking-widest font-mono">Videos Shot</div>
+                <div className="text-2xl font-black neon-text-pink">@shotbyivis</div>
+                <div className="text-[11px] text-white/50 uppercase tracking-widest font-mono">Instagram</div>
               </div>
               <div className="text-center border-x border-white/10">
-                <div className="text-2xl font-black neon-text-blue">1M+</div>
-                <div className="text-[11px] text-white/50 uppercase tracking-widest font-mono">Total Views</div>
+                <div className="text-2xl font-black neon-text-blue">4K 60fps</div>
+                <div className="text-[11px] text-white/50 uppercase tracking-widest font-mono">Cinema</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-black text-white">4K 60FPS</div>
-                <div className="text-[11px] text-white/50 uppercase tracking-widest font-mono">Quality</div>
+                <div className="text-2xl font-black text-white">Miami</div>
+                <div className="text-[11px] text-white/50 uppercase tracking-widest font-mono">Location</div>
               </div>
             </div>
 
@@ -374,18 +388,20 @@ export default function App() {
                 href="#portfolio"
                 className="px-8 py-4 rounded-xl font-bold uppercase tracking-wider text-sm bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-[0_0_30px_rgba(255,0,127,0.6)] hover:shadow-[0_0_40px_rgba(0,240,255,0.9)] hover:scale-105 transition-all flex items-center gap-2"
               >
-                View Portfolio <ChevronRight size={18} />
+                View Works <ChevronRight size={18} />
               </a>
               <a 
-                href="#book-now"
-                className="px-8 py-4 rounded-xl font-bold uppercase tracking-wider text-sm glass-panel border border-white/20 hover:border-[#00f0ff] hover:text-[#00f0ff] transition-all"
+                href="https://www.instagram.com/shotbyivis/"
+                target="_blank"
+                rel="noreferrer"
+                className="px-8 py-4 rounded-xl font-bold uppercase tracking-wider text-sm glass-panel-blue border border-[#00f0ff]/40 text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black transition-all flex items-center gap-2"
               >
-                Get Quote
+                <InstagramIcon size={18} /> Instagram @shotbyivis
               </a>
             </div>
           </motion.div>
 
-          {/* Right: 3D Animated Logo Emblem Visual */}
+          {/* Right: Transparent 3D Floating Logo Emblem */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -400,12 +416,12 @@ export default function App() {
               {/* Glowing Background Glow */}
               <div className="absolute inset-10 rounded-full bg-gradient-to-tr from-[#ff007f]/30 via-purple-600/20 to-[#00f0ff]/30 blur-3xl animate-neon-pulse" />
 
-              {/* 3D Floating Logo */}
-              <div className="relative z-10 w-full h-full p-8 animate-logo-float">
+              {/* Transparent 3D Floating Logo */}
+              <div className="relative z-10 w-full h-full p-6 animate-logo-float">
                 <img 
                   src="/logo.png" 
-                  alt="ShotByIvis 3D Emblem" 
-                  className="w-full h-full object-contain filter drop-shadow-[0_0_30px_rgba(255,0,127,0.7)] drop-shadow-[0_0_60px_rgba(0,240,255,0.5)]" 
+                  alt="ShotByIvis Transparent Logo" 
+                  className="w-full h-full object-contain filter drop-shadow-[0_0_35px_rgba(255,0,127,0.8)] drop-shadow-[0_0_70px_rgba(0,240,255,0.6)]" 
                 />
               </div>
             </div>
@@ -414,98 +430,176 @@ export default function App() {
         </div>
       </section>
 
-      {/* ===== PORTFOLIO GALLERY ===== */}
+      {/* ===== PORTFOLIO GALLERY (REAL POSTS & INSTAGRAM FEED) ===== */}
       <section id="portfolio" className="py-24 px-6 relative z-10 border-t border-white/10">
         <div className="max-w-7xl mx-auto">
           
-          <div className="text-center mb-12">
-            <span className="text-xs font-mono uppercase tracking-widest neon-text-blue font-bold">Featured Work</span>
-            <h2 className="text-4xl md:text-5xl font-black uppercase mt-2 tracking-tight" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
-              <span className="neon-text-pink">VISUAL</span> <span className="text-white">PORTFOLIO</span>
-            </h2>
-            <p className="text-white/60 text-sm max-w-md mx-auto mt-2">
-              Browse recent music videos, photoshoots, and creative projects shot across Miami.
-            </p>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
+            <div>
+              <span className="text-xs font-mono uppercase tracking-widest neon-text-blue font-bold">Official Gallery</span>
+              <h2 className="text-4xl md:text-5xl font-black uppercase mt-1 tracking-tight" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
+                <span className="neon-text-pink">REAL</span> <span className="text-white">PROJECTS</span>
+              </h2>
+            </div>
 
-            {/* Category Filter Tabs */}
-            <div className="flex flex-wrap justify-center gap-2 mt-8">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                    activeCategory === cat 
-                      ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-[0_0_20px_rgba(255,0,127,0.5)]' 
-                      : 'glass-panel text-white/60 hover:text-white hover:border-white/30'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setAddModalOpen(true)}
+                className="px-5 py-3 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white text-xs font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(255,0,127,0.5)] hover:scale-105 transition-all flex items-center gap-2"
+              >
+                <Plus size={16} /> Add New Real Post
+              </button>
+              <a
+                href="https://www.instagram.com/shotbyivis/"
+                target="_blank"
+                rel="noreferrer"
+                className="px-5 py-3 rounded-xl glass-panel-pink text-[#ff007f] text-xs font-bold uppercase tracking-wider flex items-center gap-2 hover:scale-105 transition-all"
+              >
+                <InstagramIcon size={16} /> Visit @shotbyivis
+              </a>
             </div>
           </div>
 
-          {/* Portfolio Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPortfolio.map((item) => (
-              <motion.div
-                key={item.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -8 }}
-                className="group relative rounded-2xl overflow-hidden glass-panel border border-white/10 hover:border-[#ff007f]/50 transition-all shadow-xl"
+          {/* Category Tabs */}
+          <div className="flex flex-wrap gap-2 mb-10">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                  activeCategory === cat 
+                    ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-[0_0_20px_rgba(255,0,127,0.5)]' 
+                    : 'glass-panel text-white/60 hover:text-white hover:border-white/30'
+                }`}
               >
-                {/* Media Image / Thumbnail */}
-                <div className="relative h-64 overflow-hidden">
-                  <img 
-                    src={item.thumbnail} 
-                    alt={item.title} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-80" />
-
-                  {/* Play Button Overlay for Videos */}
-                  {item.type === 'video' && (
-                    <button 
-                      onClick={() => setActiveMedia(item)}
-                      className="absolute inset-0 flex items-center justify-center group-hover:scale-110 transition-transform"
-                    >
-                      <div className="w-14 h-14 rounded-full bg-[#ff007f]/80 text-white flex items-center justify-center shadow-[0_0_25px_rgba(255,0,127,0.9)] backdrop-blur-md">
-                        <Play size={24} className="ml-1 fill-white" />
-                      </div>
-                    </button>
-                  )}
-
-                  {/* Badge */}
-                  <span className="absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest glass-panel-pink text-[#ff007f]">
-                    {item.tag}
-                  </span>
-                </div>
-
-                {/* Content Details */}
-                <div className="p-6">
-                  <div className="flex items-center justify-between text-xs text-white/50 mb-2">
-                    <span>{item.category}</span>
-                    <span className="neon-text-blue font-mono">{item.views} views</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
-                    {item.title}
-                  </h3>
-                  <p className="text-white/60 text-xs leading-relaxed mb-4">
-                    {item.description}
-                  </p>
-
-                  <button 
-                    onClick={() => setActiveMedia(item)}
-                    className="w-full py-2.5 rounded-xl glass-panel border border-white/10 hover:border-[#00f0ff] hover:text-[#00f0ff] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
-                  >
-                    Watch Visual <ArrowUpRight size={14} />
-                  </button>
-                </div>
-              </motion.div>
+                {cat}
+              </button>
             ))}
           </div>
+
+          {/* Posts Grid */}
+          {filteredPosts.length === 0 ? (
+            <div className="p-12 rounded-3xl glass-panel border border-white/10 text-center flex flex-col items-center justify-center gap-6">
+              <div className="w-20 h-20 rounded-full glass-panel-pink flex items-center justify-center text-[#ff007f]">
+                <InstagramIcon size={36} />
+              </div>
+              <div className="max-w-md">
+                <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
+                  No Real Posts Added Yet
+                </h3>
+                <p className="text-white/60 text-sm mb-6">
+                  Add Ivis's real video links or photo URLs directly, or visit his official Instagram feed below!
+                </p>
+                <div className="flex flex-wrap gap-4 justify-center">
+                  <button
+                    onClick={() => setAddModalOpen(true)}
+                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition-all flex items-center gap-2"
+                  >
+                    <Plus size={16} /> Add Real Post Now
+                  </button>
+                  <a
+                    href="https://www.instagram.com/shotbyivis/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-6 py-3 rounded-xl glass-panel-blue text-[#00f0ff] font-bold text-xs uppercase tracking-wider border border-[#00f0ff]/40 hover:bg-[#00f0ff] hover:text-black transition-all flex items-center gap-2"
+                  >
+                    <InstagramIcon size={16} /> Open Instagram @shotbyivis
+                  </a>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredPosts.map((item) => (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={{ y: -8 }}
+                  className="group relative rounded-2xl overflow-hidden glass-panel border border-white/10 hover:border-[#ff007f]/50 transition-all shadow-xl"
+                >
+                  <div className="relative h-64 overflow-hidden bg-black">
+                    {item.type === 'video' ? (
+                      <video 
+                        src={item.url} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                        muted
+                        loop
+                        onMouseOver={(e) => (e.target as HTMLVideoElement).play()}
+                        onMouseOut={(e) => (e.target as HTMLVideoElement).pause()}
+                      />
+                    ) : (
+                      <img 
+                        src={item.url} 
+                        alt={item.title} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-80" />
+
+                    {/* Delete Button */}
+                    <button
+                      onClick={() => handleDeletePost(item.id)}
+                      className="absolute top-4 right-4 p-2 rounded-full glass-panel text-white/40 hover:text-red-400 hover:scale-110 transition-all z-20"
+                      title="Delete post"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+
+                    <span className="absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest glass-panel-pink text-[#ff007f]">
+                      {item.category}
+                    </span>
+                  </div>
+
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-white mb-2" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
+                      {item.title}
+                    </h3>
+                    {item.description && (
+                      <p className="text-white/60 text-xs leading-relaxed mb-4">
+                        {item.description}
+                      </p>
+                    )}
+
+                    <button 
+                      onClick={() => setActiveMedia(item)}
+                      className="w-full py-2.5 rounded-xl glass-panel border border-white/10 hover:border-[#00f0ff] hover:text-[#00f0ff] text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+                    >
+                      View Fullscreen <ArrowUpRight size={14} />
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          {/* Instagram Direct Embedded Feed Banner */}
+          <div className="mt-16 p-8 rounded-3xl glass-panel-blue border border-[#00f0ff]/30 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_0_50px_rgba(0,240,255,0.15)]">
+            <div className="flex items-center gap-4 text-center md:text-left">
+              <div className="w-16 h-16 rounded-2xl glass-panel-pink flex items-center justify-center text-[#ff007f] shrink-0">
+                <InstagramIcon size={32} />
+              </div>
+              <div>
+                <h3 className="text-2xl font-black text-white uppercase tracking-tight" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
+                  Follow <span className="neon-text-pink">@shotbyivis</span> On Instagram
+                </h3>
+                <p className="text-white/60 text-xs mt-1">
+                  View daily behind-the-scenes reels, music video clips, and live story updates.
+                </p>
+              </div>
+            </div>
+
+            <a
+              href="https://www.instagram.com/shotbyivis/"
+              target="_blank"
+              rel="noreferrer"
+              className="px-8 py-4 rounded-xl bg-[#00f0ff] text-black font-extrabold uppercase tracking-wider text-xs shadow-[0_0_30px_rgba(0,240,255,0.8)] hover:scale-105 transition-all whitespace-nowrap"
+            >
+              Open Instagram Feed ↗
+            </a>
+          </div>
+
         </div>
       </section>
 
@@ -519,12 +613,12 @@ export default function App() {
               <span className="text-white">SHOOTING</span> <span className="neon-text-blue">SERVICES</span>
             </h2>
             <p className="text-white/60 text-sm max-w-md mx-auto mt-2">
-              Transparent pricing for video shoots, photoshoots, and event coverage.
+              Official video shoot, photoshoot, and event coverage packages.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {SERVICES.map((s) => {
+            {INITIAL_SERVICES.map((s) => {
               const Icon = s.icon;
               const isPink = s.accent === 'pink';
               return (
@@ -581,11 +675,11 @@ export default function App() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           
           <div className="relative flex justify-center">
-            <div className="w-80 h-80 sm:w-96 sm:h-96 rounded-3xl overflow-hidden glass-panel p-4 border border-[#00f0ff]/40 shadow-[0_0_50px_rgba(0,240,255,0.2)]">
+            <div className="w-80 h-80 sm:w-96 sm:h-96 rounded-3xl overflow-hidden glass-panel p-6 border border-[#00f0ff]/40 shadow-[0_0_50px_rgba(0,240,255,0.2)] flex items-center justify-center">
               <img 
-                src="/cyberpunk_miami_videography_1785202641353.jpg" 
-                alt="Ivis Behind the Lens" 
-                className="w-full h-full object-cover rounded-2xl" 
+                src="/logo.png" 
+                alt="ShotByIvis Transparent Logo" 
+                className="w-full h-full object-contain filter drop-shadow-[0_0_25px_rgba(255,0,127,0.7)]" 
               />
             </div>
             <div className="absolute -bottom-6 -right-2 glass-panel-pink p-4 rounded-2xl border border-[#ff007f]">
@@ -726,7 +820,113 @@ export default function App() {
         </div>
       </section>
 
-      {/* ===== MEDIA MODAL ===== */}
+      {/* ===== ADD REAL POST MODAL ===== */}
+      <AnimatePresence>
+        {addModalOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4"
+            onClick={() => setAddModalOpen(false)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="glass-panel p-6 rounded-3xl border border-white/20 max-w-lg w-full relative"
+            >
+              <button 
+                onClick={() => setAddModalOpen(false)}
+                className="absolute top-4 right-4 text-white/60 hover:text-white p-2 rounded-full glass-panel"
+              >
+                <X size={20} />
+              </button>
+
+              <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: "'Rajdhani', sans-serif" }}>
+                Add Real Post / Video
+              </h3>
+              <p className="text-white/50 text-xs mb-6">
+                Paste real video MP4 link, image URL, or post title below.
+              </p>
+
+              <form onSubmit={handleAddPost} className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold uppercase text-white/60 block mb-1">Title</label>
+                  <input 
+                    type="text" 
+                    required 
+                    placeholder="e.g. South Beach Music Video Shoot"
+                    value={newPost.title}
+                    onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-bold uppercase text-white/60 block mb-1">Media Type</label>
+                    <select 
+                      value={newPost.type}
+                      onChange={(e) => setNewPost({ ...newPost, type: e.target.value as 'video' | 'image' })}
+                      className="w-full bg-[#12121c] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                    >
+                      <option value="video">Video (MP4 / WebM)</option>
+                      <option value="image">Image (JPG / PNG)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold uppercase text-white/60 block mb-1">Category</label>
+                    <select 
+                      value={newPost.category}
+                      onChange={(e) => setNewPost({ ...newPost, category: e.target.value })}
+                      className="w-full bg-[#12121c] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                    >
+                      <option value="Music Videos">Music Videos</option>
+                      <option value="Photography">Photography</option>
+                      <option value="Commercials">Commercials</option>
+                      <option value="Events">Events</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase text-white/60 block mb-1">Media URL (Direct Link)</label>
+                  <input 
+                    type="url" 
+                    required 
+                    placeholder="https://example.com/my-video.mp4 or photo URL"
+                    value={newPost.url}
+                    onChange={(e) => setNewPost({ ...newPost, url: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase text-white/60 block mb-1">Description (Optional)</label>
+                  <input 
+                    type="text" 
+                    placeholder="Short summary of the shoot..."
+                    value={newPost.description}
+                    onChange={(e) => setNewPost({ ...newPost, description: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                  />
+                </div>
+
+                <button 
+                  type="submit"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                >
+                  <Plus size={16} /> Publish Post to Site
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== MEDIA FULLSCREEN MODAL ===== */}
       <AnimatePresence>
         {activeMedia && (
           <motion.div 
@@ -757,14 +957,14 @@ export default function App() {
               <div className="relative rounded-2xl overflow-hidden bg-black aspect-video mb-4">
                 {activeMedia.type === 'video' ? (
                   <video 
-                    src={activeMedia.videoUrl} 
+                    src={activeMedia.url} 
                     controls 
                     autoPlay 
                     className="w-full h-full object-cover"
                   />
                 ) : (
                   <img 
-                    src={activeMedia.thumbnail} 
+                    src={activeMedia.url} 
                     alt={activeMedia.title} 
                     className="w-full h-full object-cover"
                   />
