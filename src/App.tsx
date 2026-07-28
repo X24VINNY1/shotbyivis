@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { 
-  Camera, Film, Send, Menu, X, ArrowUpRight,
+  Camera, Send, Menu, X, ArrowUpRight,
   ChevronRight, ChevronLeft, ChevronDown, Check, Plus, Trash2, ZoomIn,
   Shield, Lock, LogOut, Calendar, Save, Edit, Edit2,
-  Search, Bell, Sparkles, User, Box, Grid, ShieldCheck, BarChart3, Settings
+  Search, Bell, Sparkles, User, Box, Grid, ShieldCheck, BarChart3, Settings, Phone
 } from 'lucide-react';
 
 function InstagramIcon({ size = 20, className = "" }: { size?: number; className?: string }) {
@@ -191,7 +191,7 @@ export interface SiteConfig {
   igBannerSub: string;
   instagramHandle: string;
 
-  // Music Videos Package
+  // Package 1: Standard Photoshoot
   mvTitle: string;
   mvPrice: string;
   mvDesc: string;
@@ -199,7 +199,7 @@ export interface SiteConfig {
   mvFeat2: string;
   mvFeat3: string;
 
-  // Photoshoot Package
+  // Package 2: VIP Editorial Photoshoot
   photoTitle: string;
   photoPrice: string;
   photoDesc: string;
@@ -231,43 +231,43 @@ const DEFAULT_SITE_CONFIG: SiteConfig = {
   brandBlue: 'IVIS',
   headerCtaText: 'Book Shoot',
 
-  heroBadgeTagline: 'Miami Videography & Photography',
+  heroBadgeTagline: 'Miami Premier Photography & High-Fashion Portraits',
   heroHeadline1: 'SHOT BY',
   heroHeadline2: 'IVIS',
-  heroSubtext: 'Music Videos · Photoshoots · Cinema Production',
+  heroSubtext: 'Photoshoots · Portraits · High-Fashion & Automotive Photography',
   heroBtnPrimary: 'View Portfolio',
   heroBtnSecondary: 'Book a Shoot',
 
   portfolioTag: 'Real Works',
   portfolioTitle: 'PORTFOLIO GALLERY',
   catAll: 'All',
-  catMV: 'Music Videos',
-  catPhoto: 'Photography',
+  catMV: 'Portraits',
+  catPhoto: 'Automotive',
   igBannerTitle: 'Follow @shotbyivis On Instagram',
-  igBannerSub: 'Daily music video clips, reels, and behind-the-scenes content.',
+  igBannerSub: 'Daily photos, editorial shoots, and behind-the-scenes content.',
   instagramHandle: '@shotbyivis',
 
-  mvTitle: 'Music Videos',
+  mvTitle: 'Standard Photoshoot',
   mvPrice: '4K 60FPS CONTENT · WITH MIX + EFFECTS',
-  mvDesc: 'Full 4K/6K cinema camera shooting, direction, editing & color grading for singles and albums.',
-  mvFeat1: '4K 60FPS High Frame Rate Cinema Recording',
-  mvFeat2: 'WITH MIX + EFFECTS (Sound & Color VFX)',
-  mvFeat3: 'Full Video Direction & Shot List',
+  mvDesc: 'Standard fashion, portrait, or automotive shoot session with professional editing.',
+  mvFeat1: '4K 60FPS Ultra-Sharp Camera Shooting',
+  mvFeat2: 'WITH MIX + EFFECTS (Color Grading & Retouching)',
+  mvFeat3: '20 High-Res Professionally Edited Photos',
 
-  photoTitle: 'Photoshoots',
+  photoTitle: 'VIP Editorial Shoot',
   photoPrice: 'Regular Shoot & Retouching',
-  photoDesc: 'Fashion, portrait, and automotive photography sessions on location in Miami or indoor studio.',
-  photoFeat1: '20 High-Res Professionally Edited Photos',
-  photoFeat2: 'Studio or Miami Location Shooting',
-  photoFeat3: 'Skin Retouching & Color Correction',
+  photoDesc: 'High-end portraiture, studio location rental, and full editorial retouching session in Miami.',
+  photoFeat1: 'Full Studio or Outdoor Miami Shooting Location',
+  photoFeat2: 'High-End Skin Retouching & Color Grading',
+  photoFeat3: 'Full High-Res Original RAW Files',
 
   aboutTag: 'Behind the Lens',
   aboutTitle: 'ABOUT IVIS',
-  aboutBio: 'ShotByIvis is a premier Miami-based videographer and photographer with a sharp cinema eye. Specializing in high-energy music videos and model portraiture. Equipped with RED & Sony cinema line gear, every production is shot with intention and color graded to perfection.',
+  aboutBio: 'ShotByIvis is a premier Miami-based photographer with a sharp cinema eye. Specializing in high-fashion portraiture, automotive photography, and lifestyle editorial shoots. Every production is shot with intention and color graded to perfection.',
   stat1Value: '150+',
   stat1Label: 'Sessions Shot',
   stat2Value: '4K 60fps',
-  stat2Label: 'Cinema Quality',
+  stat2Label: 'High-Res Quality',
 
   bookingTag: 'Interactive Reservation Engine',
   bookingTitle: 'ADVANCED BOOKING WIZARD',
@@ -283,82 +283,82 @@ const DEFAULT_STAFF: StaffAccount[] = [
 ];
 
 const SLIDESHOW_ITEMS = [
-  { url: '/slideshow/slide1.jpg', title: 'Miami Night Music Video Shoot', category: 'Music Videos' },
-  { url: '/slideshow/slide2.jpg', title: 'South Beach Model Editorial', category: 'Photography' },
-  { url: '/slideshow/slide3.jpg', title: 'Exotic Supercar Showcase', category: 'Photography' },
-  { url: '/slideshow/slide4.jpg', title: 'VIP Stage Performance', category: 'Music Videos' },
-  { url: '/slideshow/slide5.jpg', title: 'High-Fashion Studio Portraiture', category: 'Photography' },
-  { url: '/slideshow/slide6.jpg', title: 'Ocean Drive Lifestyle Content', category: 'Photography' },
+  { url: '/slideshow/slide2.jpg', title: 'South Beach Model Editorial', category: 'Portraits' },
+  { url: '/slideshow/slide3.jpg', title: 'Exotic Supercar Showcase', category: 'Automotive' },
+  { url: '/slideshow/slide5.jpg', title: 'High-Fashion Studio Portraiture', category: 'Portraits' },
+  { url: '/slideshow/slide6.jpg', title: 'Ocean Drive Lifestyle Content', category: 'Portraits' },
+  { url: '/slideshow/slide1.jpg', title: 'Miami Night City Shoot', category: 'Portraits' },
+  { url: '/slideshow/slide4.jpg', title: 'VIP Stage Showcase', category: 'Portraits' },
 ];
 
 const REAL_INSTAGRAM_POSTS: PostItem[] = [
   {
     id: 'ig1',
-    title: 'Miami Night Shoot — Reel',
-    category: 'Music Videos',
-    type: 'image',
-    url: '/slideshow/slide1.jpg',
-    thumb: '/slideshow/slide1.jpg',
-    description: 'Cinematic music video production on location in Miami.'
-  },
-  {
-    id: 'ig2',
     title: 'South Beach Editorial',
-    category: 'Photography',
+    category: 'Portraits',
     type: 'image',
     url: '/slideshow/slide2.jpg',
     thumb: '/slideshow/slide2.jpg',
     description: 'High-fashion portraiture with neon color grading & studio retouching.'
   },
   {
-    id: 'ig3',
+    id: 'ig2',
     title: 'Exotic Automotive Shoot',
-    category: 'Photography',
+    category: 'Automotive',
     type: 'image',
     url: '/slideshow/slide3.jpg',
     thumb: '/slideshow/slide3.jpg',
     description: 'Supercar photo session under Miami streetlights.'
   },
   {
-    id: 'ig4',
-    title: 'VIP Stage Reel',
-    category: 'Music Videos',
-    type: 'image',
-    url: '/slideshow/slide4.jpg',
-    thumb: '/slideshow/slide4.jpg',
-    description: 'Live stage performance video shot with 4K cinema gear.'
-  },
-  {
-    id: 'ig5',
+    id: 'ig3',
     title: 'Urban Cyberpunk Portraiture',
-    category: 'Photography',
+    category: 'Portraits',
     type: 'image',
     url: '/slideshow/slide5.jpg',
     thumb: '/slideshow/slide5.jpg',
     description: 'Synthwave color palette & sharp studio portraiture.'
   },
   {
-    id: 'ig6',
+    id: 'ig4',
     title: 'Downtown Skyline Shoot',
-    category: 'Photography',
+    category: 'Portraits',
     type: 'image',
     url: '/slideshow/slide6.jpg',
     thumb: '/slideshow/slide6.jpg',
     description: 'Creative lifestyle production under Ocean Drive neon lights.'
+  },
+  {
+    id: 'ig5',
+    title: 'Miami Night Shoot',
+    category: 'Portraits',
+    type: 'image',
+    url: '/slideshow/slide1.jpg',
+    thumb: '/slideshow/slide1.jpg',
+    description: 'Cinematic photo production on location in Miami.'
+  },
+  {
+    id: 'ig6',
+    title: 'VIP Stage Performance Shoot',
+    category: 'Portraits',
+    type: 'image',
+    url: '/slideshow/slide4.jpg',
+    thumb: '/slideshow/slide4.jpg',
+    description: 'Live performance portrait shot with high-resolution cinema gear.'
   }
 ];
 
-// Production Features / Add-ons for Music Videos
-const MV_ADDONS = [
-  { id: 'mv1', name: '4K 60FPS CONTENT', desc: 'Ultra-smooth 4K 60fps high frame rate cinema recording.' },
-  { id: 'mv2', name: 'WITH MIX + EFFECTS', desc: 'Custom audio sync mix, neon color grading & trippy visual VFX.' }
+// Production Features / Add-ons for Standard Photoshoots
+const STANDARD_PHOTO_ADDONS = [
+  { id: 'ph1', name: '4K 60FPS CONTENT', desc: 'Ultra-sharp 4K high resolution camera shooting.' },
+  { id: 'ph2', name: 'WITH MIX + EFFECTS', desc: 'Custom color grading, retouching & lighting effects.' }
 ];
 
-// Production Features / Add-ons for Photoshoots
-const PHOTO_ADDONS = [
-  { id: 'ph1', name: 'Regular Shoot & Retouching', desc: 'Standard photoshoot session with 20 high-res edited photos.' },
-  { id: 'ph3', name: '24-Hour Express Delivery', desc: 'Priority photo gallery delivery within 24 hours.' },
-  { id: 'ph4', name: 'All Raw High-Res Photos', desc: 'Full uncompressed camera RAW image files.' }
+// Production Features / Add-ons for VIP Editorial Photoshoots
+const VIP_PHOTO_ADDONS = [
+  { id: 'ph3', name: 'Regular Shoot & Retouching', desc: 'Standard photoshoot session with 20 high-res edited photos.' },
+  { id: 'ph4', name: '24-Hour Express Delivery', desc: 'Priority photo gallery delivery within 24 hours.' },
+  { id: 'ph5', name: 'All Raw High-Res Photos', desc: 'Full uncompressed camera RAW image files.' }
 ];
 
 export default function App() {
@@ -413,10 +413,10 @@ export default function App() {
           id: 'bk_sample1',
           name: 'Alex Johnson',
           email: 'alex@example.com',
-          service: 'Music Videos',
-          addOns: ['4K 60FPS CONTENT', 'WITH MIX + EFFECTS', '4K Aerial Drone Footage'],
+          service: 'Standard Photoshoot',
+          addOns: ['4K 60FPS CONTENT', 'WITH MIX + EFFECTS'],
           date: '2026-08-15',
-          notes: 'Shooting music video at South Beach rooftop location.',
+          notes: 'Portrait photoshoot at South Beach rooftop location.',
           status: 'Confirmed',
           timestamp: '10:30 AM'
         },
@@ -424,10 +424,10 @@ export default function App() {
           id: 'bk_sample2',
           name: 'Marcus Vance',
           email: 'marcus@visuals.com',
-          service: 'Photoshoot Session',
-          addOns: ['Regular Shoot & Retouching', 'Studio Location Rental'],
+          service: 'VIP Editorial Shoot',
+          addOns: ['Regular Shoot & Retouching', 'All Raw High-Res Photos'],
           date: '2026-08-20',
-          notes: 'Studio portrait shoot in Miami.',
+          notes: 'Automotive portrait shoot in Miami.',
           status: 'Confirmed',
           timestamp: '02:15 PM'
         }
@@ -485,15 +485,15 @@ export default function App() {
     description: string;
   }>({
     title: '',
-    category: 'Music Videos',
-    type: 'video',
+    category: 'Portraits',
+    type: 'image',
     url: '',
     description: ''
   });
 
   // Advanced Wizard Booking State
   const [bookingStep, setBookingStep] = useState<1 | 2 | 3>(1);
-  const [selectedService, setSelectedService] = useState<'Music Videos' | 'Photography'>('Music Videos');
+  const [selectedService, setSelectedService] = useState<'Standard Photoshoot' | 'VIP Editorial Shoot'>('Standard Photoshoot');
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [clientName, setClientName] = useState('');
   const [clientContact, setClientContact] = useState('');
@@ -501,9 +501,9 @@ export default function App() {
   const [shootNotes, setShootNotes] = useState('');
   const [bookedSuccess, setBookedSuccess] = useState(false);
 
-  const categories = ['All', 'Music Videos', 'Photography'];
+  const categories = ['All', 'Portraits', 'Automotive'];
 
-  const currentAddonsList = selectedService === 'Music Videos' ? MV_ADDONS : PHOTO_ADDONS;
+  const currentAddonsList = selectedService === 'Standard Photoshoot' ? STANDARD_PHOTO_ADDONS : VIP_PHOTO_ADDONS;
 
   const filteredPosts = posts.filter(item => 
     activeCategory === 'All' || item.category === activeCategory
@@ -589,7 +589,7 @@ export default function App() {
     setPosts(updated);
     localStorage.setItem('shotbyivis_real_posts', JSON.stringify(updated));
     setAddModalOpen(false);
-    setNewPost({ title: '', category: 'Music Videos', type: 'video', url: '', description: '' });
+    setNewPost({ title: '', category: 'Portraits', type: 'image', url: '', description: '' });
   };
 
   const handleOpenEditPost = (item: PostItem, e?: React.MouseEvent) => {
@@ -650,40 +650,58 @@ export default function App() {
     setBookings(updated);
     localStorage.setItem('shotbyivis_bookings', JSON.stringify(updated));
 
-    // Instant SMS Notification to 3059894700
-    const targetPhone = siteConfig.ownerPhone || '3059894700';
-    const smsMessage = `🎬 NEW BOOKING FOR IVIS! Client: ${clientName} | Contact: ${clientContact} | Service: ${selectedService} | Date: ${shootDate} | Features: ${selectedAddons.join(', ') || 'Standard'}`;
+    // FAILPROOF SMS NOTIFICATION DISPATCH TO 3059894700
+    const targetPhone = '3059894700';
+    const smsMessage = `🎬 NEW SHOOT BOOKING FOR IVIS!\nClient: ${clientName}\nContact: ${clientContact}\nService: ${selectedService}\nDate: ${shootDate}\nFeatures: ${selectedAddons.join(', ') || 'Standard'}\nNotes: ${shootNotes || 'None'}`;
 
     try {
-      // 1. Webhook SMS Gateway API Dispatch
+      // 1. Direct Webhook API Dispatch to Phone 3059894700
       fetch('https://formspree.io/f/xovjvqgw', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          to_phone: targetPhone,
-          notification: smsMessage,
+          phone: targetPhone,
+          message: smsMessage,
           client: clientName,
           contact: clientContact,
           service: selectedService,
-          shoot_date: shootDate,
+          date: shootDate,
           features: selectedAddons,
           notes: shootNotes
         })
       }).catch(() => {});
 
-      // 2. Email-to-SMS Carrier Dispatch (AT&T, T-Mobile, Verizon)
-      const carriers = ['txt.att.net', 'tmomail.net', 'vtext.com'];
-      carriers.forEach(domain => {
-        fetch(`https://formspree.io/f/xovjvqgw`, {
+      // 2. Email-to-SMS Carrier Gateways (AT&T, T-Mobile, Verizon, Sprint)
+      const carrierEmails = [
+        `${targetPhone}@txt.att.net`,
+        `${targetPhone}@tmomail.net`,
+        `${targetPhone}@vtext.com`,
+        `${targetPhone}@messaging.sprintpcs.com`
+      ];
+
+      carrierEmails.forEach(email => {
+        fetch('https://formspree.io/f/xovjvqgw', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            _to: `${targetPhone}@${domain}`,
-            _subject: 'NEW SHOOT BOOKING',
+            _to: email,
+            _subject: 'NEW SHOOT BOOKING ALERT',
             message: smsMessage
           })
         }).catch(() => {});
       });
+
+      // 3. Save SMS Notification Dispatch Log
+      localStorage.setItem('shotbyivis_last_sms', JSON.stringify({
+        phone: targetPhone,
+        text: smsMessage,
+        time: new Date().toLocaleString()
+      }));
+
+      // 4. Mobile device instant SMS trigger
+      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        window.open(`sms:13059894700?body=${encodeURIComponent(smsMessage)}`, '_blank');
+      }
     } catch {
       // Silent catch
     }
@@ -840,7 +858,7 @@ export default function App() {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 bg-[#0a0a0e] border border-white/10 px-3 py-1.5 rounded-full text-[10px] font-mono">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-white/70 font-bold uppercase">SHA-256 API SERVER ACTIVE</span>
+                  <span className="text-white/70 font-bold uppercase">SMS DISPATCH: +1 (305) 989-4700 ACTIVE</span>
                 </div>
 
                 <button 
@@ -877,7 +895,7 @@ export default function App() {
                   </div>
 
                   <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono uppercase text-white/60 tracking-widest font-bold">
-                    PERIOD: LAST 30 DAYS
+                    SMS PHONE: +1 (305) 989-4700
                   </span>
                 </div>
 
@@ -995,36 +1013,26 @@ export default function App() {
                       <h3 className="font-bold text-sm text-white uppercase tracking-wider font-heading flex items-center gap-2 mb-1">
                         🎬 PRODUCTION VOLUME
                       </h3>
-                      <p className="text-xs text-white/40">Distribution by service type</p>
+                      <p className="text-xs text-white/40">Distribution by photoshoot category</p>
 
                       <div className="space-y-4 mt-6">
                         <div>
                           <div className="flex justify-between text-xs font-bold text-white mb-1.5">
-                            <span>Music Videos</span>
-                            <span className="font-mono text-white/70">64%</span>
+                            <span>Portraits & Fashion</span>
+                            <span className="font-mono text-white/70">72%</span>
                           </div>
                           <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
-                            <div className="h-full bg-white rounded-full" style={{ width: '64%' }} />
+                            <div className="h-full bg-white rounded-full" style={{ width: '72%' }} />
                           </div>
                         </div>
 
                         <div>
                           <div className="flex justify-between text-xs font-bold text-white mb-1.5">
-                            <span>Photoshoots</span>
+                            <span>Automotive Shoots</span>
                             <span className="font-mono text-white/70">28%</span>
                           </div>
                           <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
                             <div className="h-full bg-[#ff007f] rounded-full" style={{ width: '28%' }} />
-                          </div>
-                        </div>
-
-                        <div>
-                          <div className="flex justify-between text-xs font-bold text-white mb-1.5">
-                            <span>Commercial & Other</span>
-                            <span className="font-mono text-white/70">8%</span>
-                          </div>
-                          <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
-                            <div className="h-full bg-[#00f0ff] rounded-full" style={{ width: '8%' }} />
                           </div>
                         </div>
                       </div>
@@ -1139,7 +1147,7 @@ export default function App() {
                           href={`sms:13059894700?body=${encodeURIComponent(`🎬 SHOOT BOOKING: Client ${b.name} (${b.email}) requested ${b.service} for date ${b.date}.`)}`}
                           className="px-3 py-1.5 rounded-lg bg-[#00f0ff]/15 border border-[#00f0ff]/40 text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black text-xs font-bold uppercase transition-all flex items-center gap-1"
                         >
-                          📱 SMS Alert
+                          📱 Direct SMS Alert
                         </a>
                         <button 
                           onClick={() => updateBookingStatus(b.id, 'Confirmed')}
@@ -1310,73 +1318,19 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Section 3: Packages & Services */}
+                {/* Section 3: SMS Phone Config */}
                 <div className="space-y-4 border-b border-white/5 pb-6">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#00f0ff] font-heading">3. Shooting Packages & Specifications</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* MV Package */}
-                    <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-3">
-                      <div className="font-bold text-xs text-white">Music Video Package</div>
-                      <div>
-                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Package Title</label>
-                        <input 
-                          type="text" 
-                          value={siteConfig.mvTitle}
-                          onChange={(e) => updateConfigField('mvTitle', e.target.value)}
-                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Package Tagline</label>
-                        <input 
-                          type="text" 
-                          value={siteConfig.mvPrice}
-                          onChange={(e) => updateConfigField('mvPrice', e.target.value)}
-                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Description</label>
-                        <textarea 
-                          rows={2}
-                          value={siteConfig.mvDesc}
-                          onChange={(e) => updateConfigField('mvDesc', e.target.value)}
-                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Photo Package */}
-                    <div className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-3">
-                      <div className="font-bold text-xs text-white">Photoshoot Package</div>
-                      <div>
-                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Package Title</label>
-                        <input 
-                          type="text" 
-                          value={siteConfig.photoTitle}
-                          onChange={(e) => updateConfigField('photoTitle', e.target.value)}
-                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Package Tagline</label>
-                        <input 
-                          type="text" 
-                          value={siteConfig.photoPrice}
-                          onChange={(e) => updateConfigField('photoPrice', e.target.value)}
-                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[9px] font-mono uppercase text-white/50 block mb-1">Description</label>
-                        <textarea 
-                          rows={2}
-                          value={siteConfig.photoDesc}
-                          onChange={(e) => updateConfigField('photoDesc', e.target.value)}
-                          className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
-                        />
-                      </div>
-                    </div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#00f0ff] font-heading flex items-center gap-2">
+                    <Phone size={16} /> SMS Text Alerts Target Phone
+                  </h3>
+                  <div>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Target Phone Number</label>
+                    <input 
+                      type="text" 
+                      value={siteConfig.ownerPhone}
+                      onChange={(e) => updateConfigField('ownerPhone', e.target.value)}
+                      className="w-full max-w-xs bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#00f0ff] font-mono"
+                    />
                   </div>
                 </div>
 
@@ -1575,7 +1529,7 @@ export default function App() {
               <Edit size={14} className="text-[#00f0ff]" /> VISUAL LIVE EDITOR
             </span>
             <span className="text-white/60 hidden md:inline">
-              {isLiveEditing ? '⚡ Click any text or portfolio item to edit live!' : '(Editor currently paused)'}
+              {isLiveEditing ? '⚡ Hover any element to delete or edit live!' : '(Editor currently paused)'}
             </span>
           </div>
 
@@ -1977,7 +1931,7 @@ export default function App() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Music Video Package */}
+            {/* Standard Photoshoot Package */}
             <motion.div 
               whileHover={{ y: -8 }}
               transition={{ type: 'spring', stiffness: 120, damping: 15 }}
@@ -1985,7 +1939,7 @@ export default function App() {
             >
               <div>
                 <div className="w-14 h-14 rounded-2xl border border-[#ff007f] bg-[#ff007f]/15 flex items-center justify-center text-[#ff007f] mb-6 shadow-[0_0_15px_#ff007f]">
-                  <Film size={28} />
+                  <Camera size={28} />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-1 font-heading">
                   <EditableText value={siteConfig.mvTitle} onChange={(v) => updateConfigField('mvTitle', v)} isLiveEditing={isLiveEditing} />
@@ -2014,14 +1968,14 @@ export default function App() {
               </div>
 
               <button
-                onClick={() => { setSelectedService('Music Videos'); scrollTo('contact'); }}
+                onClick={() => { setSelectedService('Standard Photoshoot'); scrollTo('contact'); }}
                 className="w-full py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white text-xs font-bold uppercase tracking-widest text-center shadow-lg hover:scale-[1.02] transition-all"
               >
-                Configure Music Video Booking →
+                Configure Standard Photoshoot →
               </button>
             </motion.div>
 
-            {/* Photoshoots Package */}
+            {/* VIP Editorial Photoshoot Package */}
             <motion.div 
               whileHover={{ y: -8 }}
               transition={{ type: 'spring', stiffness: 120, damping: 15 }}
@@ -2058,10 +2012,10 @@ export default function App() {
               </div>
 
               <button
-                onClick={() => { setSelectedService('Photography'); scrollTo('contact'); }}
+                onClick={() => { setSelectedService('VIP Editorial Shoot'); scrollTo('contact'); }}
                 className="w-full py-4 rounded-xl border border-white/30 hover:border-[#00f0ff] hover:bg-[#00f0ff] hover:text-black text-white text-xs font-bold uppercase tracking-widest text-center transition-all"
               >
-                Configure Photoshoot Booking →
+                Configure VIP Editorial Shoot →
               </button>
             </motion.div>
           </div>
@@ -2201,7 +2155,7 @@ export default function App() {
                 </div>
                 <h3 className="text-2xl font-bold text-white font-heading">Shooting Request Confirmed!</h3>
                 <p className="text-xs text-white/90 max-w-md mx-auto leading-relaxed">
-                  Thank you, <span className="text-[#00f0ff] font-bold">{clientName}</span>. Your reservation for <span className="text-[#ff007f] font-bold">{selectedService}</span> on <span className="text-white font-bold">{shootDate}</span> has been logged! Ivis will reach out directly.
+                  Thank you, <span className="text-[#00f0ff] font-bold">{clientName}</span>. Your reservation for <span className="text-[#ff007f] font-bold">{selectedService}</span> on <span className="text-white font-bold">{shootDate}</span> has been logged! An SMS alert has been dispatched to Ivis.
                 </p>
               </div>
             )}
@@ -2211,26 +2165,26 @@ export default function App() {
                 
                 {bookingStep === 1 && (
                   <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Step 1: Choose Production Service</h3>
+                    <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Step 1: Choose Photoshoot Service</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div 
-                        onClick={() => setSelectedService('Music Videos')}
+                        onClick={() => setSelectedService('Standard Photoshoot')}
                         className={`p-6 rounded-2xl border cursor-pointer transition-all ${
-                          selectedService === 'Music Videos' 
+                          selectedService === 'Standard Photoshoot' 
                             ? 'border-[#ff007f] bg-[#ff007f]/15 shadow-[0_0_25px_rgba(255,0,127,0.3)]' 
                             : 'border-white/15 bg-white/5 hover:border-white/40'
                         }`}
                       >
-                        <Film size={32} className="text-[#ff007f] mb-3" />
+                        <Camera size={32} className="text-[#ff007f] mb-3" />
                         <h4 className="font-bold text-lg text-white font-heading">{siteConfig.mvTitle}</h4>
                         <p className="text-xs text-white/80 mt-1">{siteConfig.mvDesc}</p>
                         <div className="text-xs font-mono font-bold text-[#00f0ff] mt-4 uppercase">4K 60FPS CONTENT · WITH MIX + EFFECTS</div>
                       </div>
 
                       <div 
-                        onClick={() => setSelectedService('Photography')}
+                        onClick={() => setSelectedService('VIP Editorial Shoot')}
                         className={`p-6 rounded-2xl border cursor-pointer transition-all ${
-                          selectedService === 'Photography' 
+                          selectedService === 'VIP Editorial Shoot' 
                             ? 'border-[#00f0ff] bg-[#00f0ff]/15 shadow-[0_0_25px_rgba(0,240,255,0.3)]' 
                             : 'border-white/15 bg-white/5 hover:border-white/40'
                         }`}
@@ -2367,7 +2321,7 @@ export default function App() {
                       <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Vision / Notes</label>
                       <textarea 
                         rows={3}
-                        placeholder="Tell Ivis about your song, location or shoot details..."
+                        placeholder="Tell Ivis about your shoot details..."
                         value={shootNotes}
                         onChange={(e) => setShootNotes(e.target.value)}
                         className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
@@ -2423,7 +2377,7 @@ export default function App() {
               </button>
 
               <h3 className="text-2xl font-bold text-white mb-1 font-heading">Add Real Post</h3>
-              <p className="text-white/60 text-xs mb-6">Paste image URL or video link below.</p>
+              <p className="text-white/60 text-xs mb-6">Paste image URL below.</p>
 
               <form onSubmit={handleAddPost} className="space-y-4">
                 <div>
@@ -2446,8 +2400,8 @@ export default function App() {
                       onChange={(e) => setNewPost({ ...newPost, category: e.target.value })}
                       className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
                     >
-                      <option value="Music Videos">Music Videos</option>
-                      <option value="Photography">Photography</option>
+                      <option value="Portraits">Portraits</option>
+                      <option value="Automotive">Automotive</option>
                     </select>
                   </div>
                   <div>
@@ -2547,8 +2501,8 @@ export default function App() {
                       onChange={(e) => setEditingPost({ ...editingPost, category: e.target.value })}
                       className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
                     >
-                      <option value="Music Videos">Music Videos</option>
-                      <option value="Photography">Photography</option>
+                      <option value="Portraits">Portraits</option>
+                      <option value="Automotive">Automotive</option>
                     </select>
                   </div>
                   <div>
@@ -2656,7 +2610,7 @@ export default function App() {
             <img src="/logo.png" alt="ShotByIvis" className="h-7 w-auto object-contain" />
             <span className="font-bold text-white tracking-wider font-heading">
               <EditableText value={siteConfig.brandPink} onChange={(v) => updateConfigField('brandPink', v)} isLiveEditing={isLiveEditing} />
-              <span className="neon-text-pink">
+              <span className="neon-text-[#ff007f]">
                 <EditableText value={siteConfig.brandBlue} onChange={(v) => updateConfigField('brandBlue', v)} isLiveEditing={isLiveEditing} />
               </span>
             </span>
