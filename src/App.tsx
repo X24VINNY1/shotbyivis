@@ -274,7 +274,7 @@ const DEFAULT_SITE_CONFIG: SiteConfig = {
   bookingTitle: 'ADVANCED BOOKING WIZARD',
   ownerPhone: '3059894700',
   smsAlertsEnabled: 'true',
-  formspreeEndpoint: 'xovjvqgw',
+  formspreeEndpoint: 'xeeynopq',
 
   footerCopyright: '© 2026 ShotByIvis. All rights reserved. Miami, FL.'
 };
