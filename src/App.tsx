@@ -4,7 +4,8 @@ import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { 
   Camera, Film, Send, Menu, X, ArrowUpRight,
   ChevronRight, ChevronLeft, ChevronDown, Check, Plus, Trash2, ZoomIn,
-  Shield, Lock, LogOut, Users, Calendar, Edit3, LayoutDashboard, DollarSign, ExternalLink
+  Shield, Lock, LogOut, Calendar, ExternalLink,
+  Search, Bell, Sparkles, User, Box, Grid, ShieldCheck, BarChart3, Settings
 } from 'lucide-react';
 
 function InstagramIcon({ size = 20, className = "" }: { size?: number; className?: string }) {
@@ -263,6 +264,19 @@ export default function App() {
           notes: 'Shooting music video at South Beach rooftop location.',
           status: 'Confirmed',
           timestamp: '10:30 AM'
+        },
+        {
+          id: 'bk_sample2',
+          name: 'Marcus Vance',
+          email: 'marcus@visuals.com',
+          service: 'Photoshoot Session',
+          basePrice: 450,
+          addOns: ['Studio Location Booking'],
+          totalPrice: 650,
+          date: '2026-08-20',
+          notes: 'Studio portrait shoot in Miami.',
+          status: 'Confirmed',
+          timestamp: '02:15 PM'
         }
       ];
     } catch {
@@ -495,283 +509,431 @@ export default function App() {
     setMobileMenuOpen(false);
   };
 
-  // ===== ADVANCED PRO SIDEBAR ADMIN DASHBOARD =====
+  // ===== EXACT VOID RP / ZEN2K ENTERPRISE ADMIN DASHBOARD =====
   if (view === 'admin-panel' && currentStaff) {
     return (
-      <div className="min-h-screen bg-[#07070c] text-white selection:bg-[#ff007f] selection:text-white font-sans flex relative overflow-hidden">
-        <ParticleCanvas />
+      <div className="min-h-screen bg-[#050508] text-white font-sans flex relative overflow-hidden selection:bg-[#ff007f] selection:text-white">
         
-        {/* ===== PERMANENT PRO SIDEBAR ===== */}
-        <aside className="w-64 bg-[#0a0a12]/95 border-r border-white/10 flex flex-col justify-between p-6 z-20 backdrop-blur-2xl shrink-0">
-          <div className="space-y-8">
-            {/* Brand Logo Header */}
-            <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="ShotByIvis Logo" className="h-10 w-auto object-contain" />
-              <div>
-                <div className="font-extrabold text-lg tracking-wider font-heading">
-                  SHOTBY<span className="neon-text-pink">IVIS</span>
-                </div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#00f0ff] bg-[#00f0ff]/10 px-2 py-0.5 rounded-full border border-[#00f0ff]/30">
-                  PRO CMS v2.0
-                </span>
-              </div>
-            </div>
-
-            {/* Staff User Avatar Card */}
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#ff007f] to-[#00f0ff] flex items-center justify-center font-bold text-lg text-white font-heading shadow-md">
-                {currentStaff.name[0]}
-              </div>
-              <div className="overflow-hidden">
-                <div className="font-bold text-sm text-white truncate font-heading">{currentStaff.name}</div>
-                <div className="text-[10px] font-mono uppercase text-white/60 font-bold flex items-center gap-1.5">
-                  <span className={`w-2 h-2 rounded-full ${currentStaff.role === 'owner' ? 'bg-[#ff007f]' : 'bg-[#00f0ff]'}`} />
-                  {currentStaff.role}
+        {/* ===== LEFT ENTERPRISE SIDEBAR ===== */}
+        <aside className="w-64 bg-[#08080c] border-r border-white/10 flex flex-col justify-between p-5 z-20 shrink-0">
+          <div className="space-y-6">
+            
+            {/* Header: Logo & Status */}
+            <div className="flex items-center justify-between pb-4 border-b border-white/10">
+              <div className="flex items-center gap-2.5">
+                <img src="/logo.png" alt="ShotByIvis Logo" className="h-8 w-auto object-contain" />
+                <div>
+                  <div className="font-extrabold text-sm tracking-wider font-heading uppercase">
+                    SHOTBY<span className="neon-text-pink">IVIS</span>
+                  </div>
+                  <div className="text-[9px] font-mono text-white/50">v4.8 PRO · SECURED</div>
                 </div>
               </div>
+              <button className="p-1.5 rounded-lg border border-white/10 text-white/40 hover:text-white">
+                <ChevronLeft size={14} />
+              </button>
             </div>
 
-            {/* Sidebar Navigation */}
-            <nav className="space-y-2">
+            {/* Navigation Tabs (Zen2K Pill Style) */}
+            <nav className="space-y-1.5 text-xs font-bold uppercase tracking-wider">
               <button
                 onClick={() => setAdminTab('overview')}
-                className={`w-full px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-all ${
+                className={`w-full py-2.5 px-4 rounded-full flex items-center justify-between transition-all ${
                   adminTab === 'overview'
-                    ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg'
-                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                    ? 'bg-white text-black font-extrabold shadow-md'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <span className="flex items-center gap-2.5"><LayoutDashboard size={16} /> Overview</span>
+                <span className="flex items-center gap-2.5"><BarChart3 size={15} /> Analytics & Overview</span>
+                {adminTab === 'overview' && <span className="w-2 h-2 rounded-full bg-black" />}
               </button>
 
               <button
                 onClick={() => setAdminTab('bookings')}
-                className={`w-full px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-all ${
+                className={`w-full py-2.5 px-4 rounded-full flex items-center justify-between transition-all ${
                   adminTab === 'bookings'
-                    ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg'
-                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                    ? 'bg-white text-black font-extrabold shadow-md'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <span className="flex items-center gap-2.5"><Calendar size={16} /> Shoot Bookings</span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] bg-white/10 border border-white/15 font-mono">{bookings.length}</span>
+                <span className="flex items-center gap-2.5"><Calendar size={15} /> Shoot Inquiries</span>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${adminTab === 'bookings' ? 'bg-black text-white' : 'bg-white/10 text-white/80'}`}>{bookings.length}</span>
               </button>
 
               <button
                 onClick={() => setAdminTab('portfolio')}
-                className={`w-full px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-all ${
+                className={`w-full py-2.5 px-4 rounded-full flex items-center justify-between transition-all ${
                   adminTab === 'portfolio'
-                    ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg'
-                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                    ? 'bg-white text-black font-extrabold shadow-md'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <span className="flex items-center gap-2.5"><Camera size={16} /> Portfolio</span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] bg-white/10 border border-white/15 font-mono">{posts.length}</span>
+                <span className="flex items-center gap-2.5"><Camera size={15} /> Product Catalog</span>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${adminTab === 'portfolio' ? 'bg-black text-white' : 'bg-white/10 text-white/80'}`}>{posts.length}</span>
               </button>
 
               <button
                 onClick={() => setAdminTab('cms')}
-                className={`w-full px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-all ${
+                className={`w-full py-2.5 px-4 rounded-full flex items-center justify-between transition-all ${
                   adminTab === 'cms'
-                    ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg'
-                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                    ? 'bg-white text-black font-extrabold shadow-md'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <span className="flex items-center gap-2.5"><Edit3 size={16} /> Edit Site Content</span>
+                <span className="flex items-center gap-2.5"><Settings size={15} /> System Configuration</span>
               </button>
 
               {currentStaff.role === 'owner' && (
                 <button
                   onClick={() => setAdminTab('staff')}
-                  className={`w-full px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-all ${
+                  className={`w-full py-2.5 px-4 rounded-full flex items-center justify-between transition-all ${
                     adminTab === 'staff'
-                      ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg'
-                      : 'text-white/70 hover:text-white hover:bg-white/5'
+                      ? 'bg-white text-black font-extrabold shadow-md'
+                      : 'text-white/60 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <span className="flex items-center gap-2.5"><Users size={16} /> Staff & Team</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] bg-white/10 border border-white/15 font-mono">{staffAccounts.length}</span>
+                  <span className="flex items-center gap-2.5"><ShieldCheck size={15} /> Security & Audit Trail</span>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${adminTab === 'staff' ? 'bg-black text-white' : 'bg-white/10 text-white/80'}`}>{staffAccounts.length}</span>
                 </button>
               )}
             </nav>
           </div>
 
-          {/* Bottom Controls */}
-          <div className="space-y-3 pt-6 border-t border-white/10">
+          {/* Bottom Actions */}
+          <div className="space-y-2.5 pt-4 border-t border-white/10">
             <button 
               onClick={() => setView('site')} 
-              className="w-full py-3 rounded-xl border border-white/20 text-white/80 hover:text-white hover:bg-white/5 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-xl border border-white/20 text-white/80 hover:text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2"
             >
-              View Live Site <ExternalLink size={14} />
+              View Live Website <ExternalLink size={14} />
             </button>
             <button 
               onClick={handleLogout} 
-              className="w-full py-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-xl bg-red-500/20 border border-red-500/40 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2"
             >
               <LogOut size={14} /> Log Out
             </button>
           </div>
         </aside>
 
-        {/* ===== MAIN DASHBOARD CONTENT AREA ===== */}
-        <main className="flex-1 overflow-y-auto p-8 lg:p-12 relative z-10">
+        {/* ===== RIGHT ENTERPRISE MAIN AREA ===== */}
+        <main className="flex-1 overflow-y-auto bg-[#040406] p-8 flex flex-col justify-between">
           
-          {/* Header Banner */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-10 pb-6 border-b border-white/10">
-            <div>
-              <h1 className="text-3xl font-black uppercase tracking-tight font-heading">
-                ADMIN <span className="neon-text-pink">CONTROL CENTER</span>
-              </h1>
-              <p className="text-xs text-white/70 mt-1">Manage client shoot inquiries, site content, portfolio photos, and staff credentials.</p>
-            </div>
-
-            <button
-              onClick={() => setAddModalOpen(true)}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white text-xs font-bold uppercase tracking-wider shadow-lg hover:scale-105 transition-all flex items-center gap-2"
-            >
-              <Plus size={16} /> Add Real Post
-            </button>
-          </div>
-
-          {/* TAB 0: DASHBOARD OVERVIEW METRICS */}
-          {adminTab === 'overview' && (
-            <div className="space-y-10">
-              {/* Metric Cards Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="p-6 rounded-3xl glass-card border border-[#ff007f]/40 space-y-2 shadow-[0_0_25px_rgba(255,0,127,0.15)]">
-                  <div className="text-xs font-mono uppercase text-white/70 font-bold flex items-center justify-between">
-                    <span>Shoot Inquiries</span>
-                    <Calendar size={18} className="text-[#ff007f]" />
-                  </div>
-                  <div className="text-4xl font-black text-white font-heading">{bookings.length}</div>
-                  <div className="text-[10px] font-mono text-[#00f0ff]">{bookings.filter(b => b.status === 'Confirmed').length} Confirmed Shoots</div>
-                </div>
-
-                <div className="p-6 rounded-3xl glass-card border border-[#00f0ff]/40 space-y-2 shadow-[0_0_25px_rgba(0,240,255,0.15)]">
-                  <div className="text-xs font-mono uppercase text-white/70 font-bold flex items-center justify-between">
-                    <span>Pipeline Value</span>
-                    <DollarSign size={18} className="text-[#00f0ff]" />
-                  </div>
-                  <div className="text-4xl font-black text-white font-heading">${calculateTotalRevenue()}</div>
-                  <div className="text-[10px] font-mono text-white/60">Estimated Total Revenue</div>
-                </div>
-
-                <div className="p-6 rounded-3xl glass-card border border-white/15 space-y-2">
-                  <div className="text-xs font-mono uppercase text-white/70 font-bold flex items-center justify-between">
-                    <span>Portfolio Posts</span>
-                    <Camera size={18} className="text-white/80" />
-                  </div>
-                  <div className="text-4xl font-black text-white font-heading">{posts.length}</div>
-                  <div className="text-[10px] font-mono text-[#ff007f]">Real Instagram Works</div>
-                </div>
-
-                <div className="p-6 rounded-3xl glass-card border border-white/15 space-y-2">
-                  <div className="text-xs font-mono uppercase text-white/70 font-bold flex items-center justify-between">
-                    <span>Staff Accounts</span>
-                    <Users size={18} className="text-white/80" />
-                  </div>
-                  <div className="text-4xl font-black text-white font-heading">{staffAccounts.length}</div>
-                  <div className="text-[10px] font-mono text-white/60">Owners & Team Members</div>
-                </div>
+          <div>
+            {/* Top Enterprise Command Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+              
+              {/* Command Search */}
+              <div className="flex items-center gap-3 bg-[#0a0a0e] border border-white/10 px-4 py-2 rounded-full w-full max-w-md">
+                <Search size={16} className="text-white/40" />
+                <input 
+                  type="text" 
+                  placeholder="Search commands, shoot orders..."
+                  className="bg-transparent text-xs text-white placeholder-white/40 focus:outline-none w-full"
+                />
+                <span className="text-[10px] font-mono bg-white/10 px-2 py-0.5 rounded text-white/60">Ctrl + K</span>
               </div>
 
-              {/* Recent Shoot Inquiries Quick Table */}
-              <div className="glass-card p-8 rounded-3xl border border-white/15 space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Recent Shoot Inquiries</h3>
-                  <button onClick={() => setAdminTab('bookings')} className="text-xs text-[#00f0ff] hover:underline font-bold">
-                    View All ({bookings.length}) →
+              {/* Status & Quick Action */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 bg-[#0a0a0e] border border-white/10 px-3 py-1.5 rounded-full text-[10px] font-mono">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-white/70 font-bold uppercase">SHA-256 API SERVER ACTIVE</span>
+                </div>
+
+                <button 
+                  onClick={() => setAddModalOpen(true)}
+                  className="px-5 py-2 rounded-full bg-white text-black font-extrabold text-xs uppercase tracking-wider hover:bg-white/90 transition-all flex items-center gap-1.5 shadow-md"
+                >
+                  + Quick Action <ChevronDown size={14} />
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <button className="p-2 rounded-full border border-white/10 text-white/60 hover:text-white">
+                    <Bell size={16} />
+                  </button>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#ff007f] to-[#00f0ff] flex items-center justify-center font-bold text-xs text-white font-heading">
+                    {currentStaff.name[0]}
+                  </div>
+                  <button onClick={handleLogout} className="p-2 rounded-full border border-white/10 text-white/60 hover:text-red-400">
+                    <LogOut size={16} />
                   </button>
                 </div>
-
-                {bookings.length === 0 ? (
-                  <p className="text-xs text-white/60">No bookings logged yet.</p>
-                ) : (
-                  <div className="space-y-3">
-                    {bookings.slice(0, 4).map((b) => (
-                      <div key={b.id} className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between gap-4">
-                        <div>
-                          <div className="font-bold text-sm text-white font-heading">{b.name}</div>
-                          <div className="text-xs text-white/60 font-mono">{b.service} | Date: {b.date}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-mono font-bold text-sm text-[#00f0ff]">${b.totalPrice || b.basePrice}</div>
-                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase ${
-                            b.status === 'Confirmed' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                          }`}>
-                            {b.status}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
-          )}
 
-          {/* TAB 1: SHOOT BOOKINGS */}
-          {adminTab === 'bookings' && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-black uppercase tracking-tight font-heading">Client Shoot Inquiries</h2>
-                <span className="text-xs font-mono text-white/70 font-bold">{bookings.length} Total Requests</span>
-              </div>
+            {/* ===== TAB 0: EXECUTIVE ANALYTICS & OVERVIEW ===== */}
+            {adminTab === 'overview' && (
+              <div className="space-y-8">
+                
+                {/* Header Title & Period Filter */}
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h1 className="text-2xl font-black uppercase tracking-tight font-heading flex items-center gap-2">
+                      EXECUTIVE ANALYTICS & OVERVIEW <Sparkles size={20} className="text-[#00f0ff]" />
+                    </h1>
+                    <p className="text-xs text-white/50 mt-1">Real-time telemetry, transaction metrics, and revenue breakdown</p>
+                  </div>
 
-              {bookings.length === 0 ? (
-                <div className="p-12 rounded-3xl glass-card text-center text-white/60 text-sm">
-                  No shoot booking requests yet.
+                  <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono uppercase text-white/60 tracking-widest font-bold">
+                    PERIOD: LAST 30 DAYS
+                  </span>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-4">
+
+                {/* 4 Metric Cards Grid (Matching Zen2K layout) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  
+                  {/* Card 1: Gross Revenue */}
+                  <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 space-y-4">
+                    <div className="flex items-center justify-between text-xs font-mono uppercase text-white/50 font-bold">
+                      <span>TOTAL GROSS REVENUE</span>
+                      <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/60">
+                        <BarChart3 size={16} />
+                      </div>
+                    </div>
+                    <div className="text-3xl font-black text-white font-heading">${calculateTotalRevenue()}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold flex items-center gap-1">
+                        ↗ +18.4%
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Card 2: Completed Orders */}
+                  <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 space-y-4">
+                    <div className="flex items-center justify-between text-xs font-mono uppercase text-white/50 font-bold">
+                      <span>COMPLETED SHOOTS</span>
+                      <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/60">
+                        <Box size={16} />
+                      </div>
+                    </div>
+                    <div className="text-3xl font-black text-white font-heading">{bookings.length}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold flex items-center gap-1">
+                        ↗ +12.1%
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Card 3: Registered Clients */}
+                  <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 space-y-4">
+                    <div className="flex items-center justify-between text-xs font-mono uppercase text-white/50 font-bold">
+                      <span>REGISTERED CLIENTS</span>
+                      <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/60">
+                        <User size={16} />
+                      </div>
+                    </div>
+                    <div className="text-3xl font-black text-white font-heading">48</div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold flex items-center gap-1">
+                        ↗ +8.5%
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Card 4: Active Products */}
+                  <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 space-y-4">
+                    <div className="flex items-center justify-between text-xs font-mono uppercase text-white/50 font-bold">
+                      <span>ACTIVE PORTFOLIO WORKS</span>
+                      <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center text-white/60">
+                        <Grid size={16} />
+                      </div>
+                    </div>
+                    <div className="text-3xl font-black text-white font-heading">{posts.length}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold">
+                        ~ Optimal
+                      </span>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Middle Charts & Distribution Split */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  
+                  {/* Left (2 Cols): Revenue Trajectory SVG Graph */}
+                  <div className="lg:col-span-2 p-6 rounded-2xl bg-[#09090e] border border-white/10 flex flex-col justify-between space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-bold text-sm text-white uppercase tracking-wider font-heading flex items-center gap-2">
+                          📈 REVENUE TRAJECTORY ($ USD)
+                        </h3>
+                        <p className="text-xs text-white/40">30-day cumulative revenue growth</p>
+                      </div>
+                      <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[9px] font-mono uppercase text-white/60 font-bold">
+                        PEAK: $1,450/DAY
+                      </span>
+                    </div>
+
+                    {/* Interactive Curve SVG Graph */}
+                    <div className="relative w-full h-48 flex items-end">
+                      <svg className="w-full h-full overflow-visible" viewBox="0 0 500 150" fill="none">
+                        <path 
+                          d="M 0 110 Q 120 130 250 80 T 500 20 L 500 150 L 0 150 Z" 
+                          fill="url(#chartGradient)" 
+                        />
+                        <path 
+                          d="M 0 110 Q 120 130 250 80 T 500 20" 
+                          stroke="white" 
+                          strokeWidth="3" 
+                          fill="none" 
+                        />
+                        <circle cx="250" cy="80" r="5" fill="white" />
+                        <circle cx="500" cy="20" r="5" fill="white" />
+                        <defs>
+                          <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.2" />
+                            <stop offset="100%" stopColor="#000000" stopOpacity="0.8" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                    </div>
+
+                    <div className="flex justify-between text-[10px] font-mono text-white/40 uppercase border-t border-white/5 pt-3">
+                      <span>WEEK 1</span>
+                      <span>WEEK 2</span>
+                      <span>WEEK 3</span>
+                      <span>WEEK 4</span>
+                    </div>
+                  </div>
+
+                  {/* Right (1 Col): Production Volume Distribution */}
+                  <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 flex flex-col justify-between space-y-6">
+                    <div>
+                      <h3 className="font-bold text-sm text-white uppercase tracking-wider font-heading flex items-center gap-2 mb-1">
+                        🎬 PRODUCTION VOLUME
+                      </h3>
+                      <p className="text-xs text-white/40">Distribution by service type</p>
+
+                      <div className="space-y-4 mt-6">
+                        <div>
+                          <div className="flex justify-between text-xs font-bold text-white mb-1.5">
+                            <span>Music Videos</span>
+                            <span className="font-mono text-white/70">64%</span>
+                          </div>
+                          <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+                            <div className="h-full bg-white rounded-full" style={{ width: '64%' }} />
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className="flex justify-between text-xs font-bold text-white mb-1.5">
+                            <span>Photoshoots</span>
+                            <span className="font-mono text-white/70">28%</span>
+                          </div>
+                          <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+                            <div className="h-full bg-[#ff007f] rounded-full" style={{ width: '28%' }} />
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className="flex justify-between text-xs font-bold text-white mb-1.5">
+                            <span>Commercial & Other</span>
+                            <span className="font-mono text-white/70">8%</span>
+                          </div>
+                          <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+                            <div className="h-full bg-[#00f0ff] rounded-full" style={{ width: '8%' }} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between text-xs">
+                      <span className="text-white/60">Fulfillment Success Rate</span>
+                      <span className="font-mono font-extrabold text-emerald-400">99.98%</span>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Bottom Recent Transactions Table */}
+                <div className="p-6 rounded-2xl bg-[#09090e] border border-white/10 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-sm text-white uppercase tracking-wider font-heading flex items-center gap-2">
+                      🔄 RECENT TRANSACTIONS
+                    </h3>
+                    <span className="text-[10px] font-mono text-white/40 uppercase">Showing latest shoot orders</span>
+                  </div>
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs text-white/70">
+                      <thead className="text-[10px] font-mono uppercase text-white/40 border-b border-white/10">
+                        <tr>
+                          <th className="py-3 px-4">ORDER ID</th>
+                          <th className="py-3 px-4">CLIENT</th>
+                          <th className="py-3 px-4">DATE</th>
+                          <th className="py-3 px-4">STATUS</th>
+                          <th className="py-3 px-4 text-right">AMOUNT</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {bookings.map((b) => (
+                          <tr key={b.id} className="hover:bg-white/5 transition-colors">
+                            <td className="py-3 px-4 font-mono font-bold text-white">#{b.id}</td>
+                            <td className="py-3 px-4 font-bold text-white">{b.name}</td>
+                            <td className="py-3 px-4 font-mono">{b.date}</td>
+                            <td className="py-3 px-4">
+                              <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase ${
+                                b.status === 'Confirmed' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                              }`}>
+                                {b.status}
+                              </span>
+                            </td>
+                            <td className="py-3 px-4 text-right font-mono font-bold text-white">${b.totalPrice || b.basePrice}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+            {/* TAB 1: SHOOT BOOKINGS */}
+            {adminTab === 'bookings' && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-black uppercase tracking-tight font-heading">Shoot Order Management</h2>
+                  <span className="text-xs font-mono text-white/50">{bookings.length} Total Requests</span>
+                </div>
+
+                <div className="grid grid-cols-1 gap-3">
                   {bookings.map((b) => (
-                    <div key={b.id} className="p-6 rounded-3xl glass-card border border-white/15 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl">
+                    <div key={b.id} className="p-6 rounded-2xl bg-[#09090e] border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
-                          <span className="font-bold text-lg text-white font-heading">{b.name}</span>
-                          <span className={`px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase ${
-                            b.status === 'Confirmed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
-                            b.status === 'Completed' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-                            b.status === 'Declined' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                            'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                          <span className="font-bold text-base text-white font-heading">{b.name}</span>
+                          <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase ${
+                            b.status === 'Confirmed' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
                           }`}>
                             {b.status}
                           </span>
                         </div>
-
-                        <div className="text-xs text-white/80 font-mono">
-                          Service: <span className="text-[#00f0ff] font-bold">{b.service}</span> | Estimated Total: <span className="text-[#ff007f] font-bold">${b.totalPrice || b.basePrice}</span> | Date: <span className="text-white font-bold">{b.date}</span>
+                        <div className="text-xs text-white/60 font-mono">
+                          Service: <span className="text-white font-bold">{b.service}</span> | Date: <span className="text-white">{b.date}</span>
                         </div>
-
-                        {b.addOns && b.addOns.length > 0 && (
-                          <div className="flex flex-wrap gap-1.5 pt-1">
-                            {b.addOns.map(addon => (
-                              <span key={addon} className="px-2.5 py-0.5 rounded-full bg-white/10 border border-white/15 text-[10px] font-mono text-white/90">
-                                + {addon}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        <div className="text-xs text-white/70">Contact: <span className="text-white font-bold">{b.email}</span></div>
-                        {b.notes && <div className="text-xs text-white/90 bg-white/10 p-3 rounded-lg border border-white/10">"{b.notes}"</div>}
+                        <div className="text-xs text-white/50">Contact: {b.email}</div>
+                        {b.notes && <div className="text-xs text-white/80 bg-white/5 p-3 rounded-lg border border-white/5">"{b.notes}"</div>}
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2">
                         <button 
                           onClick={() => updateBookingStatus(b.id, 'Confirmed')}
-                          className="px-4 py-2 rounded-xl bg-green-500/20 text-green-400 hover:bg-green-500 hover:text-white text-xs font-bold uppercase transition-all"
+                          className="px-3.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white text-xs font-bold uppercase transition-all"
                         >
                           Confirm
                         </button>
                         <button 
                           onClick={() => updateBookingStatus(b.id, 'Completed')}
-                          className="px-4 py-2 rounded-xl bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white text-xs font-bold uppercase transition-all"
+                          className="px-3.5 py-1.5 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white text-xs font-bold uppercase transition-all"
                         >
                           Completed
                         </button>
                         <button 
                           onClick={() => updateBookingStatus(b.id, 'Declined')}
-                          className="px-4 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase transition-all"
+                          className="px-3.5 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase transition-all"
                         >
                           Decline
                         </button>
@@ -779,229 +941,233 @@ export default function App() {
                     </div>
                   ))}
                 </div>
-              )}
-            </div>
-          )}
-
-          {/* TAB 2: PORTFOLIO MANAGEMENT */}
-          {adminTab === 'portfolio' && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-black uppercase tracking-tight font-heading">Portfolio & Real Works</h2>
-                <button
-                  onClick={() => setAddModalOpen(true)}
-                  className="px-5 py-2.5 rounded-full bg-[#ff007f] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:scale-105 transition-all shadow-lg"
-                >
-                  <Plus size={16} /> Add Real Post
-                </button>
               </div>
+            )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {posts.map((item) => (
-                  <div key={item.id} className="p-4 rounded-3xl glass-card border border-white/15 flex flex-col justify-between gap-4">
-                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-black">
-                      <img src={item.url} alt={item.title} className="w-full h-full object-cover" />
-                      <span className="absolute top-3 left-3 px-3 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase bg-black/80 text-[#00f0ff] border border-white/20">
-                        {item.category}
-                      </span>
-                    </div>
-
-                    <div>
-                      <h3 className="font-bold text-sm text-white font-heading">{item.title}</h3>
-                      <p className="text-xs text-white/70 mt-0.5 truncate">{item.description}</p>
-                    </div>
-
-                    <button
-                      onClick={(e) => handleDeletePost(item.id, e)}
-                      className="w-full py-2.5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
-                    >
-                      <Trash2 size={14} /> Remove Post
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* TAB 3: FULL CMS SITE EDITING */}
-          {adminTab === 'cms' && (
-            <form onSubmit={handleSaveCMS} className="space-y-6 glass-card p-8 md:p-10 rounded-3xl border border-white/15 shadow-2xl">
-              <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                <div>
-                  <h2 className="text-2xl font-black uppercase tracking-tight font-heading">Edit Website Content</h2>
-                  <p className="text-xs text-white/70 mt-1">Changes made here update the live website immediately.</p>
-                </div>
-                <button
-                  type="submit"
-                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition-all"
-                >
-                  Save All Changes
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Hero Tagline</label>
-                  <input 
-                    type="text" 
-                    value={siteConfig.heroTagline}
-                    onChange={(e) => setSiteConfig({ ...siteConfig, heroTagline: e.target.value })}
-                    className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-                  />
+            {/* TAB 2: PORTFOLIO MANAGEMENT */}
+            {adminTab === 'portfolio' && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-black uppercase tracking-tight font-heading">Product & Portfolio Catalog</h2>
+                  <button
+                    onClick={() => setAddModalOpen(true)}
+                    className="px-5 py-2 rounded-full bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-white/90 transition-all shadow-md"
+                  >
+                    + Add New Item
+                  </button>
                 </div>
 
-                <div>
-                  <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Hero Subtext</label>
-                  <input 
-                    type="text" 
-                    value={siteConfig.heroSubtext}
-                    onChange={(e) => setSiteConfig({ ...siteConfig, heroSubtext: e.target.value })}
-                    className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Music Video Package Price Tag</label>
-                  <input 
-                    type="text" 
-                    value={siteConfig.musicVideoPrice}
-                    onChange={(e) => setSiteConfig({ ...siteConfig, musicVideoPrice: e.target.value })}
-                    className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Photoshoot Package Price Tag</label>
-                  <input 
-                    type="text" 
-                    value={siteConfig.photoshootPrice}
-                    onChange={(e) => setSiteConfig({ ...siteConfig, photoshootPrice: e.target.value })}
-                    className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">About Section Biography</label>
-                <textarea 
-                  rows={4}
-                  value={siteConfig.aboutBio}
-                  onChange={(e) => setSiteConfig({ ...siteConfig, aboutBio: e.target.value })}
-                  className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-xl hover:scale-[1.01] transition-all"
-              >
-                Save Site Content
-              </button>
-            </form>
-          )}
-
-          {/* TAB 4: STAFF MANAGEMENT */}
-          {adminTab === 'staff' && currentStaff.role === 'owner' && (
-            <div className="space-y-8">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-black uppercase tracking-tight font-heading">Staff & Team Logins</h2>
-                  <p className="text-xs text-white/70 mt-1">Create accounts to give access to staff members or co-owners.</p>
-                </div>
-              </div>
-
-              <form onSubmit={handleCreateStaff} className="p-6 rounded-3xl glass-card border border-white/15 space-y-4">
-                <h3 className="font-bold text-sm text-white uppercase tracking-wider flex items-center gap-2 font-heading">
-                  <Plus size={16} className="text-[#00f0ff]" /> Add New Staff Member
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div>
-                    <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Username</label>
-                    <input 
-                      type="text" 
-                      required 
-                      placeholder="e.g. cameraman1"
-                      value={newStaffUser}
-                      onChange={(e) => setNewStaffUser(e.target.value)}
-                      className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Full Name</label>
-                    <input 
-                      type="text" 
-                      placeholder="Staff Member Name"
-                      value={newStaffName}
-                      onChange={(e) => setNewStaffName(e.target.value)}
-                      className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Password</label>
-                    <input 
-                      type="text" 
-                      required 
-                      placeholder="Set Password"
-                      value={newStaffPass}
-                      onChange={(e) => setNewStaffPass(e.target.value)}
-                      className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Role</label>
-                    <select 
-                      value={newStaffRole}
-                      onChange={(e) => setNewStaffRole(e.target.value as 'owner' | 'staff')}
-                      className="w-full bg-[#14141d] border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
-                    >
-                      <option value="staff">Staff Member</option>
-                      <option value="owner">Full Owner Access</option>
-                    </select>
-                  </div>
-                </div>
-
-                <button 
-                  type="submit"
-                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-md hover:scale-[1.01] transition-all"
-                >
-                  Create Staff Account
-                </button>
-              </form>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {staffAccounts.map((s) => (
-                  <div key={s.id} className="p-5 rounded-2xl glass-card border border-white/15 flex items-center justify-between gap-4">
-                    <div className="space-y-1">
-                      <div className="font-bold text-base text-white flex items-center gap-2 font-heading">
-                        {s.name}
-                        <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase ${
-                          s.role === 'owner' ? 'bg-[#ff007f]/20 text-[#ff007f] border border-[#ff007f]/40' : 'bg-[#00f0ff]/20 text-[#00f0ff] border border-[#00f0ff]/40'
-                        }`}>
-                          {s.role}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {posts.map((item) => (
+                    <div key={item.id} className="p-4 rounded-2xl bg-[#09090e] border border-white/10 flex flex-col justify-between gap-4">
+                      <div className="relative aspect-video rounded-xl overflow-hidden bg-black">
+                        <img src={item.url} alt={item.title} className="w-full h-full object-cover" />
+                        <span className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase bg-black/80 text-[#00f0ff] border border-white/10">
+                          {item.category}
                         </span>
                       </div>
-                      <div className="text-xs text-white/70 font-mono">Username: <span className="text-white font-bold">{s.username}</span></div>
-                      <div className="text-xs text-white/60 font-mono">Password: <span className="text-white/90">{s.pass}</span></div>
-                    </div>
 
-                    {staffAccounts.length > 1 && s.username !== 'ivis' && (
+                      <div>
+                        <h3 className="font-bold text-sm text-white font-heading">{item.title}</h3>
+                        <p className="text-xs text-white/50 mt-0.5 truncate">{item.description}</p>
+                      </div>
+
                       <button
-                        onClick={() => handleDeleteStaff(s.id)}
-                        className="p-2.5 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500 hover:text-white transition-all"
-                        title="Delete account"
+                        onClick={(e) => handleDeletePost(item.id, e)}
+                        className="w-full py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={14} /> Remove Item
                       </button>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
+            {/* TAB 3: SYSTEM CONFIGURATION (CMS) */}
+            {adminTab === 'cms' && (
+              <form onSubmit={handleSaveCMS} className="space-y-6 bg-[#09090e] p-8 rounded-2xl border border-white/10">
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <div>
+                    <h2 className="text-xl font-black uppercase tracking-tight font-heading">System Configuration</h2>
+                    <p className="text-xs text-white/40 mt-1">Configure global site text, pricing rates & tags.</p>
+                  </div>
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 rounded-full bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-white/90 transition-all shadow-md"
+                  >
+                    Save Configuration
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Hero Tagline</label>
+                    <input 
+                      type="text" 
+                      value={siteConfig.heroTagline}
+                      onChange={(e) => setSiteConfig({ ...siteConfig, heroTagline: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Hero Subtext</label>
+                    <input 
+                      type="text" 
+                      value={siteConfig.heroSubtext}
+                      onChange={(e) => setSiteConfig({ ...siteConfig, heroSubtext: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Music Video Price Tag</label>
+                    <input 
+                      type="text" 
+                      value={siteConfig.musicVideoPrice}
+                      onChange={(e) => setSiteConfig({ ...siteConfig, musicVideoPrice: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Photoshoot Price Tag</label>
+                    <input 
+                      type="text" 
+                      value={siteConfig.photoshootPrice}
+                      onChange={(e) => setSiteConfig({ ...siteConfig, photoshootPrice: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">About Biography</label>
+                  <textarea 
+                    rows={4}
+                    value={siteConfig.aboutBio}
+                    onChange={(e) => setSiteConfig({ ...siteConfig, aboutBio: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-white"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3.5 rounded-xl bg-white text-black font-extrabold text-xs uppercase tracking-widest hover:bg-white/90 transition-all shadow-md"
+                >
+                  Save Configuration Changes
+                </button>
+              </form>
+            )}
+
+            {/* TAB 4: SECURITY & STAFF LOGINS */}
+            {adminTab === 'staff' && currentStaff.role === 'owner' && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-black uppercase tracking-tight font-heading">Security & Staff Audit Trail</h2>
+                    <p className="text-xs text-white/40 mt-1">Manage team login credentials and access privileges.</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleCreateStaff} className="p-6 rounded-2xl bg-[#09090e] border border-white/10 space-y-4">
+                  <h3 className="font-bold text-xs text-white uppercase tracking-wider flex items-center gap-2 font-heading">
+                    <Plus size={14} /> Create Staff Login Account
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <div>
+                      <label className="text-[10px] font-mono uppercase text-white/50 block mb-1">Username</label>
+                      <input 
+                        type="text" 
+                        required 
+                        placeholder="e.g. cameraman1"
+                        value={newStaffUser}
+                        onChange={(e) => setNewStaffUser(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-mono uppercase text-white/50 block mb-1">Full Name</label>
+                      <input 
+                        type="text" 
+                        placeholder="Staff Name"
+                        value={newStaffName}
+                        onChange={(e) => setNewStaffName(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-mono uppercase text-white/50 block mb-1">Password</label>
+                      <input 
+                        type="text" 
+                        required 
+                        placeholder="Set Password"
+                        value={newStaffPass}
+                        onChange={(e) => setNewStaffPass(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-mono uppercase text-white/50 block mb-1">Role</label>
+                      <select 
+                        value={newStaffRole}
+                        onChange={(e) => setNewStaffRole(e.target.value as 'owner' | 'staff')}
+                        className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-white"
+                      >
+                        <option value="staff">Staff Member</option>
+                        <option value="owner">Full Owner Access</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <button 
+                    type="submit"
+                    className="px-6 py-2.5 rounded-xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-white/90 transition-all"
+                  >
+                    Create Account
+                  </button>
+                </form>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {staffAccounts.map((s) => (
+                    <div key={s.id} className="p-5 rounded-2xl bg-[#09090e] border border-white/10 flex items-center justify-between gap-4">
+                      <div className="space-y-1">
+                        <div className="font-bold text-sm text-white flex items-center gap-2 font-heading">
+                          {s.name}
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase ${
+                            s.role === 'owner' ? 'bg-[#ff007f]/20 text-[#ff007f]' : 'bg-[#00f0ff]/20 text-[#00f0ff]'
+                          }`}>
+                            {s.role}
+                          </span>
+                        </div>
+                        <div className="text-xs text-white/50 font-mono">User: <span className="text-white font-bold">{s.username}</span></div>
+                        <div className="text-xs text-white/40 font-mono">Pass: <span className="text-white/80">{s.pass}</span></div>
+                      </div>
+
+                      {staffAccounts.length > 1 && s.username !== 'ivis' && (
+                        <button
+                          onClick={() => handleDeleteStaff(s.id)}
+                          className="p-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all"
+                          title="Delete account"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+          </div>
+
+          <div className="text-center text-[10px] font-mono text-white/30 uppercase pt-8">
+            SHOTBYIVIS ENTERPRISE ADMIN ENGINE © 2026. ALL RIGHTS RESERVED.
+          </div>
         </main>
       </div>
     );
