@@ -554,6 +554,7 @@ export default function App() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [isSwitchingTab, setIsSwitchingTab] = useState(false);
   const [isSwitchingCategory, setIsSwitchingCategory] = useState(false);
+  const [switchingStepTarget, setSwitchingStepTarget] = useState<number | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -563,8 +564,12 @@ export default function App() {
   }, []);
 
   const changeBookingStep = (targetStep: 1 | 2 | 3) => {
-    if (targetStep === bookingStep) return;
-    setBookingStep(targetStep);
+    if (targetStep === bookingStep || switchingStepTarget !== null) return;
+    setSwitchingStepTarget(targetStep);
+    setTimeout(() => {
+      setBookingStep(targetStep);
+      setSwitchingStepTarget(null);
+    }, 350);
   };
 
   const changeAdminTab = (tab: 'overview' | 'bookings' | 'portfolio' | 'cms' | 'staff') => {
@@ -2767,11 +2772,21 @@ export default function App() {
 
                       <button
                         type="button"
+                        disabled={switchingStepTarget !== null}
                         onClick={() => changeBookingStep(2)}
-                        className="w-full py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                        className="w-full py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-80"
                       >
-                        <span>Next: Choose Production Features</span>
-                        <ChevronRight size={16} />
+                        {switchingStepTarget === 2 ? (
+                          <>
+                            <Loader size={16} className="animate-spin text-white" />
+                            <span className="animate-pulse">LOADING PRODUCTION FEATURES...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Next: Choose Production Features</span>
+                            <ChevronRight size={16} />
+                          </>
+                        )}
                       </button>
                     </motion.div>
                   )}
@@ -2825,18 +2840,29 @@ export default function App() {
                       <div className="flex gap-4">
                         <button
                           type="button"
+                          disabled={switchingStepTarget !== null}
                           onClick={() => changeBookingStep(1)}
-                          className="w-1/3 py-4 rounded-xl border border-white/30 text-white/90 font-bold text-xs uppercase tracking-wider cursor-pointer hover:bg-white/10 transition-all"
+                          className="w-1/3 py-4 rounded-xl border border-white/30 text-white/90 font-bold text-xs uppercase tracking-wider cursor-pointer hover:bg-white/10 transition-all disabled:opacity-50"
                         >
-                          Back
+                          {switchingStepTarget === 1 ? 'Loading...' : 'Back'}
                         </button>
                         <button
                           type="button"
+                          disabled={switchingStepTarget !== null}
                           onClick={() => changeBookingStep(3)}
-                          className="w-2/3 py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01] transition-all"
+                          className="w-2/3 py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01] transition-all disabled:opacity-80"
                         >
-                          <span>Next: Client Details & Date</span>
-                          <ChevronRight size={16} />
+                          {switchingStepTarget === 3 ? (
+                            <>
+                              <Loader size={16} className="animate-spin text-white" />
+                              <span className="animate-pulse">LOADING CLIENT DETAILS...</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>Next: Client Details & Date</span>
+                              <ChevronRight size={16} />
+                            </>
+                          )}
                         </button>
                       </div>
                     </motion.div>
