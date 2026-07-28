@@ -5,7 +5,7 @@ import {
   Camera, Send, Menu, X, ArrowUpRight,
   ChevronRight, ChevronLeft, ChevronDown, Check, Plus, Trash2, ZoomIn,
   Shield, Lock, LogOut, Calendar, Save, Edit, Edit2,
-  Search, Bell, Sparkles, User, Box, Grid, ShieldCheck, BarChart3, Settings, Phone, Loader, Zap
+  Search, Bell, Sparkles, User, Box, Grid, ShieldCheck, BarChart3, Settings, Phone, Loader
 } from 'lucide-react';
 
 function InstagramIcon({ size = 20, className = "" }: { size?: number; className?: string }) {
@@ -2760,50 +2760,7 @@ export default function App() {
         </div>
       </motion.section>
 
-      {/* ===== CDXX-INSPIRED WHY CHOOSE SHOTBYIVIS GRID ===== */}
-      <section className="py-24 px-6 bg-[#040407] border-t border-white/10 relative z-10">
-        <div className="max-w-7xl mx-auto space-y-12">
-          <div className="text-center space-y-3">
-            <span className="text-[11px] font-mono text-[#00f0ff] uppercase tracking-[0.4em] font-bold block">WHY CHOOSE SHOTBYIVIS</span>
-            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight font-heading">BUILT FOR FAST, HIGH-END PRODUCTION</h2>
-            <p className="text-xs text-white/60 max-w-xl mx-auto">Seamless workflow, 4K/60FPS cinema standards, and direct email dispatch alerts.</p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="glass-card p-6 rounded-2xl border border-white/15 hover:border-[#ff007f]/50 transition-all space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-[#ff007f]/15 border border-[#ff007f]/40 flex items-center justify-center text-[#ff007f] shadow-[0_0_15px_rgba(255,0,127,0.3)]">
-                <Camera size={24} />
-              </div>
-              <h3 className="font-bold text-lg text-white font-heading">Cinema 4K/60FPS</h3>
-              <p className="text-xs text-white/70 leading-relaxed">Full cinema grade camera gear, professional lighting, and 6K color grading included in every package.</p>
-            </div>
-
-            <div className="glass-card p-6 rounded-2xl border border-white/15 hover:border-[#00f0ff]/50 transition-all space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-[#00f0ff]/15 border border-[#00f0ff]/40 flex items-center justify-center text-[#00f0ff] shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-                <Zap size={24} />
-              </div>
-              <h3 className="font-bold text-lg text-white font-heading">Fast Delivery</h3>
-              <p className="text-xs text-white/70 leading-relaxed">Edited high-res photo galleries and video edits delivered within 48 to 72 hours via cloud link.</p>
-            </div>
-
-            <div className="glass-card p-6 rounded-2xl border border-white/15 hover:border-emerald-500/50 transition-all space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                <ShieldCheck size={24} />
-              </div>
-              <h3 className="font-bold text-lg text-white font-heading">Instant Dispatch</h3>
-              <p className="text-xs text-white/70 leading-relaxed">Booking requests trigger real-time email dispatch notifications directly to rfmnisaiah@gmail.com.</p>
-            </div>
-
-            <div className="glass-card p-6 rounded-2xl border border-white/15 hover:border-purple-500/50 transition-all space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-purple-500/15 border border-purple-500/40 flex items-center justify-center text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)]">
-                <Sparkles size={24} />
-              </div>
-              <h3 className="font-bold text-lg text-white font-heading">VIP Experience</h3>
-              <p className="text-xs text-white/70 leading-relaxed">Custom moodboards, location scouting, high-end skin retouching, and tailored sound design.</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
 
 
