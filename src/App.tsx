@@ -326,20 +326,14 @@ const REAL_INSTAGRAM_POSTS: PostItem[] = [
 // Production Features / Add-ons for Music Videos
 const MV_ADDONS = [
   { id: 'mv1', name: '4K 60FPS CONTENT', desc: 'Ultra-smooth 4K 60fps high frame rate cinema recording.' },
-  { id: 'mv2', name: 'WITH MIX + EFFECTS', desc: 'Custom audio sync mix, neon color grading & trippy visual VFX.' },
-  { id: 'mv3', name: '4K Aerial Drone Footage', desc: 'Licensed overhead drone operator for aerial shots.' },
-  { id: 'mv4', name: '24-Hour Express Turnaround', desc: 'Priority video editing delivered within 24 hours of shoot.' },
-  { id: 'mv5', name: 'Raw Uncut Video Files', desc: 'Full high-res original unedited footage files on drive.' },
-  { id: 'mv6', name: 'Studio Location Booking', desc: 'Private indoor studio rental in Miami.' }
+  { id: 'mv2', name: 'WITH MIX + EFFECTS', desc: 'Custom audio sync mix, neon color grading & trippy visual VFX.' }
 ];
 
 // Production Features / Add-ons for Photoshoots
 const PHOTO_ADDONS = [
   { id: 'ph1', name: 'Regular Shoot & Retouching', desc: 'Standard photoshoot session with 20 high-res edited photos.' },
-  { id: 'ph2', name: 'Studio Location Rental', desc: 'Private indoor studio rental in Miami.' },
   { id: 'ph3', name: '24-Hour Express Delivery', desc: 'Priority photo gallery delivery within 24 hours.' },
-  { id: 'ph4', name: 'All Raw High-Res Photos', desc: 'Full uncompressed camera RAW image files.' },
-  { id: 'ph5', name: 'Skin Retouching & Color Grading', desc: 'High-end fashion skin retouching & color correction.' }
+  { id: 'ph4', name: 'All Raw High-Res Photos', desc: 'Full uncompressed camera RAW image files.' }
 ];
 
 export default function App() {
