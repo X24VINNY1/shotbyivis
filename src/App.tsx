@@ -169,6 +169,9 @@ export interface SiteConfig {
   // Portfolio Section
   portfolioTag: string;
   portfolioTitle: string;
+  catAll: string;
+  catMV: string;
+  catPhoto: string;
   igBannerTitle: string;
   igBannerSub: string;
   instagramHandle: string;
@@ -220,6 +223,9 @@ const DEFAULT_SITE_CONFIG: SiteConfig = {
 
   portfolioTag: 'Real Works',
   portfolioTitle: 'PORTFOLIO GALLERY',
+  catAll: 'All',
+  catMV: 'Music Videos',
+  catPhoto: 'Photography',
   igBannerTitle: 'Follow @shotbyivis On Instagram',
   igBannerSub: 'Daily music video clips, reels, and behind-the-scenes content.',
   instagramHandle: '@shotbyivis',
@@ -1737,19 +1743,26 @@ export default function App() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                  activeCategory === cat 
-                    ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-[0_0_20px_rgba(255,0,127,0.5)]' 
-                    : 'bg-white/5 border border-white/15 text-white/80 hover:text-white hover:border-white/40'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+            {categories.map((cat, catIdx) => {
+              const configKey = catIdx === 0 ? 'catAll' : catIdx === 1 ? 'catMV' : 'catPhoto';
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
+                    activeCategory === cat 
+                      ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-[0_0_20px_rgba(255,0,127,0.5)]' 
+                      : 'bg-white/5 border border-white/15 text-white/80 hover:text-white hover:border-white/40'
+                  }`}
+                >
+                  <EditableText 
+                    value={siteConfig[configKey as keyof SiteConfig] || cat} 
+                    onChange={(v) => updateConfigField(configKey as keyof SiteConfig, v)} 
+                    isLiveEditing={isLiveEditing} 
+                  />
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -1763,10 +1776,13 @@ export default function App() {
                 animate={{ opacity: 1, scale: 1 }}
                 whileHover={{ y: -8 }}
                 transition={{ type: 'spring', stiffness: 120, damping: 15 }}
-                className="group relative rounded-2xl overflow-hidden glass-card glass-card-hover cursor-pointer shadow-2xl"
-                onClick={() => setSelectedLightboxIndex(idx)}
+                className="group relative rounded-2xl overflow-hidden glass-card glass-card-hover shadow-2xl"
               >
-                <div className="relative overflow-hidden bg-black">
+                {/* PHOTO CONTAINER (CLICK ONLY HERE FOR POPUP / LIGHTBOX) */}
+                <div 
+                  className="relative overflow-hidden bg-black cursor-pointer"
+                  onClick={() => setSelectedLightboxIndex(idx)}
+                >
                   <img
                     src={item.thumb || item.url}
                     alt={item.title}
@@ -1782,7 +1798,7 @@ export default function App() {
                   </div>
 
                   {currentStaff && (
-                    <div className="absolute top-3 right-3 flex items-center gap-2 z-20">
+                    <div className="absolute top-3 right-3 flex items-center gap-2 z-20" onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={(e) => handleOpenEditPost(item, e)}
                         className="p-2 rounded-full bg-black/80 border border-white/20 text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black transition-all shadow-lg"
@@ -1805,6 +1821,7 @@ export default function App() {
                   </span>
                 </div>
 
+                {/* TITLE & DESCRIPTION CONTAINER (NO POPUP WHEN CLICKED) */}
                 <div className="p-5 flex items-center justify-between">
                   <div>
                     <h3 className="font-bold text-base text-white font-heading">
@@ -1814,7 +1831,7 @@ export default function App() {
                       <EditableText value={item.description} onChange={(v) => updatePostTitleOrDesc(item.id, 'description', v)} isLiveEditing={isLiveEditing} />
                     </p>
                   </div>
-                  <ArrowUpRight size={20} className="text-white/60 group-hover:text-[#ff007f] transition-colors" />
+                  <ArrowUpRight size={20} className="text-white/60 group-hover:text-[#ff007f] transition-colors shrink-0" />
                 </div>
               </motion.div>
             ))}
