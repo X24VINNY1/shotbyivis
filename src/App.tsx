@@ -552,8 +552,6 @@ export default function App() {
   const [isSavingCMS, setIsSavingCMS] = useState(false);
   const [isSavingLiveEdits, setIsSavingLiveEdits] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [isSwitchingTab, setIsSwitchingTab] = useState(false);
-  const [isSwitchingCategory, setIsSwitchingCategory] = useState(false);
   const [switchingStepTarget, setSwitchingStepTarget] = useState<number | null>(null);
 
   useEffect(() => {
@@ -573,21 +571,13 @@ export default function App() {
   };
 
   const changeAdminTab = (tab: 'overview' | 'bookings' | 'portfolio' | 'cms' | 'staff') => {
-    if (tab === adminTab || isSwitchingTab) return;
-    setIsSwitchingTab(true);
-    setTimeout(() => {
-      setAdminTab(tab);
-      setIsSwitchingTab(false);
-    }, 350);
+    if (tab === adminTab) return;
+    setAdminTab(tab);
   };
 
   const changeCategory = (cat: string) => {
-    if (cat === activeCategory || isSwitchingCategory) return;
-    setIsSwitchingCategory(true);
-    setTimeout(() => {
-      setActiveCategory(cat);
-      setIsSwitchingCategory(false);
-    }, 300);
+    if (cat === activeCategory) return;
+    setActiveCategory(cat);
   };
 
   const [categories, setCategories] = useState<string[]>(() => {
@@ -947,7 +937,6 @@ export default function App() {
             {/* Navigation Tabs (Horizontal Scroll on Mobile, Vertical Stack on Desktop) */}
             <nav className="flex md:flex-col items-center md:items-stretch gap-2 overflow-x-auto no-scrollbar py-1 md:py-0 text-xs font-bold uppercase tracking-wider">
               <button
-                disabled={isSwitchingTab}
                 onClick={() => changeAdminTab('overview')}
                 className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all cursor-pointer ${
                   adminTab === 'overview'
@@ -960,7 +949,6 @@ export default function App() {
               </button>
 
               <button
-                disabled={isSwitchingTab}
                 onClick={() => changeAdminTab('bookings')}
                 className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all cursor-pointer ${
                   adminTab === 'bookings'
@@ -973,7 +961,6 @@ export default function App() {
               </button>
 
               <button
-                disabled={isSwitchingTab}
                 onClick={() => changeAdminTab('portfolio')}
                 className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all cursor-pointer ${
                   adminTab === 'portfolio'
@@ -986,7 +973,6 @@ export default function App() {
               </button>
 
               <button
-                disabled={isSwitchingTab}
                 onClick={() => changeAdminTab('cms')}
                 className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all cursor-pointer ${
                   adminTab === 'cms'
@@ -999,7 +985,6 @@ export default function App() {
 
               {currentStaff.role === 'owner' && (
                 <button
-                  disabled={isSwitchingTab}
                   onClick={() => changeAdminTab('staff')}
                   className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all cursor-pointer ${
                     adminTab === 'staff'
@@ -1074,19 +1059,17 @@ export default function App() {
               </div>
             </div>
 
-            {isSwitchingTab && (
-              <div className="p-12 rounded-2xl bg-[#09090e] border border-[#00f0ff]/40 text-center space-y-4 my-6">
-                <div className="w-12 h-12 rounded-full border-4 border-t-[#ff007f] border-r-[#00f0ff] border-b-[#ff007f] border-l-transparent animate-spin mx-auto shadow-[0_0_20px_#00f0ff]" />
-                <div className="text-xs font-mono text-[#00f0ff] font-bold uppercase tracking-widest flex items-center justify-center gap-2 animate-pulse">
-                  <Loader size={14} className="animate-spin" />
-                  <span>SWITCHING DASHBOARD TAB...</span>
-                </div>
-              </div>
-            )}
-
-            {/* ===== TAB 0: EXECUTIVE ANALYTICS & OVERVIEW ===== */}
-            {adminTab === 'overview' && (
-              <div className="space-y-8">
+            <AnimatePresence mode="wait">
+              {/* ===== TAB 0: EXECUTIVE ANALYTICS & OVERVIEW ===== */}
+              {adminTab === 'overview' && (
+                <motion.div
+                  key="admin-overview"
+                  initial={{ opacity: 0, y: 15, scale: 0.99 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -15, scale: 0.99 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  className="space-y-8"
+                >
                 
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
@@ -1298,12 +1281,19 @@ export default function App() {
                   </div>
                 </div>
 
-              </div>
+              </motion.div>
             )}
 
             {/* TAB 1: SHOOT BOOKINGS */}
             {adminTab === 'bookings' && (
-              <div className="space-y-6">
+              <motion.div
+                key="admin-bookings"
+                initial={{ opacity: 0, y: 15, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -15, scale: 0.99 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                className="space-y-6"
+              >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#00f0ff]/10 border border-[#00f0ff]/30">
                   <div className="flex items-center gap-3">
                     <span className="w-3 h-3 rounded-full bg-[#00f0ff] animate-ping" />
@@ -1384,12 +1374,19 @@ export default function App() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {/* TAB 2: PORTFOLIO MANAGEMENT */}
             {adminTab === 'portfolio' && (
-              <div className="space-y-6">
+              <motion.div
+                key="admin-portfolio"
+                initial={{ opacity: 0, y: 15, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -15, scale: 0.99 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                className="space-y-6"
+              >
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-black uppercase tracking-tight font-heading">Product & Portfolio Catalog</h2>
                   <button
@@ -1432,12 +1429,19 @@ export default function App() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {/* TAB 3: FULL SITE EDITOR */}
             {adminTab === 'cms' && (
-              <form onSubmit={handleSaveCMS} className="space-y-8 bg-[#09090e] p-8 rounded-2xl border border-white/10">
+              <motion.div
+                key="admin-cms"
+                initial={{ opacity: 0, y: 15, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -15, scale: 0.99 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <form onSubmit={handleSaveCMS} className="space-y-8 bg-[#09090e] p-8 rounded-2xl border border-white/10">
                 <div className="flex items-center justify-between border-b border-white/10 pb-4">
                   <div>
                     <h2 className="text-xl font-black uppercase tracking-tight font-heading">FULL SITE CONTENT EDITOR</h2>
@@ -1599,11 +1603,19 @@ export default function App() {
                   )}
                 </button>
               </form>
+              </motion.div>
             )}
 
             {/* TAB 4: SECURITY & STAFF LOGINS */}
             {adminTab === 'staff' && currentStaff.role === 'owner' && (
-              <div className="space-y-6">
+              <motion.div
+                key="admin-staff"
+                initial={{ opacity: 0, y: 15, scale: 0.99 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -15, scale: 0.99 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                className="space-y-6"
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-xl font-black uppercase tracking-tight font-heading">Security & Staff Audit Trail</h2>
@@ -1664,7 +1676,7 @@ export default function App() {
 
                   <button 
                     type="submit"
-                    className="px-6 py-2.5 rounded-xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-white/90 transition-all"
+                    className="px-6 py-2.5 rounded-xl bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-white/90 transition-all cursor-pointer"
                   >
                     Create Account
                   </button>
@@ -1686,20 +1698,21 @@ export default function App() {
                         <div className="text-xs text-white/40 font-mono">Pass: <span className="text-white/80">{s.pass}</span></div>
                       </div>
 
-                      {staffAccounts.length > 1 && s.username !== 'ivis' && (
+                      {s.username !== 'ivis' && (
                         <button
                           onClick={() => handleDeleteStaff(s.id)}
-                          className="p-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all"
-                          title="Delete account"
+                          className="p-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all cursor-pointer"
+                          title="Revoke Staff Access"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={16} />
                         </button>
                       )}
                     </div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             )}
+          </AnimatePresence>
 
           </div>
 
@@ -2380,13 +2393,6 @@ export default function App() {
                 </button>
               )}
             </div>
-
-            {isSwitchingCategory && (
-              <div className="py-6 text-center text-xs font-mono text-[#00f0ff] font-bold uppercase tracking-widest flex items-center justify-center gap-2 animate-pulse">
-                <Loader size={14} className="animate-spin text-[#00f0ff]" />
-                <span>FILTERING PORTFOLIO...</span>
-              </div>
-            )}
           </div>
         </div>
 
