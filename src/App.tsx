@@ -763,11 +763,6 @@ export default function App() {
         text: `New shoot booking for ${clientName} (${selectedService})`,
         time: new Date().toLocaleString()
       }));
-
-      // 4. Mobile device instant SMS trigger fallback
-      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        window.open(`sms:13059894700?body=${encodeURIComponent(`🎬 SHOOT BOOKING: ${clientName} booked ${selectedService} for ${shootDate}. Check rfmnisaiah@gmail.com`)}`, '_blank');
-      }
     } catch {
       // Silent catch
     }
@@ -2356,16 +2351,6 @@ export default function App() {
                 <p className="text-xs text-white/90 max-w-md mx-auto leading-relaxed">
                   Thank you, <span className="text-[#00f0ff] font-bold">{clientName}</span>. Your reservation for <span className="text-[#ff007f] font-bold">{selectedService}</span> on <span className="text-white font-bold">{shootDate}</span> has been logged!
                 </p>
-                <div>
-                  <a
-                    href={`sms:13059894700?body=${encodeURIComponent(`🎬 SHOOT BOOKING: Client ${clientName} (${clientContact}) requested ${selectedService} for date ${shootDate}.`)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition-all mt-2"
-                  >
-                    📱 Tap Here To Text Ivis Directly (+1 305-989-4700)
-                  </a>
-                </div>
               </div>
             )}
 
