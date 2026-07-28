@@ -832,87 +832,90 @@ export default function App() {
   // ===== EXACT VOID RP / ZEN2K ENTERPRISE ADMIN DASHBOARD =====
   if (view === 'admin-panel' && currentStaff) {
     return (
-      <div className="min-h-screen bg-[#050508] text-white font-sans flex relative overflow-hidden selection:bg-[#ff007f] selection:text-white">
+      <div className="flex flex-col md:flex-row min-h-screen bg-[#050508] text-white">
         
-        {/* ===== LEFT ENTERPRISE SIDEBAR ===== */}
-        <aside className="w-64 bg-[#08080c] border-r border-white/10 flex flex-col justify-between p-5 z-20 shrink-0">
-          <div className="space-y-6">
+        {/* ===== LEFT ENTERPRISE NAVIGATION SIDEBAR / MOBILE NAV BAR ===== */}
+        <aside className="w-full md:w-64 bg-[#08080c] border-b md:border-b-0 md:border-r border-white/10 p-4 md:p-6 flex flex-col justify-between shrink-0 z-20">
+          <div className="space-y-4 md:space-y-6">
             
-            {/* Header: Logo & Status */}
-            <div className="flex items-center justify-between pb-4 border-b border-white/10">
+            {/* Header: Logo & Exit */}
+            <div className="flex items-center justify-between pb-3 md:pb-4 border-b border-white/10">
               <div className="flex items-center gap-2.5">
-                <img src="/logo.png" alt="ShotByIvis Logo" className="h-8 w-auto object-contain" />
+                <img src="/logo.png" alt="ShotByIvis Logo" className="h-7 md:h-8 w-auto object-contain" />
                 <div>
-                  <div className="font-extrabold text-sm tracking-wider font-heading uppercase">
+                  <div className="font-extrabold text-xs md:text-sm tracking-wider font-heading uppercase">
                     SHOTBY<span className="neon-text-pink">IVIS</span>
                   </div>
-                  <div className="text-[9px] font-mono text-white/50">v4.8 PRO · SECURED</div>
+                  <div className="text-[9px] font-mono text-white/50">ADMIN PORTAL · ONLINE</div>
                 </div>
               </div>
-              <button className="p-1.5 rounded-lg border border-white/10 text-white/40 hover:text-white">
-                <ChevronLeft size={14} />
+              <button 
+                onClick={() => setView('site')}
+                className="px-3 py-1 rounded-full border border-white/15 text-white/80 hover:text-white text-[10px] uppercase font-bold transition-all flex items-center gap-1"
+              >
+                <ChevronLeft size={12} /> Exit Portal
               </button>
             </div>
 
-            {/* Navigation Tabs (Zen2K Pill Style) */}
-            <nav className="space-y-1.5 text-xs font-bold uppercase tracking-wider">
+            {/* Navigation Tabs (Horizontal Scroll on Mobile, Vertical Stack on Desktop) */}
+            <nav className="flex md:flex-col items-center md:items-stretch gap-2 overflow-x-auto no-scrollbar py-1 md:py-0 text-xs font-bold uppercase tracking-wider">
               <button
                 onClick={() => setAdminTab('overview')}
-                className={`w-full py-2.5 px-4 rounded-full flex items-center justify-between transition-all ${
+                className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all ${
                   adminTab === 'overview'
                     ? 'bg-white text-black font-extrabold shadow-md'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                    : 'bg-white/5 md:bg-transparent text-white/60 hover:text-white hover:bg-white/10'
                 }`}
               >
-                <span className="flex items-center gap-2.5"><BarChart3 size={15} /> Analytics & Overview</span>
-                {adminTab === 'overview' && <span className="w-2 h-2 rounded-full bg-black" />}
+                <BarChart3 size={15} /> <span>Analytics</span>
+                {adminTab === 'overview' && <span className="w-2 h-2 rounded-full bg-black hidden md:inline-block" />}
               </button>
 
               <button
                 onClick={() => setAdminTab('bookings')}
-                className={`w-full py-2.5 px-4 rounded-full flex items-center justify-between transition-all ${
+                className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all ${
                   adminTab === 'bookings'
                     ? 'bg-white text-black font-extrabold shadow-md'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                    : 'bg-white/5 md:bg-transparent text-white/60 hover:text-white hover:bg-white/10'
                 }`}
               >
-                <span className="flex items-center gap-2.5"><Calendar size={15} /> Shoot Inquiries</span>
+                <Calendar size={15} /> <span>Shoot Inquiries</span>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${adminTab === 'bookings' ? 'bg-black text-white' : 'bg-white/10 text-white/80'}`}>{bookings.length}</span>
               </button>
 
               <button
                 onClick={() => setAdminTab('portfolio')}
-                className={`w-full py-2.5 px-4 rounded-full flex items-center justify-between transition-all ${
+                className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all ${
                   adminTab === 'portfolio'
                     ? 'bg-white text-black font-extrabold shadow-md'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                    : 'bg-white/5 md:bg-transparent text-white/60 hover:text-white hover:bg-white/10'
                 }`}
               >
-                <span className="flex items-center gap-2.5"><Camera size={15} /> Product Catalog</span>
+                <Camera size={15} /> <span>Product Catalog</span>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${adminTab === 'portfolio' ? 'bg-black text-white' : 'bg-white/10 text-white/80'}`}>{posts.length}</span>
               </button>
 
               <button
                 onClick={() => setAdminTab('cms')}
-                className={`w-full py-2.5 px-4 rounded-full flex items-center justify-between transition-all ${
+                className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all ${
                   adminTab === 'cms'
                     ? 'bg-white text-black font-extrabold shadow-md'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                    : 'bg-white/5 md:bg-transparent text-white/60 hover:text-white hover:bg-white/10'
                 }`}
               >
-                <span className="flex items-center gap-2.5"><Settings size={15} /> System Configuration</span>
+                <Settings size={15} /> <span>Configuration</span>
               </button>
 
               {currentStaff.role === 'owner' && (
                 <button
                   onClick={() => setAdminTab('staff')}
-                  className={`w-full py-2.5 px-4 rounded-full flex items-center justify-between transition-all ${
+                  className={`shrink-0 py-2.5 px-4 rounded-full flex items-center gap-2.5 transition-all ${
                     adminTab === 'staff'
                       ? 'bg-white text-black font-extrabold shadow-md'
-                      : 'text-white/60 hover:text-white hover:bg-white/5'
+                      : 'bg-white/5 md:bg-transparent text-white/60 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <span className="flex items-center gap-2.5"><ShieldCheck size={15} /> Security & Audit Trail</span>
+                  <ShieldCheck size={15} /> <span>Security & Staff</span>
                   <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono ${adminTab === 'staff' ? 'bg-black text-white' : 'bg-white/10 text-white/80'}`}>{staffAccounts.length}</span>
                 </button>
               )}
@@ -920,16 +923,16 @@ export default function App() {
           </div>
 
           {/* Bottom Actions */}
-          <div className="space-y-2.5 pt-4 border-t border-white/10">
+          <div className="flex md:flex-col gap-2 pt-3 md:pt-4 border-t border-white/10 mt-2 md:mt-0">
             <button 
               onClick={() => { setView('site'); setIsLiveEditing(true); }} 
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg"
+              className="w-1/2 md:w-full py-2.5 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg"
             >
-              ⚡ Launch Visual Live Editor
+              ⚡ Visual Live Editor
             </button>
             <button 
               onClick={handleLogout} 
-              className="w-full py-2.5 rounded-xl bg-red-500/20 border border-red-500/40 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2"
+              className="w-1/2 md:w-full py-2.5 rounded-xl bg-red-500/20 border border-red-500/40 text-red-400 hover:bg-red-500 hover:text-white text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5"
             >
               <LogOut size={14} /> Log Out
             </button>
@@ -937,7 +940,7 @@ export default function App() {
         </aside>
 
         {/* ===== RIGHT ENTERPRISE MAIN AREA ===== */}
-        <main className="flex-1 overflow-y-auto bg-[#040406] p-8 flex flex-col justify-between">
+        <main className="flex-1 overflow-y-auto bg-[#040406] p-4 md:p-8 flex flex-col justify-between">
           
           <div>
             {/* Top Enterprise Command Bar */}
