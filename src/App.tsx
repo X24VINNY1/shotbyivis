@@ -1817,15 +1817,30 @@ export default function App() {
               exit={{ height: 0, opacity: 0 }}
               className="md:hidden bg-[#0a0a0d] border-b border-white/10 px-6 py-4 flex flex-col gap-4 text-xs font-bold uppercase tracking-wider"
             >
-              <button onClick={() => scrollTo('home')} className="text-left py-2 text-white/90">Home</button>
-              <button onClick={() => scrollTo('portfolio')} className="text-left py-2 text-white/90">Portfolio</button>
-              <button onClick={() => scrollTo('services')} className="text-left py-2 text-white/90">Services</button>
-              <button onClick={() => scrollTo('about')} className="text-left py-2 text-white/90">About</button>
-              <button onClick={() => scrollTo('contact')} className="text-left py-2 text-white/90">Contact</button>
-              <button onClick={() => setView('admin-login')} className="text-left py-2 text-[#ff007f] flex items-center gap-2">
+              <button onClick={() => { scrollTo('home'); setMobileMenuOpen(false); }} className="text-left py-3 text-white/90 border-b border-white/5 flex items-center justify-between font-heading text-sm">
+                <span>Home</span>
+                <ChevronRight size={14} className="text-[#00f0ff]" />
+              </button>
+              <button onClick={() => { scrollTo('portfolio'); setMobileMenuOpen(false); }} className="text-left py-3 text-white/90 border-b border-white/5 flex items-center justify-between font-heading text-sm">
+                <span>Portfolio</span>
+                <ChevronRight size={14} className="text-[#00f0ff]" />
+              </button>
+              <button onClick={() => { scrollTo('services'); setMobileMenuOpen(false); }} className="text-left py-3 text-white/90 border-b border-white/5 flex items-center justify-between font-heading text-sm">
+                <span>Services</span>
+                <ChevronRight size={14} className="text-[#00f0ff]" />
+              </button>
+              <button onClick={() => { scrollTo('about'); setMobileMenuOpen(false); }} className="text-left py-3 text-white/90 border-b border-white/5 flex items-center justify-between font-heading text-sm">
+                <span>About</span>
+                <ChevronRight size={14} className="text-[#00f0ff]" />
+              </button>
+              <button onClick={() => { scrollTo('contact'); setMobileMenuOpen(false); }} className="text-left py-3 text-white/90 border-b border-white/5 flex items-center justify-between font-heading text-sm">
+                <span>Contact</span>
+                <ChevronRight size={14} className="text-[#00f0ff]" />
+              </button>
+              <button onClick={() => { setView('admin-login'); setMobileMenuOpen(false); }} className="text-left py-3 text-[#ff007f] flex items-center gap-2 text-sm font-bold pt-2">
                 <Lock size={16} /> Staff / Owner Panel
               </button>
-              <a href="https://www.instagram.com/shotbyivis/" target="_blank" rel="noreferrer" className="py-2 text-[#00f0ff] flex items-center gap-2">
+              <a href="https://www.instagram.com/shotbyivis/" target="_blank" rel="noreferrer" className="py-3 text-[#00f0ff] flex items-center gap-2 text-sm font-bold">
                 <InstagramIcon size={16} /> Instagram {siteConfig.instagramHandle}
               </a>
             </motion.div>
@@ -1885,16 +1900,16 @@ export default function App() {
               </span>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto px-4 sm:px-0">
               <button
                 onClick={() => scrollTo('portfolio')}
-                className="px-9 py-4 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white tracking-[0.2em] uppercase text-xs font-bold rounded-full shadow-[0_0_25px_rgba(255,0,127,0.6)] hover:scale-105 transition-all"
+                className="w-full sm:w-auto px-9 py-4 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white tracking-[0.2em] uppercase text-xs font-bold rounded-full shadow-[0_0_25px_rgba(255,0,127,0.6)] hover:scale-105 transition-all text-center"
               >
                 <EditableText value={siteConfig.heroBtnPrimary} onChange={(v) => updateConfigField('heroBtnPrimary', v)} isLiveEditing={isLiveEditing} />
               </button>
               <button
                 onClick={() => scrollTo('contact')}
-                className="px-9 py-4 border border-white/30 text-white/90 tracking-[0.2em] uppercase text-xs font-bold rounded-full hover:border-[#00f0ff] hover:text-[#00f0ff] hover:bg-[#00f0ff]/10 transition-all"
+                className="w-full sm:w-auto px-9 py-4 border border-white/30 text-white/90 tracking-[0.2em] uppercase text-xs font-bold rounded-full hover:border-[#00f0ff] hover:text-[#00f0ff] hover:bg-[#00f0ff]/10 transition-all text-center"
               >
                 <EditableText value={siteConfig.heroBtnSecondary} onChange={(v) => updateConfigField('heroBtnSecondary', v)} isLiveEditing={isLiveEditing} />
               </button>
@@ -1949,7 +1964,7 @@ export default function App() {
             </h2>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 max-w-full flex-nowrap md:flex-wrap justify-start md:justify-center">
             {categories.map((cat, catIdx) => (
               <div key={cat} className="relative inline-flex items-center group/cat">
                 <div
