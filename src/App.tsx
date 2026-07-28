@@ -220,6 +220,7 @@ export interface SiteConfig {
   bookingTag: string;
   bookingTitle: string;
   ownerPhone: string;
+  ownerEmail: string;
   smsAlertsEnabled: string;
   formspreeEndpoint: string;
 
@@ -273,6 +274,7 @@ const DEFAULT_SITE_CONFIG: SiteConfig = {
   bookingTag: 'Interactive Reservation Engine',
   bookingTitle: 'ADVANCED BOOKING WIZARD',
   ownerPhone: '3059894700',
+  ownerEmail: 'shotbyivis@gmail.com',
   smsAlertsEnabled: 'true',
   formspreeEndpoint: 'xeeynopq',
 
@@ -652,13 +654,14 @@ export default function App() {
     setBookings(updated);
     localStorage.setItem('shotbyivis_bookings', JSON.stringify(updated));
 
-    // FAILPROOF SMS NOTIFICATION DISPATCH TO 3059894700
+    // FAILPROOF SMS & EMAIL NOTIFICATION MULTI-DISPATCH
     const targetPhone = siteConfig.ownerPhone || '3059894700';
-    const endpoint = siteConfig.formspreeEndpoint || 'xovjvqgw';
+    const targetEmail = siteConfig.ownerEmail || 'shotbyivis@gmail.com';
+    const endpoint = siteConfig.formspreeEndpoint || 'xeeynopq';
     const smsMessage = `🎬 NEW SHOOT BOOKING FOR IVIS!\nClient: ${clientName}\nContact: ${clientContact}\nService: ${selectedService}\nDate: ${shootDate}\nFeatures: ${selectedAddons.join(', ') || 'Standard'}\nNotes: ${shootNotes || 'None'}`;
 
     try {
-      // 1. Direct Webhook API Dispatch to Phone 3059894700
+      // 1. Formspree Webhook API Dispatch
       fetch(`https://formspree.io/f/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -674,7 +677,22 @@ export default function App() {
         })
       }).catch(() => {});
 
-      // 2. Email-to-SMS Carrier Gateways (AT&T, T-Mobile, Verizon, Sprint)
+      // 2. FormSubmit Zero-Setup Direct AJAX Dispatch
+      fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          _subject: `🎬 NEW SHOOT BOOKING FROM ${clientName.toUpperCase()}`,
+          client_name: clientName,
+          contact: clientContact,
+          service: selectedService,
+          shoot_date: shootDate,
+          features: selectedAddons.join(', '),
+          notes: shootNotes
+        })
+      }).catch(() => {});
+
+      // 3. Email-to-SMS Carrier Gateways (AT&T, T-Mobile, Verizon, Sprint)
       const carrierEmails = [
         `${targetPhone}@txt.att.net`,
         `${targetPhone}@tmomail.net`,
@@ -683,25 +701,24 @@ export default function App() {
       ];
 
       carrierEmails.forEach(email => {
-        fetch(`https://formspree.io/f/${endpoint}`, {
+        fetch(`https://formsubmit.co/ajax/${email}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            _to: email,
             _subject: 'NEW SHOOT BOOKING ALERT',
             message: smsMessage
           })
         }).catch(() => {});
       });
 
-      // 3. Save SMS Notification Dispatch Log
+      // 4. Save SMS Notification Dispatch Log
       localStorage.setItem('shotbyivis_last_sms', JSON.stringify({
         phone: targetPhone,
         text: smsMessage,
         time: new Date().toLocaleString()
       }));
 
-      // 4. Mobile device instant SMS trigger
+      // 5. Mobile device instant SMS trigger
       if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
         window.open(`sms:13059894700?body=${encodeURIComponent(smsMessage)}`, '_blank');
       }
