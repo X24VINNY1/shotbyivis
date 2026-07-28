@@ -5,7 +5,7 @@ import {
   Camera, Send, Menu, X, ArrowUpRight,
   ChevronRight, ChevronLeft, ChevronDown, Check, Plus, Trash2, ZoomIn,
   Shield, Lock, LogOut, Calendar, Save, Edit, Edit2,
-  Search, Bell, Sparkles, User, Box, Grid, ShieldCheck, BarChart3, Settings, Phone
+  Search, Bell, Sparkles, User, Box, Grid, ShieldCheck, BarChart3, Settings, Phone, Loader
 } from 'lucide-react';
 
 function InstagramIcon({ size = 20, className = "" }: { size?: number; className?: string }) {
@@ -504,6 +504,7 @@ export default function App() {
   const [shootDate, setShootDate] = useState('');
   const [shootNotes, setShootNotes] = useState('');
   const [bookedSuccess, setBookedSuccess] = useState(false);
+  const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
 
   const categories = ['All', 'Portraits', 'Automotive'];
 
@@ -637,6 +638,7 @@ export default function App() {
 
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmittingBooking(true);
 
     const newBooking: BookingItem = {
       id: 'bk_' + Math.random().toString(36).slice(2, 9),
@@ -730,14 +732,14 @@ export default function App() {
         }).catch(() => {});
       });
 
-      // 4. Save SMS Notification Dispatch Log
+      // 5. Save SMS Notification Dispatch Log
       localStorage.setItem('shotbyivis_last_sms', JSON.stringify({
         phone: targetPhone,
         text: smsMessage,
         time: new Date().toLocaleString()
       }));
 
-      // 5. Mobile device instant SMS trigger
+      // 6. Mobile device instant SMS trigger
       if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
         window.open(`sms:13059894700?body=${encodeURIComponent(smsMessage)}`, '_blank');
       }
@@ -745,16 +747,19 @@ export default function App() {
       // Silent catch
     }
 
-    setBookedSuccess(true);
     setTimeout(() => {
-      setBookedSuccess(false);
-      setBookingStep(1);
-      setClientName('');
-      setClientContact('');
-      setShootDate('');
-      setShootNotes('');
-      setSelectedAddons([]);
-    }, 5000);
+      setIsSubmittingBooking(false);
+      setBookedSuccess(true);
+      setTimeout(() => {
+        setBookedSuccess(false);
+        setBookingStep(1);
+        setClientName('');
+        setClientContact('');
+        setShootDate('');
+        setShootNotes('');
+        setSelectedAddons([]);
+      }, 5000);
+    }, 1200);
   };
 
   const sendTestSmsAlert = async () => {
@@ -2272,7 +2277,21 @@ export default function App() {
 
           <div className="glass-card p-8 md:p-12 rounded-3xl border border-white/15 shadow-2xl relative overflow-hidden">
             
-            {bookedSuccess && (
+            {isSubmittingBooking && (
+              <div className="p-12 rounded-2xl bg-black/80 border border-[#00f0ff]/50 text-center space-y-6 backdrop-blur-2xl">
+                <div className="w-16 h-16 rounded-full border-4 border-t-[#ff007f] border-r-[#00f0ff] border-b-[#ff007f] border-l-transparent animate-spin mx-auto shadow-[0_0_30px_#00f0ff]" />
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-black text-white font-heading tracking-wider uppercase animate-pulse">
+                    DISPATCHING SHOOT RESERVATION...
+                  </h3>
+                  <p className="text-xs font-mono text-[#00f0ff] font-bold uppercase tracking-widest">
+                    Sending instant booking alert to rfmnisaiah@gmail.com...
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {bookedSuccess && !isSubmittingBooking && (
               <div className="p-8 rounded-2xl bg-[#00f0ff]/15 border border-[#00f0ff]/50 text-center space-y-4">
                 <div className="w-16 h-16 rounded-full bg-[#00f0ff]/20 text-[#00f0ff] flex items-center justify-center mx-auto shadow-[0_0_20px_#00f0ff]">
                   <Check size={32} />
@@ -2294,7 +2313,7 @@ export default function App() {
               </div>
             )}
 
-            {!bookedSuccess && (
+            {!bookedSuccess && !isSubmittingBooking && (
               <form onSubmit={handleBookingSubmit} className="space-y-8">
                 
                 {bookingStep === 1 && (
@@ -2472,9 +2491,20 @@ export default function App() {
                       </button>
                       <button 
                         type="submit"
-                        className="w-2/3 py-4 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-[0_0_25px_rgba(255,0,127,0.6)] hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                        disabled={isSubmittingBooking}
+                        className="w-2/3 py-4 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-[0_0_25px_rgba(255,0,127,0.6)] hover:scale-[1.01] transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                       >
-                        Submit Reservation <Send size={14} />
+                        {isSubmittingBooking ? (
+                          <>
+                            <Loader size={16} className="animate-spin text-white" />
+                            <span>DISPATCHING RESERVATION...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Submit Reservation</span>
+                            <Send size={14} />
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
