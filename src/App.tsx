@@ -445,13 +445,7 @@ export default function App() {
     try {
       const saved = localStorage.getItem('shotbyivis_real_posts');
       if (saved && JSON.parse(saved).length > 0) {
-        const parsed: PostItem[] = JSON.parse(saved);
-        return parsed.map((p) => {
-          if (p.id === 'ig1' && (p.title === 'South Beach Editorial' || p.title === 'South Beach Model Editorial')) {
-            return { ...p, title: 'MIAMI HIGH 2026', description: 'Gainesville Florida.' };
-          }
-          return p;
-        });
+        return JSON.parse(saved);
       }
       return REAL_INSTAGRAM_POSTS;
     } catch {
@@ -564,18 +558,6 @@ export default function App() {
   const [switchingStepTarget, setSwitchingStepTarget] = useState<number | null>(null);
 
   useEffect(() => {
-    const CURRENT_SITE_VERSION = 'v5_1_miami_high_sync_global';
-    try {
-      const storedVersion = localStorage.getItem('shotbyivis_version');
-      if (storedVersion !== CURRENT_SITE_VERSION) {
-        localStorage.setItem('shotbyivis_real_posts', JSON.stringify(REAL_INSTAGRAM_POSTS));
-        localStorage.setItem('shotbyivis_site_config', JSON.stringify(DEFAULT_SITE_CONFIG));
-        localStorage.setItem('shotbyivis_version', CURRENT_SITE_VERSION);
-        setPosts(REAL_INSTAGRAM_POSTS);
-        setSiteConfig(DEFAULT_SITE_CONFIG);
-      }
-    } catch {}
-
     const timer = setTimeout(() => {
       setIsInitialLoading(false);
     }, 1000);
