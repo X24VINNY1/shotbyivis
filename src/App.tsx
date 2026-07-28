@@ -552,7 +552,6 @@ export default function App() {
   const [isSavingCMS, setIsSavingCMS] = useState(false);
   const [isSavingLiveEdits, setIsSavingLiveEdits] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [isSwitchingStep, setIsSwitchingStep] = useState(false);
   const [isSwitchingTab, setIsSwitchingTab] = useState(false);
   const [isSwitchingCategory, setIsSwitchingCategory] = useState(false);
 
@@ -564,12 +563,8 @@ export default function App() {
   }, []);
 
   const changeBookingStep = (targetStep: 1 | 2 | 3) => {
-    if (targetStep === bookingStep || isSwitchingStep) return;
-    setIsSwitchingStep(true);
-    setTimeout(() => {
-      setBookingStep(targetStep);
-      setIsSwitchingStep(false);
-    }, 400);
+    if (targetStep === bookingStep) return;
+    setBookingStep(targetStep);
   };
 
   const changeAdminTab = (tab: 'overview' | 'bookings' | 'portfolio' | 'cms' | 'staff') => {
@@ -2727,267 +2722,226 @@ export default function App() {
           </div>
 
           <div className="glass-card p-8 md:p-12 rounded-3xl border border-white/15 shadow-2xl relative overflow-hidden">
-            
-            {isSwitchingStep && (
-              <div className="p-12 rounded-2xl bg-black/80 border border-[#00f0ff]/50 text-center space-y-6 backdrop-blur-2xl my-4">
-                <div className="w-14 h-14 rounded-full border-4 border-t-[#ff007f] border-r-[#00f0ff] border-b-[#ff007f] border-l-transparent animate-spin mx-auto shadow-[0_0_25px_#00f0ff]" />
-                <div className="space-y-1">
-                  <h4 className="text-xl font-black text-white font-heading tracking-wider uppercase animate-pulse">
-                    SWITCHING STEP...
-                  </h4>
-                  <p className="text-xs font-mono text-[#00f0ff] font-bold uppercase tracking-widest flex items-center justify-center gap-1.5">
-                    <Loader size={12} className="animate-spin" />
-                    <span>LOADING STEP DETAILS...</span>
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {isSubmittingBooking && (
-              <div className="p-12 rounded-2xl bg-black/80 border border-[#00f0ff]/50 text-center space-y-6 backdrop-blur-2xl">
-                <div className="w-16 h-16 rounded-full border-4 border-t-[#ff007f] border-r-[#00f0ff] border-b-[#ff007f] border-l-transparent animate-spin mx-auto shadow-[0_0_30px_#00f0ff]" />
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-black text-white font-heading tracking-wider uppercase animate-pulse">
-                    DISPATCHING SHOOT RESERVATION...
-                  </h3>
-                  <p className="text-xs font-mono text-[#00f0ff] font-bold uppercase tracking-widest">
-                    Sending instant booking alert to rfmnisaiah@gmail.com...
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {bookedSuccess && !isSubmittingBooking && (
-              <div className="p-8 rounded-2xl bg-[#00f0ff]/15 border border-[#00f0ff]/50 text-center space-y-4">
-                <div className="w-16 h-16 rounded-full bg-[#00f0ff]/20 text-[#00f0ff] flex items-center justify-center mx-auto shadow-[0_0_20px_#00f0ff]">
-                  <Check size={32} />
-                </div>
-                <h3 className="text-2xl font-bold text-white font-heading">Shooting Request Confirmed!</h3>
-                <p className="text-xs text-white/90 max-w-md mx-auto leading-relaxed">
-                  Thank you, <span className="text-[#00f0ff] font-bold">{clientName}</span>. Your reservation for <span className="text-[#ff007f] font-bold">{selectedService}</span> on <span className="text-white font-bold">{shootDate}</span> has been logged!
-                </p>
-              </div>
-            )}
-
             {!bookedSuccess && !isSubmittingBooking && (
-              <form onSubmit={handleBookingSubmit} className="space-y-8">
-                
-                {bookingStep === 1 && (
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Step 1: Choose Photoshoot Service</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div 
-                        onClick={() => setSelectedService('Standard Photoshoot')}
-                        className={`p-6 rounded-2xl border cursor-pointer transition-all ${
-                          selectedService === 'Standard Photoshoot' 
-                            ? 'border-[#ff007f] bg-[#ff007f]/15 shadow-[0_0_25px_rgba(255,0,127,0.3)]' 
-                            : 'border-white/15 bg-white/5 hover:border-white/40'
-                        }`}
-                      >
-                        <Camera size={32} className="text-[#ff007f] mb-3" />
-                        <h4 className="font-bold text-lg text-white font-heading">{siteConfig.mvTitle}</h4>
-                        <p className="text-xs text-white/80 mt-1">{siteConfig.mvDesc}</p>
-                        <div className="text-xs font-mono font-bold text-[#00f0ff] mt-4 uppercase">4K 60FPS CONTENT · WITH MIX + EFFECTS</div>
-                      </div>
-
-                      <div 
-                        onClick={() => setSelectedService('VIP Editorial Shoot')}
-                        className={`p-6 rounded-2xl border cursor-pointer transition-all ${
-                          selectedService === 'VIP Editorial Shoot' 
-                            ? 'border-[#00f0ff] bg-[#00f0ff]/15 shadow-[0_0_25px_rgba(0,240,255,0.3)]' 
-                            : 'border-white/15 bg-white/5 hover:border-white/40'
-                        }`}
-                      >
-                        <Camera size={32} className="text-[#00f0ff] mb-3" />
-                        <h4 className="font-bold text-lg text-white font-heading">{siteConfig.photoTitle}</h4>
-                        <p className="text-xs text-white/80 mt-1">{siteConfig.photoDesc}</p>
-                        <div className="text-xs font-mono font-bold text-[#ff007f] mt-4 uppercase">Regular Shoot & High-Res Retouching</div>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      disabled={isSwitchingStep}
-                      onClick={() => changeBookingStep(2)}
-                      className="w-full py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              <form onSubmit={handleBookingSubmit} className="space-y-8 overflow-hidden">
+                <AnimatePresence mode="wait">
+                  {bookingStep === 1 && (
+                    <motion.div
+                      key="step1"
+                      initial={{ opacity: 0, x: -30, scale: 0.98 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      exit={{ opacity: 0, x: -30, scale: 0.98 }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      className="space-y-6"
                     >
-                      {isSwitchingStep ? (
-                        <>
-                          <Loader size={16} className="animate-spin text-white" />
-                          <span>LOADING FEATURES...</span>
-                        </>
-                      ) : (
-                        <>
-                          Next: Choose Production Features <ChevronRight size={16} />
-                        </>
-                      )}
-                    </button>
-                  </div>
-                )}
-
-                {bookingStep === 2 && (
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Step 2: Select Features ({selectedService})</h3>
-                      <span className="text-xs font-mono text-[#00f0ff] font-bold">Selected: {selectedAddons.length}</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-3">
-                      {currentAddonsList.map((addon) => {
-                        const active = selectedAddons.includes(addon.name);
-                        return (
-                          <div 
-                            key={addon.id}
-                            onClick={() => toggleAddon(addon.name)}
-                            className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between gap-4 ${
-                              active ? 'border-[#00f0ff] bg-[#00f0ff]/15' : 'border-white/15 bg-white/5 hover:border-white/30'
-                            }`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className={`w-5 h-5 rounded-md border flex items-center justify-center ${
-                                active ? 'border-[#00f0ff] bg-[#00f0ff] text-black' : 'border-white/40'
-                              }`}>
-                                {active && <Check size={14} />}
-                              </div>
-                              <div>
-                                <div className="font-bold text-sm text-white font-heading">{addon.name}</div>
-                                <div className="text-xs text-white/70">{addon.desc}</div>
-                              </div>
-                            </div>
-                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
-                              active ? 'bg-[#00f0ff]/20 text-[#00f0ff]' : 'bg-white/5 text-white/40'
-                            }`}>
-                              {active ? 'Selected' : 'Select'}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    <div className="flex gap-4">
-                      <button
-                        type="button"
-                        disabled={isSwitchingStep}
-                        onClick={() => changeBookingStep(1)}
-                        className="w-1/3 py-4 rounded-xl border border-white/30 text-white/90 font-bold text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
-                      >
-                        Back
-                      </button>
-                      <button
-                        type="button"
-                        disabled={isSwitchingStep}
-                        onClick={() => changeBookingStep(3)}
-                        className="w-2/3 py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                      >
-                        {isSwitchingStep ? (
-                          <>
-                            <Loader size={16} className="animate-spin text-white" />
-                            <span>LOADING DETAILS...</span>
-                          </>
-                        ) : (
-                          <>
-                            Next: Client Details & Date <ChevronRight size={16} />
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {bookingStep === 3 && (
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Step 3: Contact & Shoot Date</h3>
-
-                    <div className="p-5 rounded-2xl bg-white/10 border border-white/15 space-y-2">
-                      <div className="text-xs font-mono uppercase text-white/70 font-bold">Booking Request Summary</div>
-                      <div className="flex justify-between text-sm font-bold text-white">
-                        <span>Selected Service:</span>
-                        <span className="text-[#00f0ff]">{selectedService}</span>
-                      </div>
-                      {selectedAddons.map(addon => (
-                        <div key={addon} className="flex justify-between text-xs text-white/80 pl-2">
-                          <span>✓ {addon}</span>
+                      <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Step 1: Choose Photoshoot Service</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div 
+                          onClick={() => setSelectedService('Standard Photoshoot')}
+                          className={`p-6 rounded-2xl border cursor-pointer transition-all ${
+                            selectedService === 'Standard Photoshoot' 
+                              ? 'border-[#ff007f] bg-[#ff007f]/15 shadow-[0_0_25px_rgba(255,0,127,0.3)]' 
+                              : 'border-white/15 bg-white/5 hover:border-white/40'
+                          }`}
+                        >
+                          <Camera size={32} className="text-[#ff007f] mb-3" />
+                          <h4 className="font-bold text-lg text-white font-heading">{siteConfig.mvTitle}</h4>
+                          <p className="text-xs text-white/80 mt-1">{siteConfig.mvDesc}</p>
+                          <div className="text-xs font-mono font-bold text-[#00f0ff] mt-4 uppercase">4K 60FPS CONTENT · WITH MIX + EFFECTS</div>
                         </div>
-                      ))}
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Your Name</label>
-                        <input 
-                          type="text" 
-                          required
-                          placeholder="Full Name"
-                          value={clientName}
-                          onChange={(e) => setClientName(e.target.value)}
-                          className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-                        />
+                        <div 
+                          onClick={() => setSelectedService('VIP Editorial Shoot')}
+                          className={`p-6 rounded-2xl border cursor-pointer transition-all ${
+                            selectedService === 'VIP Editorial Shoot' 
+                              ? 'border-[#00f0ff] bg-[#00f0ff]/15 shadow-[0_0_25px_rgba(0,240,255,0.3)]' 
+                              : 'border-white/15 bg-white/5 hover:border-white/40'
+                          }`}
+                        >
+                          <Camera size={32} className="text-[#00f0ff] mb-3" />
+                          <h4 className="font-bold text-lg text-white font-heading">{siteConfig.photoTitle}</h4>
+                          <p className="text-xs text-white/80 mt-1">{siteConfig.photoDesc}</p>
+                          <div className="text-xs font-mono font-bold text-[#ff007f] mt-4 uppercase">Regular Shoot & High-Res Retouching</div>
+                        </div>
                       </div>
-                      <div>
-                        <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Phone or Email</label>
-                        <input 
-                          type="text" 
-                          required
-                          placeholder="Contact Info"
-                          value={clientContact}
-                          onChange={(e) => setClientContact(e.target.value)}
-                          className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-                        />
-                      </div>
-                    </div>
 
-                    <div>
-                      <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Shoot Date</label>
-                      <input 
-                        type="date" 
-                        required
-                        value={shootDate}
-                        onChange={(e) => setShootDate(e.target.value)}
-                        className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Vision / Notes</label>
-                      <textarea 
-                        rows={3}
-                        placeholder="Tell Ivis about your shoot details..."
-                        value={shootNotes}
-                        onChange={(e) => setShootNotes(e.target.value)}
-                        className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-                      />
-                    </div>
-
-                    <div className="flex gap-4">
                       <button
                         type="button"
-                        disabled={isSwitchingStep}
                         onClick={() => changeBookingStep(2)}
-                        className="w-1/3 py-4 rounded-xl border border-white/30 text-white/90 font-bold text-xs uppercase tracking-wider cursor-pointer disabled:opacity-50"
+                        className="w-full py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer"
                       >
-                        Back
+                        <span>Next: Choose Production Features</span>
+                        <ChevronRight size={16} />
                       </button>
-                      <button 
-                        type="submit"
-                        disabled={isSubmittingBooking}
-                        className="w-2/3 py-4 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-[0_0_25px_rgba(255,0,127,0.6)] hover:scale-[1.01] transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
-                      >
-                        {isSubmittingBooking ? (
-                          <>
-                            <Loader size={16} className="animate-spin text-white" />
-                            <span>DISPATCHING RESERVATION...</span>
-                          </>
-                        ) : (
-                          <>
-                            <span>Submit Reservation</span>
-                            <Send size={14} />
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                )}
+                    </motion.div>
+                  )}
 
+                  {bookingStep === 2 && (
+                    <motion.div
+                      key="step2"
+                      initial={{ opacity: 0, x: 30, scale: 0.98 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      exit={{ opacity: 0, x: 30, scale: 0.98 }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      className="space-y-6"
+                    >
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Step 2: Select Features ({selectedService})</h3>
+                        <span className="text-xs font-mono text-[#00f0ff] font-bold">Selected: {selectedAddons.length}</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-3">
+                        {currentAddonsList.map((addon) => {
+                          const active = selectedAddons.includes(addon.name);
+                          return (
+                            <div 
+                              key={addon.id}
+                              onClick={() => toggleAddon(addon.name)}
+                              className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between gap-4 ${
+                                active ? 'border-[#00f0ff] bg-[#00f0ff]/15' : 'border-white/15 bg-white/5 hover:border-white/30'
+                              }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className={`w-5 h-5 rounded-md border flex items-center justify-center ${
+                                  active ? 'border-[#00f0ff] bg-[#00f0ff] text-black' : 'border-white/40'
+                                }`}>
+                                  {active && <Check size={14} />}
+                                </div>
+                                <div>
+                                  <div className="font-bold text-sm text-white font-heading">{addon.name}</div>
+                                  <div className="text-xs text-white/70">{addon.desc}</div>
+                                </div>
+                              </div>
+                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
+                                active ? 'bg-[#00f0ff]/20 text-[#00f0ff]' : 'bg-white/5 text-white/40'
+                              }`}>
+                                {active ? 'Selected' : 'Select'}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="flex gap-4">
+                        <button
+                          type="button"
+                          onClick={() => changeBookingStep(1)}
+                          className="w-1/3 py-4 rounded-xl border border-white/30 text-white/90 font-bold text-xs uppercase tracking-wider cursor-pointer hover:bg-white/10 transition-all"
+                        >
+                          Back
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => changeBookingStep(3)}
+                          className="w-2/3 py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01] transition-all"
+                        >
+                          <span>Next: Client Details & Date</span>
+                          <ChevronRight size={16} />
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {bookingStep === 3 && (
+                    <motion.div
+                      key="step3"
+                      initial={{ opacity: 0, x: 30, scale: 0.98 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      exit={{ opacity: 0, x: 30, scale: 0.98 }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      className="space-y-6"
+                    >
+                      <h3 className="text-xl font-bold text-white uppercase tracking-tight font-heading">Step 3: Contact & Shoot Date</h3>
+
+                      <div className="p-5 rounded-2xl bg-white/10 border border-white/15 space-y-2">
+                        <div className="text-xs font-mono uppercase text-white/70 font-bold">Booking Request Summary</div>
+                        <div className="flex justify-between text-sm font-bold text-white">
+                          <span>Selected Service:</span>
+                          <span className="text-[#00f0ff]">{selectedService}</span>
+                        </div>
+                        {selectedAddons.map(addon => (
+                          <div key={addon} className="flex justify-between text-xs text-white/80 pl-2">
+                            <span>✓ {addon}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                          <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Your Name</label>
+                          <input 
+                            type="text" 
+                            required
+                            placeholder="Full Name"
+                            value={clientName}
+                            onChange={(e) => setClientName(e.target.value)}
+                            className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Phone or Email</label>
+                          <input 
+                            type="text" 
+                            required
+                            placeholder="Contact Info"
+                            value={clientContact}
+                            onChange={(e) => setClientContact(e.target.value)}
+                            className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Shoot Date</label>
+                        <input 
+                          type="date" 
+                          required
+                          value={shootDate}
+                          onChange={(e) => setShootDate(e.target.value)}
+                          className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-mono font-bold uppercase text-white/80 block mb-1">Vision / Notes</label>
+                        <textarea 
+                          rows={3}
+                          placeholder="Tell Ivis about your shoot details..."
+                          value={shootNotes}
+                          onChange={(e) => setShootNotes(e.target.value)}
+                          className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                        />
+                      </div>
+
+                      <div className="flex gap-4">
+                        <button
+                          type="button"
+                          onClick={() => changeBookingStep(2)}
+                          className="w-1/3 py-4 rounded-xl border border-white/30 text-white/90 font-bold text-xs uppercase tracking-wider cursor-pointer hover:bg-white/10 transition-all"
+                        >
+                          Back
+                        </button>
+                        <button 
+                          type="submit"
+                          disabled={isSubmittingBooking}
+                          className="w-2/3 py-4 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-[0_0_25px_rgba(255,0,127,0.6)] hover:scale-[1.01] transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                        >
+                          {isSubmittingBooking ? (
+                            <>
+                              <Loader size={16} className="animate-spin text-white" />
+                              <span>DISPATCHING RESERVATION...</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>Submit Reservation</span>
+                              <Send size={14} />
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </form>
             )}
           </div>
