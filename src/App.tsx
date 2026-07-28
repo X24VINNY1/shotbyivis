@@ -669,7 +669,21 @@ export default function App() {
 
     setTimeout(() => {
       setIsLoggingIn(false);
-      const found = staffAccounts.find(s => s.username.toLowerCase() === loginUser.trim().toLowerCase() && s.pass === loginPass);
+      const cleanUser = loginUser.trim().toLowerCase();
+      const cleanPass = loginPass.trim();
+
+      let allAccounts = [...staffAccounts, ...DEFAULT_STAFF];
+      try {
+        const saved = localStorage.getItem('shotbyivis_staff');
+        if (saved) {
+          allAccounts = [...allAccounts, ...JSON.parse(saved)];
+        }
+      } catch {}
+
+      const found = allAccounts.find(
+        s => s.username.trim().toLowerCase() === cleanUser && s.pass.trim() === cleanPass
+      );
+
       if (found) {
         setCurrentStaff(found);
         localStorage.setItem('shotbyivis_current_staff', JSON.stringify(found));
@@ -2018,7 +2032,7 @@ export default function App() {
               <input 
                 type="text" 
                 required 
-                placeholder="Username (e.g. ivis)"
+                placeholder="Enter Username"
                 value={loginUser}
                 onChange={(e) => setLoginUser(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
