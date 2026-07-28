@@ -168,10 +168,15 @@ export interface StaffAccount {
 }
 
 export interface SiteConfig {
-  // Brand Header
+  // Brand Header & Nav Links
   brandPink: string;
   brandBlue: string;
   headerCtaText: string;
+  navHome: string;
+  navPortfolio: string;
+  navServices: string;
+  navAbout: string;
+  navContact: string;
   
   // Hero Section
   heroBadgeTagline: string;
@@ -189,7 +194,12 @@ export interface SiteConfig {
   catPhoto: string;
   igBannerTitle: string;
   igBannerSub: string;
+  igBannerBtn: string;
   instagramHandle: string;
+
+  // Services Section Header
+  servicesTag: string;
+  servicesTitle: string;
 
   // Package 1: Standard Photoshoot
   mvTitle: string;
@@ -198,6 +208,7 @@ export interface SiteConfig {
   mvFeat1: string;
   mvFeat2: string;
   mvFeat3: string;
+  mvBtnText: string;
 
   // Package 2: VIP Editorial Photoshoot
   photoTitle: string;
@@ -206,6 +217,7 @@ export interface SiteConfig {
   photoFeat1: string;
   photoFeat2: string;
   photoFeat3: string;
+  photoBtnText: string;
 
   // About Section
   aboutTag: string;
@@ -215,6 +227,8 @@ export interface SiteConfig {
   stat1Label: string;
   stat2Value: string;
   stat2Label: string;
+  aboutBtn1: string;
+  aboutBtn2: string;
 
   // Booking Wizard Section
   bookingTag: string;
@@ -232,6 +246,11 @@ const DEFAULT_SITE_CONFIG: SiteConfig = {
   brandPink: 'SHOTBY',
   brandBlue: 'IVIS',
   headerCtaText: 'Book Shoot',
+  navHome: 'Home',
+  navPortfolio: 'Portfolio',
+  navServices: 'Services',
+  navAbout: 'About',
+  navContact: 'Contact',
 
   heroBadgeTagline: 'Miami Premier Photography & High-Fashion Portraits',
   heroHeadline1: 'SHOT BY',
@@ -247,7 +266,11 @@ const DEFAULT_SITE_CONFIG: SiteConfig = {
   catPhoto: 'Automotive',
   igBannerTitle: 'Follow @shotbyivis On Instagram',
   igBannerSub: 'Daily photos, editorial shoots, and behind-the-scenes content.',
+  igBannerBtn: 'Visit Instagram Feed ↗',
   instagramHandle: '@shotbyivis',
+
+  servicesTag: 'Rates & Offerings',
+  servicesTitle: 'SHOOTING PACKAGES',
 
   mvTitle: 'Standard Photoshoot',
   mvPrice: '4K 60FPS CONTENT · WITH MIX + EFFECTS',
@@ -255,6 +278,7 @@ const DEFAULT_SITE_CONFIG: SiteConfig = {
   mvFeat1: '4K 60FPS Ultra-Sharp Camera Shooting',
   mvFeat2: 'WITH MIX + EFFECTS (Color Grading & Retouching)',
   mvFeat3: '20 High-Res Professionally Edited Photos',
+  mvBtnText: 'Configure Standard Photoshoot →',
 
   photoTitle: 'VIP Editorial Shoot',
   photoPrice: 'Regular Shoot & Retouching',
@@ -262,6 +286,7 @@ const DEFAULT_SITE_CONFIG: SiteConfig = {
   photoFeat1: 'Full Studio or Outdoor Miami Shooting Location',
   photoFeat2: 'High-End Skin Retouching & Color Grading',
   photoFeat3: 'Full High-Res Original RAW Files',
+  photoBtnText: 'Configure VIP Editorial Shoot →',
 
   aboutTag: 'Behind the Lens',
   aboutTitle: 'ABOUT IVIS',
@@ -270,6 +295,8 @@ const DEFAULT_SITE_CONFIG: SiteConfig = {
   stat1Label: 'Sessions Shot',
   stat2Value: '4K 60fps',
   stat2Label: 'High-Res Quality',
+  aboutBtn1: 'Work With Ivis',
+  aboutBtn2: 'Instagram Profile',
 
   bookingTag: 'Interactive Reservation Engine',
   bookingTitle: 'ADVANCED BOOKING WIZARD',
@@ -1689,11 +1716,21 @@ export default function App() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.2em] font-semibold text-white/80">
-            <button onClick={() => scrollTo('home')} className="hover:text-[#00f0ff] transition-colors">Home</button>
-            <button onClick={() => scrollTo('portfolio')} className="hover:text-[#00f0ff] transition-colors">Portfolio</button>
-            <button onClick={() => scrollTo('services')} className="hover:text-[#00f0ff] transition-colors">Services</button>
-            <button onClick={() => scrollTo('about')} className="hover:text-[#00f0ff] transition-colors">About</button>
-            <button onClick={() => scrollTo('contact')} className="hover:text-[#00f0ff] transition-colors">Contact</button>
+            <button onClick={() => scrollTo('home')} className="hover:text-[#00f0ff] transition-colors">
+              <EditableText value={siteConfig.navHome} onChange={(v) => updateConfigField('navHome', v)} isLiveEditing={isLiveEditing} />
+            </button>
+            <button onClick={() => scrollTo('portfolio')} className="hover:text-[#00f0ff] transition-colors">
+              <EditableText value={siteConfig.navPortfolio} onChange={(v) => updateConfigField('navPortfolio', v)} isLiveEditing={isLiveEditing} />
+            </button>
+            <button onClick={() => scrollTo('services')} className="hover:text-[#00f0ff] transition-colors">
+              <EditableText value={siteConfig.navServices} onChange={(v) => updateConfigField('navServices', v)} isLiveEditing={isLiveEditing} />
+            </button>
+            <button onClick={() => scrollTo('about')} className="hover:text-[#00f0ff] transition-colors">
+              <EditableText value={siteConfig.navAbout} onChange={(v) => updateConfigField('navAbout', v)} isLiveEditing={isLiveEditing} />
+            </button>
+            <button onClick={() => scrollTo('contact')} className="hover:text-[#00f0ff] transition-colors">
+              <EditableText value={siteConfig.navContact} onChange={(v) => updateConfigField('navContact', v)} isLiveEditing={isLiveEditing} />
+            </button>
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
@@ -1992,7 +2029,7 @@ export default function App() {
             rel="noreferrer"
             className="px-8 py-4 rounded-full bg-[#00f0ff] text-black font-extrabold text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.6)] hover:scale-105 transition-all whitespace-nowrap"
           >
-            Visit Instagram Feed ↗
+            <EditableText value={siteConfig.igBannerBtn} onChange={(v) => updateConfigField('igBannerBtn', v)} isLiveEditing={isLiveEditing} />
           </a>
         </div>
       </motion.section>
@@ -2009,10 +2046,10 @@ export default function App() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <span className="text-[11px] font-mono text-[#ff007f] uppercase tracking-[0.4em] block mb-2 font-bold">
-              Rates & Offerings
+              <EditableText value={siteConfig.servicesTag} onChange={(v) => updateConfigField('servicesTag', v)} isLiveEditing={isLiveEditing} />
             </span>
             <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight font-heading">
-              SHOOTING <span className="neon-text-blue">PACKAGES</span>
+              <EditableText value={siteConfig.servicesTitle} onChange={(v) => updateConfigField('servicesTitle', v)} isLiveEditing={isLiveEditing} />
             </h2>
           </div>
 
@@ -2057,7 +2094,7 @@ export default function App() {
                 onClick={() => { setSelectedService('Standard Photoshoot'); scrollTo('contact'); }}
                 className="w-full py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white text-xs font-bold uppercase tracking-widest text-center shadow-lg hover:scale-[1.02] transition-all"
               >
-                Configure Standard Photoshoot →
+                <EditableText value={siteConfig.mvBtnText} onChange={(v) => updateConfigField('mvBtnText', v)} isLiveEditing={isLiveEditing} />
               </button>
             </motion.div>
 
@@ -2101,7 +2138,7 @@ export default function App() {
                 onClick={() => { setSelectedService('VIP Editorial Shoot'); scrollTo('contact'); }}
                 className="w-full py-4 rounded-xl border border-white/30 hover:border-[#00f0ff] hover:bg-[#00f0ff] hover:text-black text-white text-xs font-bold uppercase tracking-widest text-center transition-all"
               >
-                Configure VIP Editorial Shoot →
+                <EditableText value={siteConfig.photoBtnText} onChange={(v) => updateConfigField('photoBtnText', v)} isLiveEditing={isLiveEditing} />
               </button>
             </motion.div>
           </div>
@@ -2167,7 +2204,7 @@ export default function App() {
                 onClick={() => scrollTo('contact')}
                 className="px-8 py-4 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg hover:scale-105 transition-all"
               >
-                Work With Ivis
+                <EditableText value={siteConfig.aboutBtn1} onChange={(v) => updateConfigField('aboutBtn1', v)} isLiveEditing={isLiveEditing} />
               </button>
               <a
                 href="https://www.instagram.com/shotbyivis/"
