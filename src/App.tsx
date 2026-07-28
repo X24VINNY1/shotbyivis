@@ -4,7 +4,7 @@ import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { 
   Camera, Film, Send, Menu, X, ArrowUpRight,
   ChevronRight, ChevronLeft, ChevronDown, Check, Plus, Trash2, ZoomIn,
-  Shield, Lock, LogOut, Calendar, Save, Edit,
+  Shield, Lock, LogOut, Calendar, Save, Edit, Edit2,
   Search, Bell, Sparkles, User, Box, Grid, ShieldCheck, BarChart3, Settings
 } from 'lucide-react';
 
@@ -454,6 +454,10 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
 
+  // Edit Post Modal State
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState<PostItem | null>(null);
+
   const [newPost, setNewPost] = useState<{
     title: string;
     category: string;
@@ -567,6 +571,30 @@ export default function App() {
     localStorage.setItem('shotbyivis_real_posts', JSON.stringify(updated));
     setAddModalOpen(false);
     setNewPost({ title: '', category: 'Music Videos', type: 'video', url: '', description: '' });
+  };
+
+  const handleOpenEditPost = (item: PostItem, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setEditingPost({ ...item });
+    setEditModalOpen(true);
+  };
+
+  const handleSaveEditPost = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPost) return;
+
+    const updated = posts.map(p => p.id === editingPost.id ? { ...editingPost, thumb: editingPost.url } : p);
+    setPosts(updated);
+    localStorage.setItem('shotbyivis_real_posts', JSON.stringify(updated));
+    setEditModalOpen(false);
+    setEditingPost(null);
+  };
+
+  const updatePostTitleOrDesc = (id: string, field: 'title' | 'description', val: string) => {
+    const updated = posts.map(p => p.id === id ? { ...p, [field]: val } : p);
+    setPosts(updated);
+    localStorage.setItem('shotbyivis_real_posts', JSON.stringify(updated));
+    setHasUnsavedLiveEdits(true);
   };
 
   const handleDeletePost = (id: string, e: React.MouseEvent) => {
@@ -1086,12 +1114,20 @@ export default function App() {
                         <p className="text-xs text-white/50 mt-0.5 truncate">{item.description}</p>
                       </div>
 
-                      <button
-                        onClick={(e) => handleDeletePost(item.id, e)}
-                        className="w-full py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
-                      >
-                        <Trash2 size={14} /> Remove Item
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleOpenEditPost(item)}
+                          className="w-1/2 py-2 rounded-xl bg-[#00f0ff]/15 border border-[#00f0ff]/30 text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <Edit2 size={13} /> Edit Item
+                        </button>
+                        <button
+                          onClick={(e) => handleDeletePost(item.id, e)}
+                          className="w-1/2 py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <Trash2 size={13} /> Remove
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1459,7 +1495,7 @@ export default function App() {
               <Edit size={14} className="text-[#00f0ff]" /> VISUAL LIVE EDITOR
             </span>
             <span className="text-white/60 hidden md:inline">
-              {isLiveEditing ? '⚡ Click any text on the page below to edit live!' : '(Editor currently paused)'}
+              {isLiveEditing ? '⚡ Click any text or portfolio item to edit live!' : '(Editor currently paused)'}
             </span>
           </div>
 
@@ -1752,13 +1788,22 @@ export default function App() {
                   </div>
 
                   {currentStaff && (
-                    <button
-                      onClick={(e) => handleDeletePost(item.id, e)}
-                      className="absolute top-3 right-3 p-2 rounded-full bg-black/70 border border-white/20 text-white/70 hover:text-red-400 transition-all z-20"
-                      title="Delete post"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div className="absolute top-3 right-3 flex items-center gap-2 z-20">
+                      <button
+                        onClick={(e) => handleOpenEditPost(item, e)}
+                        className="p-2 rounded-full bg-black/80 border border-white/20 text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black transition-all shadow-lg"
+                        title="Edit image & post info"
+                      >
+                        <Edit2 size={14} />
+                      </button>
+                      <button
+                        onClick={(e) => handleDeletePost(item.id, e)}
+                        className="p-2 rounded-full bg-black/80 border border-white/20 text-white/70 hover:text-red-400 transition-all shadow-lg"
+                        title="Delete post"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   )}
 
                   <span className="absolute top-3 left-3 px-3.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-widest bg-black/80 border border-white/20 text-[#00f0ff]">
@@ -1768,8 +1813,12 @@ export default function App() {
 
                 <div className="p-5 flex items-center justify-between">
                   <div>
-                    <h3 className="font-bold text-base text-white font-heading">{item.title}</h3>
-                    <p className="text-xs text-white/70 mt-1">{item.description}</p>
+                    <h3 className="font-bold text-base text-white font-heading">
+                      <EditableText value={item.title} onChange={(v) => updatePostTitleOrDesc(item.id, 'title', v)} isLiveEditing={isLiveEditing} />
+                    </h3>
+                    <p className="text-xs text-white/70 mt-1">
+                      <EditableText value={item.description} onChange={(v) => updatePostTitleOrDesc(item.id, 'description', v)} isLiveEditing={isLiveEditing} />
+                    </p>
                   </div>
                   <ArrowUpRight size={20} className="text-white/60 group-hover:text-[#ff007f] transition-colors" />
                 </div>
@@ -2337,6 +2386,105 @@ export default function App() {
                   className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
                 >
                   <Plus size={16} /> Save Post
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== EDIT PORTFOLIO POST MODAL ===== */}
+      <AnimatePresence>
+        {editModalOpen && editingPost && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4"
+            onClick={() => setEditModalOpen(false)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#0c0c12] p-6 rounded-3xl border border-white/20 max-w-lg w-full relative space-y-4"
+            >
+              <button 
+                onClick={() => setEditModalOpen(false)}
+                className="absolute top-4 right-4 text-white/60 hover:text-white p-2"
+              >
+                <X size={20} />
+              </button>
+
+              <h3 className="text-2xl font-bold text-white mb-1 font-heading flex items-center gap-2">
+                <Edit2 size={20} className="text-[#00f0ff]" /> Edit Portfolio Item
+              </h3>
+              <p className="text-white/60 text-xs mb-4">Update the image URL, category, title, or description.</p>
+
+              <form onSubmit={handleSaveEditPost} className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Title</label>
+                  <input 
+                    type="text" 
+                    required 
+                    value={editingPost.title}
+                    onChange={(e) => setEditingPost({ ...editingPost, title: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Category</label>
+                    <select 
+                      value={editingPost.category}
+                      onChange={(e) => setEditingPost({ ...editingPost, category: e.target.value })}
+                      className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                    >
+                      <option value="Music Videos">Music Videos</option>
+                      <option value="Photography">Photography</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Type</label>
+                    <select 
+                      value={editingPost.type}
+                      onChange={(e) => setEditingPost({ ...editingPost, type: e.target.value as 'video' | 'image' })}
+                      className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                    >
+                      <option value="image">Image</option>
+                      <option value="video">Video</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Image / Video URL</label>
+                  <input 
+                    type="text" 
+                    required 
+                    value={editingPost.url}
+                    onChange={(e) => setEditingPost({ ...editingPost, url: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono uppercase text-white/70 block mb-1">Description</label>
+                  <input 
+                    type="text" 
+                    value={editingPost.description}
+                    onChange={(e) => setEditingPost({ ...editingPost, description: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                  />
+                </div>
+
+                <button 
+                  type="submit"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                >
+                  <Save size={16} /> Save Changes
                 </button>
               </form>
             </motion.div>
