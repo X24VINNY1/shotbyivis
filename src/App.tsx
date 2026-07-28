@@ -83,7 +83,7 @@ function ParticleCanvas() {
   return <canvas ref={canvasRef} className="particle-canvas" />;
 }
 
-// Inline Editable Text Component for Live Editor Mode (Supports Mobile Touch Keyboard)
+// Inline Editable Text Component for Live Editor Mode (Supports Mobile & Cursor Caret Positioning)
 function EditableText({
   value,
   onChange,
@@ -97,7 +97,14 @@ function EditableText({
   className?: string;
   placeholder?: string;
 }) {
-  const spanRef = useRef<HTMLSpanElement | null>(null);
+  const [localValue, setLocalValue] = useState(value);
+  const isEditingRef = useRef(false);
+
+  useEffect(() => {
+    if (!isEditingRef.current) {
+      setLocalValue(value);
+    }
+  }, [value]);
 
   if (!isLiveEditing) {
     if (!value || value.trim() === '') return null;
@@ -105,55 +112,45 @@ function EditableText({
   }
 
   return (
-    <span className="relative inline-flex items-center gap-1 group/edit">
-      <span
-        ref={spanRef}
-        contentEditable
-        suppressContentEditableWarning
-        tabIndex={0}
-        inputMode="text"
-        onClick={(e) => {
-          e.stopPropagation();
-          spanRef.current?.focus();
+    <span className="relative inline-flex items-center gap-1 group/edit max-w-full">
+      <input
+        type="text"
+        value={localValue}
+        placeholder={placeholder}
+        onFocus={() => {
+          isEditingRef.current = true;
         }}
-        onTouchStart={(e) => {
-          e.stopPropagation();
-          spanRef.current?.focus();
+        onChange={(e) => {
+          const val = e.target.value;
+          setLocalValue(val);
+          onChange(val);
         }}
         onBlur={() => {
-          if (spanRef.current) {
-            const text = spanRef.current.innerText;
-            onChange(text);
-          }
+          isEditingRef.current = false;
+          onChange(localValue);
         }}
-        onInput={() => {
-          if (spanRef.current) {
-            onChange(spanRef.current.innerText);
-          }
+        onClick={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+        className={`${className} outline-none border-b-2 border-dashed border-[#00f0ff] bg-white/10 px-1 py-0.5 rounded cursor-text focus:border-[#ff007f] focus:bg-white/20 transition-all text-white bg-transparent`}
+        style={{
+          width: `${Math.max((localValue || placeholder).length + 1, 3)}ch`,
+          minWidth: '40px',
+          maxWidth: '100%'
         }}
-        className={`${className} outline-none border-b-2 border-dashed border-[#00f0ff] hover:bg-white/10 px-1 py-0.5 rounded cursor-text focus:border-[#ff007f] focus:bg-white/15 transition-all inline-block min-w-[20px]`}
-        title="Tap to edit text"
-      >
-        {value || placeholder}
-      </span>
-      <span
-        role="button"
-        tabIndex={0}
+      />
+      <button
+        type="button"
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
-          onChange('');
-        }}
-        onTouchEnd={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
+          setLocalValue('');
           onChange('');
         }}
         className="opacity-70 md:opacity-0 group-hover/edit:opacity-100 p-1 rounded bg-red-500/90 text-white hover:bg-red-600 text-[10px] transition-opacity shrink-0 border border-white/20 shadow-md cursor-pointer inline-flex items-center justify-center ml-0.5"
         title="Delete this text/element"
       >
         <Trash2 size={11} />
-      </span>
+      </button>
     </span>
   );
 }
