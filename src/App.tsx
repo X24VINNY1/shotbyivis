@@ -656,92 +656,49 @@ export default function App() {
     setBookings(updated);
     localStorage.setItem('shotbyivis_bookings', JSON.stringify(updated));
 
-    // FAILPROOF EMAIL & SMS NOTIFICATION DISPATCH TO RFMNISAIAH@GMAIL.COM
-    const targetPhone = siteConfig.ownerPhone || '3059894700';
+    // FORMSPREE PRIMARY EMAIL DISPATCH ENGINE (TARGET: RFMNISAIAH@GMAIL.COM)
     const targetEmail = siteConfig.ownerEmail || 'rfmnisaiah@gmail.com';
+    const targetPhone = siteConfig.ownerPhone || '3059894700';
     const endpoint = siteConfig.formspreeEndpoint || 'xeeynopq';
-    const smsMessage = `🎬 NEW SHOOT BOOKING FOR IVIS!\nClient: ${clientName}\nContact: ${clientContact}\nService: ${selectedService}\nDate: ${shootDate}\nFeatures: ${selectedAddons.join(', ') || 'Standard'}\nNotes: ${shootNotes || 'None'}`;
+
+    const emailPayload = {
+      _subject: `🎬 NEW SHOOT BOOKING FOR IVIS: ${clientName.toUpperCase()}`,
+      _replyto: clientContact,
+      recipient: targetEmail,
+      client_name: clientName,
+      client_contact: clientContact,
+      service_requested: selectedService,
+      shoot_date: shootDate,
+      selected_features: selectedAddons.join(', ') || 'Standard Package',
+      client_notes: shootNotes || 'None'
+    };
 
     try {
-      // 1. Web3Forms Zero-Verification Direct API Dispatch
-      fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          access_key: 'YOUR_WEB3FORMS_KEY',
-          subject: `🎬 NEW SHOOT BOOKING FOR IVIS (${clientName})`,
-          from_name: 'ShotByIvis Booking Engine',
-          phone: targetPhone,
-          message: smsMessage,
-          client_name: clientName,
-          client_contact: clientContact,
-          service: selectedService,
-          shoot_date: shootDate,
-          features: selectedAddons.join(', '),
-          notes: shootNotes
-        })
-      }).catch(() => {});
-
-      // 2. Formspree Webhook API Dispatch
+      // 1. Primary Formspree Email Endpoint
       fetch(`https://formspree.io/f/${endpoint}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phone: targetPhone,
-          message: smsMessage,
-          client: clientName,
-          contact: clientContact,
-          service: selectedService,
-          date: shootDate,
-          features: selectedAddons,
-          notes: shootNotes
-        })
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(emailPayload)
       }).catch(() => {});
 
-      // 3. FormSubmit Direct AJAX Dispatch
+      // 2. Direct FormSubmit Email Dispatch to rfmnisaiah@gmail.com
       fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          _subject: `🎬 NEW SHOOT BOOKING FROM ${clientName.toUpperCase()}`,
-          client_name: clientName,
-          contact: clientContact,
-          service: selectedService,
-          shoot_date: shootDate,
-          features: selectedAddons.join(', '),
-          notes: shootNotes
-        })
+        body: JSON.stringify(emailPayload)
       }).catch(() => {});
 
-      // 4. Email-to-SMS Carrier Gateways (AT&T, T-Mobile, Verizon, Sprint)
-      const carrierEmails = [
-        `${targetPhone}@txt.att.net`,
-        `${targetPhone}@tmomail.net`,
-        `${targetPhone}@vtext.com`,
-        `${targetPhone}@messaging.sprintpcs.com`
-      ];
-
-      carrierEmails.forEach(email => {
-        fetch(`https://formsubmit.co/ajax/${email}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            _subject: 'NEW SHOOT BOOKING ALERT',
-            message: smsMessage
-          })
-        }).catch(() => {});
-      });
-
-      // 5. Save SMS Notification Dispatch Log
+      // 3. Save Email Notification Dispatch Log
       localStorage.setItem('shotbyivis_last_sms', JSON.stringify({
         phone: targetPhone,
-        text: smsMessage,
+        email: targetEmail,
+        text: `New shoot booking for ${clientName} (${selectedService})`,
         time: new Date().toLocaleString()
       }));
 
-      // 6. Mobile device instant SMS trigger
+      // 4. Mobile device instant SMS trigger fallback
       if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        window.open(`sms:13059894700?body=${encodeURIComponent(smsMessage)}`, '_blank');
+        window.open(`sms:13059894700?body=${encodeURIComponent(`🎬 SHOOT BOOKING: ${clientName} booked ${selectedService} for ${shootDate}. Check rfmnisaiah@gmail.com`)}`, '_blank');
       }
     } catch {
       // Silent catch
