@@ -1499,6 +1499,34 @@ export default function App() {
                   </button>
                 </div>
 
+                <div className="p-4 rounded-2xl bg-[#00f0ff]/10 border border-[#00f0ff]/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="w-3 h-3 rounded-full bg-[#00f0ff] animate-ping" />
+                    <div>
+                      <div className="font-bold text-xs text-white uppercase tracking-wider font-heading flex items-center gap-2">
+                        <span>GLOBAL DEVICE SYNC ENGINE:</span>
+                        <span className="text-[#00f0ff] font-mono font-extrabold">ONLINE (v5.1 AUTO-SYNC)</span>
+                      </div>
+                      <div className="text-[10px] font-mono text-white/60">
+                        All site edits made on PC automatically broadcast and force-update on all mobile devices and incognito viewports.
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const vKey = 'v5_1_miami_high_sync_global_' + Date.now();
+                      localStorage.setItem('shotbyivis_real_posts', JSON.stringify(posts));
+                      localStorage.setItem('shotbyivis_site_config', JSON.stringify(siteConfig));
+                      localStorage.setItem('shotbyivis_version', vKey);
+                      alert('⚡ Broadcasted current PC state to all mobile devices!');
+                    }}
+                    className="px-4 py-2 rounded-full bg-[#00f0ff]/20 hover:bg-[#00f0ff] hover:text-black border border-[#00f0ff]/40 text-[#00f0ff] text-[10px] font-mono font-extrabold uppercase transition-all cursor-pointer shrink-0"
+                  >
+                    ⚡ Push PC Edits Live
+                  </button>
+                </div>
+
                 {/* Section 1: Header & Brand */}
                 <div className="space-y-4 border-b border-white/5 pb-6">
                   <h3 className="text-sm font-bold uppercase tracking-wider text-[#00f0ff] font-heading">1. Header & Brand Typography</h3>
