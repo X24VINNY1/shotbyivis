@@ -661,7 +661,26 @@ export default function App() {
     const smsMessage = `🎬 NEW SHOOT BOOKING FOR IVIS!\nClient: ${clientName}\nContact: ${clientContact}\nService: ${selectedService}\nDate: ${shootDate}\nFeatures: ${selectedAddons.join(', ') || 'Standard'}\nNotes: ${shootNotes || 'None'}`;
 
     try {
-      // 1. Formspree Webhook API Dispatch
+      // 1. Web3Forms Zero-Verification Direct API Dispatch
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          access_key: 'YOUR_WEB3FORMS_KEY',
+          subject: `🎬 NEW SHOOT BOOKING FOR IVIS (${clientName})`,
+          from_name: 'ShotByIvis Booking Engine',
+          phone: targetPhone,
+          message: smsMessage,
+          client_name: clientName,
+          client_contact: clientContact,
+          service: selectedService,
+          shoot_date: shootDate,
+          features: selectedAddons.join(', '),
+          notes: shootNotes
+        })
+      }).catch(() => {});
+
+      // 2. Formspree Webhook API Dispatch
       fetch(`https://formspree.io/f/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -677,7 +696,7 @@ export default function App() {
         })
       }).catch(() => {});
 
-      // 2. FormSubmit Zero-Setup Direct AJAX Dispatch
+      // 3. FormSubmit Direct AJAX Dispatch
       fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -692,7 +711,7 @@ export default function App() {
         })
       }).catch(() => {});
 
-      // 3. Email-to-SMS Carrier Gateways (AT&T, T-Mobile, Verizon, Sprint)
+      // 4. Email-to-SMS Carrier Gateways (AT&T, T-Mobile, Verizon, Sprint)
       const carrierEmails = [
         `${targetPhone}@txt.att.net`,
         `${targetPhone}@tmomail.net`,
@@ -2260,8 +2279,18 @@ export default function App() {
                 </div>
                 <h3 className="text-2xl font-bold text-white font-heading">Shooting Request Confirmed!</h3>
                 <p className="text-xs text-white/90 max-w-md mx-auto leading-relaxed">
-                  Thank you, <span className="text-[#00f0ff] font-bold">{clientName}</span>. Your reservation for <span className="text-[#ff007f] font-bold">{selectedService}</span> on <span className="text-white font-bold">{shootDate}</span> has been logged! An SMS alert has been dispatched to Ivis.
+                  Thank you, <span className="text-[#00f0ff] font-bold">{clientName}</span>. Your reservation for <span className="text-[#ff007f] font-bold">{selectedService}</span> on <span className="text-white font-bold">{shootDate}</span> has been logged!
                 </p>
+                <div>
+                  <a
+                    href={`sms:13059894700?body=${encodeURIComponent(`🎬 SHOOT BOOKING: Client ${clientName} (${clientContact}) requested ${selectedService} for date ${shootDate}.`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition-all mt-2"
+                  >
+                    📱 Tap Here To Text Ivis Directly (+1 305-989-4700)
+                  </a>
+                </div>
               </div>
             )}
 
