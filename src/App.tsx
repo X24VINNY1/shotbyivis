@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { 
-  Camera, Film, Music, Car, Send, Menu, X, ArrowUpRight,
+  Camera, Film, Send, Menu, X, ArrowUpRight,
   ChevronRight, ChevronLeft, ChevronDown, Check, Plus, Trash2, ZoomIn,
-  Shield, Lock, LogOut, Users, Calendar
+  Shield, Lock, LogOut, Users, Calendar, Edit3
 } from 'lucide-react';
 
 function InstagramIcon({ size = 20, className = "" }: { size?: number; className?: string }) {
@@ -32,6 +32,9 @@ export interface BookingItem {
   name: string;
   email: string;
   service: string;
+  basePrice: number;
+  addOns: string[];
+  totalPrice: number;
   date: string;
   notes: string;
   status: 'Pending' | 'Confirmed' | 'Completed' | 'Declined';
@@ -46,6 +49,34 @@ export interface StaffAccount {
   pass: string;
 }
 
+export interface SiteConfig {
+  heroTagline: string;
+  heroSubtext: string;
+  aboutTitle: string;
+  aboutBio: string;
+  instagramHandle: string;
+  stat1Value: string;
+  stat1Label: string;
+  stat2Value: string;
+  stat2Label: string;
+  musicVideoPrice: string;
+  photoshootPrice: string;
+}
+
+const DEFAULT_SITE_CONFIG: SiteConfig = {
+  heroTagline: 'Miami Videography & Photography',
+  heroSubtext: 'Music Videos · Photoshoots · Cinema Production',
+  aboutTitle: 'ABOUT IVIS',
+  aboutBio: 'ShotByIvis is a premier Miami-based videographer and photographer with a sharp cinema eye. Specializing in high-energy music videos and model portraiture. Equipped with RED & Sony cinema line gear, every production is shot with intention and color graded to perfection.',
+  instagramHandle: '@shotbyivis',
+  stat1Value: '150+',
+  stat1Label: 'Sessions Shot',
+  stat2Value: '4K 60fps',
+  stat2Label: 'Cinema Quality',
+  musicVideoPrice: 'Starting at $1,200',
+  photoshootPrice: 'Starting at $450'
+};
+
 const DEFAULT_STAFF: StaffAccount[] = [
   { id: 'usr_owner1', username: 'ivis', name: 'Ivis (Owner)', role: 'owner', pass: 'ivis2026' },
   { id: 'usr_staff1', username: 'staff1', name: 'Staff Member', role: 'staff', pass: 'staff123' },
@@ -54,10 +85,10 @@ const DEFAULT_STAFF: StaffAccount[] = [
 const SLIDESHOW_ITEMS = [
   { url: '/slideshow/slide1.jpg', title: 'Miami Night Music Video Shoot', category: 'Music Videos' },
   { url: '/slideshow/slide2.jpg', title: 'South Beach Model Editorial', category: 'Photography' },
-  { url: '/slideshow/slide3.jpg', title: 'Exotic Supercar Showcase', category: 'Commercials' },
-  { url: '/slideshow/slide4.jpg', title: 'Live VIP Concert Experience', category: 'Events' },
+  { url: '/slideshow/slide3.jpg', title: 'Exotic Supercar Showcase', category: 'Photography' },
+  { url: '/slideshow/slide4.jpg', title: 'VIP Stage Performance', category: 'Music Videos' },
   { url: '/slideshow/slide5.jpg', title: 'High-Fashion Studio Portraiture', category: 'Photography' },
-  { url: '/slideshow/slide6.jpg', title: 'Ocean Drive Lifestyle Content', category: 'Commercials' },
+  { url: '/slideshow/slide6.jpg', title: 'Ocean Drive Lifestyle Content', category: 'Photography' },
 ];
 
 const REAL_INSTAGRAM_POSTS: PostItem[] = [
@@ -81,21 +112,21 @@ const REAL_INSTAGRAM_POSTS: PostItem[] = [
   },
   {
     id: 'ig3',
-    title: 'Exotic Automotive Showcase',
-    category: 'Commercials',
+    title: 'Exotic Automotive Shoot',
+    category: 'Photography',
     type: 'image',
     url: '/slideshow/slide3.jpg',
     thumb: '/slideshow/slide3.jpg',
-    description: 'Supercar shoot with ultra-sharp reflections under Miami streetlights.'
+    description: 'Supercar photo session under Miami streetlights.'
   },
   {
     id: 'ig4',
-    title: 'VIP Stage Performance',
-    category: 'Events',
+    title: 'VIP Stage Reel',
+    category: 'Music Videos',
     type: 'image',
     url: '/slideshow/slide4.jpg',
     thumb: '/slideshow/slide4.jpg',
-    description: 'Live concert event recap shot with 4K cinema gear.'
+    description: 'Live stage performance video shot with 4K cinema gear.'
   },
   {
     id: 'ig5',
@@ -109,7 +140,7 @@ const REAL_INSTAGRAM_POSTS: PostItem[] = [
   {
     id: 'ig6',
     title: 'Downtown Skyline Shoot',
-    category: 'Commercials',
+    category: 'Photography',
     type: 'image',
     url: '/slideshow/slide6.jpg',
     thumb: '/slideshow/slide6.jpg',
@@ -117,48 +148,28 @@ const REAL_INSTAGRAM_POSTS: PostItem[] = [
   }
 ];
 
-const SERVICES = [
-  {
-    icon: Film,
-    title: 'Music Videos',
-    desc: 'Full 4K/6K cinema camera shooting, direction, editing & color grading for singles and albums.',
-    tags: ['Direction', '4K Cinema', 'VFX Edit', '3-Day Delivery'],
-    range: 'From $1,200',
-  },
-  {
-    icon: Camera,
-    title: 'Photoshoots',
-    desc: 'Fashion, portrait, and automotive photography sessions on location in Miami or studio.',
-    tags: ['Portraits', 'Fashion', 'Automotive', '20 High-Res Edits'],
-    range: 'From $450',
-  },
-  {
-    icon: Music,
-    title: 'Events & Club Coverage',
-    desc: 'High-energy recap videos and highlights for concerts, clubs & private VIP occasions.',
-    tags: ['Concerts', 'Clubs', 'Highlight Reels', 'Raw Footage'],
-    range: 'From $800',
-  },
-  {
-    icon: Car,
-    title: 'Commercial / Brand Content',
-    desc: 'Reels and promo content created for brands, exotic cars, and social media campaigns.',
-    tags: ['TikTok/Reels', 'Commercial Rights', 'Audio Design', 'Social Cuts'],
-    range: 'From $1,500',
-  },
-];
-
-const STATS = [
-  { value: '150+', label: 'Sessions Shot' },
-  { value: '4K 60fps', label: 'Cinema Quality' },
-  { value: 'Miami', label: 'Florida Location' },
-  { value: '100%', label: 'Client Satisfaction' },
+const BOOKING_ADDONS = [
+  { id: 'drone', name: '4K Aerial Drone Footage', price: 300, desc: 'Licensed drone operator for cinematic overhead shots.' },
+  { id: 'express', name: '24-Hour Express Turnaround', price: 250, desc: 'Priority editing delivered within 24 hours of shoot.' },
+  { id: 'raw', name: 'Raw Uncut Video/Photo Files', price: 150, desc: 'Full high-res original footage files on SSD or drive.' },
+  { id: 'studio', name: 'Studio Location Booking', price: 200, desc: 'Private indoor studio rental in Miami.' },
+  { id: 'vfx', name: '3D VFX & Motion Effects', price: 400, desc: 'Custom CGI effects & trippy music video animations.' }
 ];
 
 export default function App() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [view, setView] = useState<'site' | 'admin-login' | 'admin-panel'>('site');
-  const [adminTab, setAdminTab] = useState<'bookings' | 'portfolio' | 'staff'>('bookings');
+  const [adminTab, setAdminTab] = useState<'bookings' | 'portfolio' | 'cms' | 'staff'>('bookings');
+
+  // Site Configuration (CMS) State
+  const [siteConfig, setSiteConfig] = useState<SiteConfig>(() => {
+    try {
+      const saved = localStorage.getItem('shotbyivis_site_config');
+      return saved ? JSON.parse(saved) : DEFAULT_SITE_CONFIG;
+    } catch {
+      return DEFAULT_SITE_CONFIG;
+    }
+  });
 
   // Posts State
   const [posts, setPosts] = useState<PostItem[]>(() => {
@@ -180,6 +191,9 @@ export default function App() {
           name: 'Alex Johnson',
           email: 'alex@example.com',
           service: 'Music Videos',
+          basePrice: 1200,
+          addOns: ['4K Aerial Drone Footage', '24-Hour Express Turnaround'],
+          totalPrice: 1750,
           date: '2026-08-15',
           notes: 'Shooting music video at South Beach rooftop location.',
           status: 'Confirmed',
@@ -241,10 +255,17 @@ export default function App() {
     description: ''
   });
 
-  const [bookingForm, setBookingForm] = useState({ name: '', email: '', service: 'Music Videos', date: '', notes: '' });
+  // Advanced Wizard Booking State
+  const [bookingStep, setBookingStep] = useState<1 | 2 | 3>(1);
+  const [selectedService, setSelectedService] = useState<'Music Videos' | 'Photography'>('Music Videos');
+  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
+  const [clientName, setClientName] = useState('');
+  const [clientContact, setClientContact] = useState('');
+  const [shootDate, setShootDate] = useState('');
+  const [shootNotes, setShootNotes] = useState('');
   const [bookedSuccess, setBookedSuccess] = useState(false);
 
-  const categories = ['All', 'Music Videos', 'Photography', 'Commercials', 'Events'];
+  const categories = ['All', 'Music Videos', 'Photography'];
 
   const filteredPosts = posts.filter(item => 
     activeCategory === 'All' || item.category === activeCategory
@@ -277,6 +298,12 @@ export default function App() {
     setCurrentStaff(null);
     localStorage.removeItem('shotbyivis_current_staff');
     setView('site');
+  };
+
+  const handleSaveCMS = (e: React.FormEvent) => {
+    e.preventDefault();
+    localStorage.setItem('shotbyivis_site_config', JSON.stringify(siteConfig));
+    alert('Site content updated successfully!');
   };
 
   const handleCreateStaff = (e: React.FormEvent) => {
@@ -332,11 +359,38 @@ export default function App() {
     localStorage.setItem('shotbyivis_real_posts', JSON.stringify(updated));
   };
 
+  const toggleAddon = (name: string) => {
+    if (selectedAddons.includes(name)) {
+      setSelectedAddons(selectedAddons.filter(a => a !== name));
+    } else {
+      setSelectedAddons([...selectedAddons, name]);
+    }
+  };
+
+  const calculateTotal = () => {
+    const base = selectedService === 'Music Videos' ? 1200 : 450;
+    const addonsTotal = selectedAddons.reduce((sum, name) => {
+      const item = BOOKING_ADDONS.find(a => a.name === name);
+      return sum + (item ? item.price : 0);
+    }, 0);
+    return base + addonsTotal;
+  };
+
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const basePrice = selectedService === 'Music Videos' ? 1200 : 450;
+    const totalPrice = calculateTotal();
+
     const newBooking: BookingItem = {
       id: 'bk_' + Math.random().toString(36).slice(2, 9),
-      ...bookingForm,
+      name: clientName,
+      email: clientContact,
+      service: selectedService,
+      basePrice,
+      addOns: selectedAddons,
+      totalPrice,
+      date: shootDate,
+      notes: shootNotes,
       status: 'Pending',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
@@ -348,8 +402,13 @@ export default function App() {
     setBookedSuccess(true);
     setTimeout(() => {
       setBookedSuccess(false);
-      setBookingForm({ name: '', email: '', service: 'Music Videos', date: '', notes: '' });
-    }, 4000);
+      setBookingStep(1);
+      setClientName('');
+      setClientContact('');
+      setShootDate('');
+      setShootNotes('');
+      setSelectedAddons([]);
+    }, 5000);
   };
 
   const updateBookingStatus = (id: string, status: BookingItem['status']) => {
@@ -376,7 +435,7 @@ export default function App() {
             <img src="/logo.png" alt="ShotByIvis Logo" className="h-8 w-auto object-contain" />
             <div>
               <div className="font-bold text-sm tracking-wider uppercase flex items-center gap-2">
-                SHOTBY<span className="neon-text-pink">IVIS</span> ADMIN PANEL
+                SHOTBY<span className="neon-text-pink">IVIS</span> FULL CMS & ADMIN PANEL
               </div>
               <div className="text-[10px] text-white/50 font-mono">
                 Logged in as <span className="text-[#00f0ff]">{currentStaff.name}</span> ({currentStaff.role.toUpperCase()})
@@ -427,6 +486,17 @@ export default function App() {
               <Camera size={14} /> Manage Portfolio ({posts.length})
             </button>
 
+            <button
+              onClick={() => setAdminTab('cms')}
+              className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${
+                adminTab === 'cms' 
+                  ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg' 
+                  : 'bg-white/5 border border-white/10 text-white/60 hover:text-white'
+              }`}
+            >
+              <Edit3 size={14} /> Edit Entire Site Content
+            </button>
+
             {currentStaff.role === 'owner' && (
               <button
                 onClick={() => setAdminTab('staff')}
@@ -457,7 +527,7 @@ export default function App() {
                 <div className="grid grid-cols-1 gap-4">
                   {bookings.map((b) => (
                     <div key={b.id} className="p-6 rounded-2xl bg-[#0c0c12] border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         <div className="flex items-center gap-3">
                           <span className="font-bold text-lg text-white">{b.name}</span>
                           <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
@@ -470,14 +540,24 @@ export default function App() {
                           </span>
                         </div>
 
-                        <div className="text-xs text-white/60 font-mono">
-                          Service: <span className="text-[#00f0ff]">{b.service}</span> | Preferred Date: <span className="text-[#ff007f]">{b.date}</span>
+                        <div className="text-xs text-white/70 font-mono">
+                          Service: <span className="text-[#00f0ff] font-bold">{b.service}</span> | Estimated Total: <span className="text-[#ff007f] font-bold">${b.totalPrice || b.basePrice}</span> | Date: <span className="text-white font-bold">{b.date}</span>
                         </div>
+
+                        {b.addOns && b.addOns.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {b.addOns.map(addon => (
+                              <span key={addon} className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-mono text-white/70">
+                                + {addon}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
                         <div className="text-xs text-white/50">Contact: {b.email}</div>
-                        {b.notes && <div className="text-xs text-white/80 mt-2 bg-white/5 p-3 rounded-lg border border-white/5">"{b.notes}"</div>}
+                        {b.notes && <div className="text-xs text-white/80 bg-white/5 p-3 rounded-lg border border-white/5">"{b.notes}"</div>}
                       </div>
 
-                      {/* Status Toggle Buttons */}
                       <div className="flex flex-wrap items-center gap-2">
                         <button 
                           onClick={() => updateBookingStatus(b.id, 'Confirmed')}
@@ -545,7 +625,124 @@ export default function App() {
             </div>
           )}
 
-          {/* TAB 3: STAFF & OWNER MANAGEMENT */}
+          {/* TAB 3: FULL CMS SITE EDITING */}
+          {adminTab === 'cms' && (
+            <form onSubmit={handleSaveCMS} className="space-y-6 bg-[#0c0c12] p-8 rounded-3xl border border-white/10">
+              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div>
+                  <h2 className="text-2xl font-black uppercase tracking-tight">Edit Website Content</h2>
+                  <p className="text-xs text-white/50 mt-1">Changes made here update the live website immediately.</p>
+                </div>
+                <button
+                  type="submit"
+                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-105 transition-all"
+                >
+                  Save All Changes
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">Hero Tagline</label>
+                  <input 
+                    type="text" 
+                    value={siteConfig.heroTagline}
+                    onChange={(e) => setSiteConfig({ ...siteConfig, heroTagline: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">Hero Subtext</label>
+                  <input 
+                    type="text" 
+                    value={siteConfig.heroSubtext}
+                    onChange={(e) => setSiteConfig({ ...siteConfig, heroSubtext: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">Music Video Package Price Tag</label>
+                  <input 
+                    type="text" 
+                    value={siteConfig.musicVideoPrice}
+                    onChange={(e) => setSiteConfig({ ...siteConfig, musicVideoPrice: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">Photoshoot Package Price Tag</label>
+                  <input 
+                    type="text" 
+                    value={siteConfig.photoshootPrice}
+                    onChange={(e) => setSiteConfig({ ...siteConfig, photoshootPrice: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">About Section Biography</label>
+                <textarea 
+                  rows={4}
+                  value={siteConfig.aboutBio}
+                  onChange={(e) => setSiteConfig({ ...siteConfig, aboutBio: e.target.value })}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">Stat 1 (e.g. 150+ | Sessions Shot)</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={siteConfig.stat1Value}
+                      onChange={(e) => setSiteConfig({ ...siteConfig, stat1Value: e.target.value })}
+                      className="w-1/3 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white"
+                    />
+                    <input 
+                      type="text" 
+                      value={siteConfig.stat1Label}
+                      onChange={(e) => setSiteConfig({ ...siteConfig, stat1Label: e.target.value })}
+                      className="w-2/3 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">Stat 2 (e.g. 4K 60fps | Cinema Quality)</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={siteConfig.stat2Value}
+                      onChange={(e) => setSiteConfig({ ...siteConfig, stat2Value: e.target.value })}
+                      className="w-1/3 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white"
+                    />
+                    <input 
+                      type="text" 
+                      value={siteConfig.stat2Label}
+                      onChange={(e) => setSiteConfig({ ...siteConfig, stat2Label: e.target.value })}
+                      className="w-2/3 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-xl hover:scale-[1.01] transition-all"
+              >
+                Save Site Content
+              </button>
+            </form>
+          )}
+
+          {/* TAB 4: STAFF MANAGEMENT */}
           {adminTab === 'staff' && currentStaff.role === 'owner' && (
             <div className="space-y-8">
               <div className="flex items-center justify-between">
@@ -555,7 +752,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Add New Staff Form */}
               <form onSubmit={handleCreateStaff} className="p-6 rounded-2xl bg-[#0c0c12] border border-white/10 space-y-4">
                 <h3 className="font-bold text-sm text-white uppercase tracking-wider flex items-center gap-2">
                   <Plus size={16} className="text-[#00f0ff]" /> Add New Staff Member
@@ -615,7 +811,6 @@ export default function App() {
                 </button>
               </form>
 
-              {/* Staff Accounts List */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {staffAccounts.map((s) => (
                   <div key={s.id} className="p-5 rounded-2xl bg-[#0c0c12] border border-white/10 flex items-center justify-between gap-4">
@@ -800,7 +995,7 @@ export default function App() {
         </AnimatePresence>
       </header>
 
-      {/* ===== HERO SECTION — Fullscreen Background Slideshow ===== */}
+      {/* ===== HERO SECTION ===== */}
       <section id="home" className="relative h-screen w-full overflow-hidden bg-[#050505] flex items-center justify-center">
         <AnimatePresence mode="sync">
           <motion.div
@@ -832,7 +1027,7 @@ export default function App() {
             <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-[#ff007f]/40 bg-[#ff007f]/10 mb-6">
               <span className="w-2 h-2 rounded-full bg-[#ff007f] animate-ping" />
               <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-[#ff007f] font-bold">
-                Miami Videography & Photography
+                {siteConfig.heroTagline}
               </span>
             </div>
 
@@ -844,13 +1039,7 @@ export default function App() {
             </h1>
 
             <div className="flex items-center gap-3 mb-10 flex-wrap justify-center text-white/50 text-[11px] font-mono uppercase tracking-[0.2em]">
-              <span>Music Videos</span>
-              <span>·</span>
-              <span>Photoshoots</span>
-              <span>·</span>
-              <span>Automotive</span>
-              <span>·</span>
-              <span>Events</span>
+              <span>{siteConfig.heroSubtext}</span>
             </div>
 
             <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -898,7 +1087,7 @@ export default function App() {
         </button>
       </section>
 
-      {/* ===== PORTFOLIO SECTION — Responsive Masonry & Lightbox ===== */}
+      {/* ===== PORTFOLIO SECTION ===== */}
       <section id="portfolio" className="py-28 px-6 max-w-7xl mx-auto border-t border-white/10">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
           <div>
@@ -910,7 +1099,7 @@ export default function App() {
             </h2>
           </div>
 
-          {/* Category Tabs */}
+          {/* Category Tabs — Only Music Videos and Photography */}
           <div className="flex flex-wrap gap-2">
             {categories.map((cat) => (
               <button
@@ -928,7 +1117,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Masonry Responsive Grid */}
         <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 3 }}>
           <Masonry gutter="20px">
             {filteredPosts.map((item, idx) => (
@@ -983,7 +1171,6 @@ export default function App() {
           </Masonry>
         </ResponsiveMasonry>
 
-        {/* Instagram Direct Link Box */}
         <div className="mt-16 p-8 rounded-3xl bg-[#0c0c12] border border-[#00f0ff]/30 flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_0_40px_rgba(0,240,255,0.1)]">
           <div className="flex items-center gap-4 text-center md:text-left">
             <div className="w-14 h-14 rounded-2xl border border-[#ff007f] bg-[#ff007f]/10 flex items-center justify-center text-[#ff007f] shrink-0">
@@ -991,7 +1178,7 @@ export default function App() {
             </div>
             <div>
               <h3 className="font-bold text-xl text-white uppercase tracking-tight">
-                Follow <span className="neon-text-pink">@shotbyivis</span> On Instagram
+                Follow <span className="neon-text-pink">{siteConfig.instagramHandle}</span> On Instagram
               </h3>
               <p className="text-white/60 text-xs mt-1">Daily music video clips, reels, and behind-the-scenes content.</p>
             </div>
@@ -1015,45 +1202,64 @@ export default function App() {
               Rates & Offerings
             </span>
             <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight">
-              SHOOTING <span className="neon-text-blue">SERVICES</span>
+              SHOOTING <span className="neon-text-blue">PACKAGES</span>
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {SERVICES.map((service) => {
-              const Icon = service.icon;
-              return (
-                <div
-                  key={service.title}
-                  className="group relative p-8 rounded-3xl bg-[#0c0c12] border border-white/10 hover:border-[#ff007f]/60 transition-all duration-500 flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="w-12 h-12 rounded-2xl border border-white/15 bg-white/5 flex items-center justify-center text-white mb-6 group-hover:border-[#ff007f] group-hover:text-[#ff007f] transition-all">
-                      <Icon size={22} />
-                    </div>
-
-                    <h3 className="text-xl font-bold text-white mb-2">{service.title}</h3>
-                    <div className="text-base font-mono text-[#00f0ff] font-bold mb-4">{service.range}</div>
-                    <p className="text-xs text-white/50 leading-relaxed mb-6">{service.desc}</p>
-
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {service.tags.map((tag) => (
-                        <span key={tag} className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[9px] font-mono uppercase tracking-wider text-white/60">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => scrollTo('contact')}
-                    className="w-full py-3 rounded-full border border-white/20 hover:border-[#ff007f] hover:bg-[#ff007f] text-white text-xs font-bold uppercase tracking-widest text-center transition-all"
-                  >
-                    Inquire Booking →
-                  </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Music Video Package */}
+            <div className="p-8 rounded-3xl bg-[#0c0c12] border border-[#ff007f]/40 flex flex-col justify-between space-y-6 shadow-[0_0_30px_rgba(255,0,127,0.15)]">
+              <div>
+                <div className="w-14 h-14 rounded-2xl border border-[#ff007f] bg-[#ff007f]/10 flex items-center justify-center text-[#ff007f] mb-6">
+                  <Film size={26} />
                 </div>
-              );
-            })}
+                <h3 className="text-2xl font-bold text-white mb-1">Music Videos</h3>
+                <div className="text-lg font-mono text-[#00f0ff] font-bold mb-4">{siteConfig.musicVideoPrice}</div>
+                <p className="text-xs text-white/60 leading-relaxed mb-6">
+                  Full 4K/6K cinema camera shooting, direction, editing & color grading for singles and albums.
+                </p>
+
+                <ul className="space-y-2 mb-6 text-xs text-white/70">
+                  <li className="flex items-center gap-2"><Check size={14} className="text-[#ff007f]" /> 4K / 6K Cinema Cameras & Lighting</li>
+                  <li className="flex items-center gap-2"><Check size={14} className="text-[#ff007f]" /> Full Video Direction & Shot List</li>
+                  <li className="flex items-center gap-2"><Check size={14} className="text-[#ff007f]" /> Color Grading & Sound FX Editing</li>
+                </ul>
+              </div>
+
+              <button
+                onClick={() => { setSelectedService('Music Videos'); scrollTo('contact'); }}
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white text-xs font-bold uppercase tracking-widest text-center shadow-lg hover:scale-[1.02] transition-all"
+              >
+                Configure Music Video Booking →
+              </button>
+            </div>
+
+            {/* Photoshoots Package */}
+            <div className="p-8 rounded-3xl bg-[#0c0c12] border border-[#00f0ff]/40 flex flex-col justify-between space-y-6 shadow-[0_0_30px_rgba(0,240,255,0.15)]">
+              <div>
+                <div className="w-14 h-14 rounded-2xl border border-[#00f0ff] bg-[#00f0ff]/10 flex items-center justify-center text-[#00f0ff] mb-6">
+                  <Camera size={26} />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-1">Photoshoots</h3>
+                <div className="text-lg font-mono text-[#ff007f] font-bold mb-4">{siteConfig.photoshootPrice}</div>
+                <p className="text-xs text-white/60 leading-relaxed mb-6">
+                  Fashion, portrait, and automotive photography sessions on location in Miami or indoor studio.
+                </p>
+
+                <ul className="space-y-2 mb-6 text-xs text-white/70">
+                  <li className="flex items-center gap-2"><Check size={14} className="text-[#00f0ff]" /> 20 High-Res Professionally Edited Photos</li>
+                  <li className="flex items-center gap-2"><Check size={14} className="text-[#00f0ff]" /> Studio or Miami Location Shooting</li>
+                  <li className="flex items-center gap-2"><Check size={14} className="text-[#00f0ff]" /> Skin Retouching & Color Correction</li>
+                </ul>
+              </div>
+
+              <button
+                onClick={() => { setSelectedService('Photography'); scrollTo('contact'); }}
+                className="w-full py-4 rounded-xl border border-white/20 hover:border-[#00f0ff] hover:bg-[#00f0ff] hover:text-black text-white text-xs font-bold uppercase tracking-widest text-center transition-all"
+              >
+                Configure Photoshoot Booking →
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -1072,12 +1278,14 @@ export default function App() {
             </div>
 
             <div className="absolute -bottom-8 -right-4 lg:-right-8 p-6 rounded-2xl bg-[#0c0c12]/90 backdrop-blur-xl border border-white/10 grid grid-cols-2 gap-6 min-w-[260px]">
-              {STATS.map((s) => (
-                <div key={s.label}>
-                  <div className="text-xl font-bold text-white neon-text-pink">{s.value}</div>
-                  <div className="text-[9px] font-mono uppercase text-white/50 tracking-wider mt-0.5">{s.label}</div>
-                </div>
-              ))}
+              <div>
+                <div className="text-xl font-bold text-white neon-text-pink">{siteConfig.stat1Value}</div>
+                <div className="text-[9px] font-mono uppercase text-white/50 tracking-wider mt-0.5">{siteConfig.stat1Label}</div>
+              </div>
+              <div>
+                <div className="text-xl font-bold text-white neon-text-blue">{siteConfig.stat2Value}</div>
+                <div className="text-[9px] font-mono uppercase text-white/50 tracking-wider mt-0.5">{siteConfig.stat2Label}</div>
+              </div>
             </div>
           </div>
 
@@ -1086,16 +1294,11 @@ export default function App() {
               Behind the Lens
             </span>
             <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-8">
-              ABOUT <span className="neon-text-pink">IVIS</span>
+              {siteConfig.aboutTitle}
             </h2>
 
             <div className="space-y-4 text-white/70 text-sm leading-relaxed mb-10">
-              <p>
-                <b>ShotByIvis</b> is a premier Miami-based videographer and photographer with a sharp cinema eye. Specializing in high-energy music videos, model portraiture, and luxury automotive visuals.
-              </p>
-              <p>
-                Equipped with RED & Sony cinema line gear, every production is shot with intention and color graded to perfection.
-              </p>
+              <p>{siteConfig.aboutBio}</p>
             </div>
 
             <div className="flex flex-wrap gap-4">
@@ -1111,101 +1314,266 @@ export default function App() {
                 rel="noreferrer"
                 className="px-8 py-4 border border-white/20 text-white hover:border-[#00f0ff] hover:text-[#00f0ff] text-xs font-bold uppercase tracking-wider rounded-full transition-all flex items-center gap-2"
               >
-                <InstagramIcon size={16} /> @shotbyivis
+                <InstagramIcon size={16} /> {siteConfig.instagramHandle}
               </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ===== BOOKING / CONTACT SECTION ===== */}
+      {/* ===== ADVANCED INTERACTIVE BOOKING WIZARD ===== */}
       <section id="contact" className="py-28 px-6 bg-[#08080c] border-t border-white/10">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-14">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
             <span className="text-[10px] font-mono text-[#ff007f] uppercase tracking-[0.4em] block mb-2 font-bold">
-              Reserve Your Date
+              Interactive Reservation Engine
             </span>
             <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tight">
-              BOOK A <span className="neon-text-blue">SHOOT</span>
+              ADVANCED <span className="neon-text-blue">BOOKING WIZARD</span>
             </h2>
           </div>
 
-          <form onSubmit={handleBookingSubmit} className="bg-[#0c0c12] p-8 md:p-10 rounded-3xl border border-white/10 space-y-6 shadow-2xl">
+          {/* Progress Step Bar */}
+          <div className="flex items-center justify-between max-w-xl mx-auto mb-12 relative">
+            <div className="absolute top-1/2 inset-x-0 h-0.5 bg-white/10 -translate-y-1/2 z-0" />
+            
+            <div className="relative z-10 flex flex-col items-center gap-2">
+              <div className={`w-10 h-10 rounded-full font-bold text-xs flex items-center justify-center transition-all ${
+                bookingStep === 1 ? 'bg-[#ff007f] text-white shadow-[0_0_15px_#ff007f]' : 'bg-[#0c0c12] border border-white/20 text-white/60'
+              }`}>
+                1
+              </div>
+              <span className="text-[10px] font-mono uppercase text-white/60">Service</span>
+            </div>
+
+            <div className="relative z-10 flex flex-col items-center gap-2">
+              <div className={`w-10 h-10 rounded-full font-bold text-xs flex items-center justify-center transition-all ${
+                bookingStep === 2 ? 'bg-[#00f0ff] text-black shadow-[0_0_15px_#00f0ff]' : 'bg-[#0c0c12] border border-white/20 text-white/60'
+              }`}>
+                2
+              </div>
+              <span className="text-[10px] font-mono uppercase text-white/60">Add-Ons</span>
+            </div>
+
+            <div className="relative z-10 flex flex-col items-center gap-2">
+              <div className={`w-10 h-10 rounded-full font-bold text-xs flex items-center justify-center transition-all ${
+                bookingStep === 3 ? 'bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white shadow-lg' : 'bg-[#0c0c12] border border-white/20 text-white/60'
+              }`}>
+                3
+              </div>
+              <span className="text-[10px] font-mono uppercase text-white/60">Details & Confirm</span>
+            </div>
+          </div>
+
+          {/* Booking Card Container */}
+          <div className="bg-[#0c0c12] p-8 md:p-12 rounded-3xl border border-white/10 shadow-2xl relative overflow-hidden">
+            
             {bookedSuccess && (
-              <div className="p-4 rounded-xl bg-[#00f0ff]/10 border border-[#00f0ff]/30 text-[#00f0ff] text-xs font-bold text-center flex items-center justify-center gap-2">
-                <Check size={18} /> Shooting Request Sent! Ivis will reach out directly.
+              <div className="p-8 rounded-2xl bg-[#00f0ff]/10 border border-[#00f0ff]/40 text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-[#00f0ff]/20 text-[#00f0ff] flex items-center justify-center mx-auto shadow-[0_0_20px_#00f0ff]">
+                  <Check size={32} />
+                </div>
+                <h3 className="text-2xl font-bold text-white">Shooting Request Confirmed!</h3>
+                <p className="text-xs text-white/70 max-w-md mx-auto leading-relaxed">
+                  Thank you, <span className="text-[#00f0ff] font-bold">{clientName}</span>. Your reservation for <span className="text-[#ff007f] font-bold">{selectedService}</span> on <span className="text-white font-bold">{shootDate}</span> has been logged! Total estimate: <span className="text-[#00f0ff] font-bold">${calculateTotal()}</span>. Ivis will reach out directly.
+                </p>
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/60 block mb-2">Name</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="Full Name"
-                  value={bookingForm.name}
-                  onChange={(e) => setBookingForm({ ...bookingForm, name: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/60 block mb-2">Email / Phone</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="Contact Number or Email"
-                  value={bookingForm.email}
-                  onChange={(e) => setBookingForm({ ...bookingForm, email: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-                />
-              </div>
-            </div>
+            {!bookedSuccess && (
+              <form onSubmit={handleBookingSubmit} className="space-y-8">
+                
+                {/* STEP 1: SERVICE SELECTION */}
+                {bookingStep === 1 && (
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-bold text-white uppercase tracking-tight">Step 1: Choose Shooting Service</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div 
+                        onClick={() => setSelectedService('Music Videos')}
+                        className={`p-6 rounded-2xl border cursor-pointer transition-all ${
+                          selectedService === 'Music Videos' 
+                            ? 'border-[#ff007f] bg-[#ff007f]/10 shadow-[0_0_25px_rgba(255,0,127,0.2)]' 
+                            : 'border-white/10 bg-white/5 hover:border-white/30'
+                        }`}
+                      >
+                        <Film size={28} className="text-[#ff007f] mb-3" />
+                        <h4 className="font-bold text-lg text-white">Music Videos</h4>
+                        <p className="text-xs text-white/60 mt-1">Full 4K/6K cinema camera shooting, direction, editing & color grading.</p>
+                        <div className="text-sm font-mono font-bold text-[#00f0ff] mt-4">Base Rate: $1,200</div>
+                      </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/60 block mb-2">Service</label>
-                <select 
-                  value={bookingForm.service}
-                  onChange={(e) => setBookingForm({ ...bookingForm, service: e.target.value })}
-                  className="w-full bg-[#14141d] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
-                >
-                  <option value="Music Videos">Music Videos</option>
-                  <option value="Photoshoots">Photoshoots</option>
-                  <option value="Event Coverage">Event Coverage</option>
-                  <option value="Commercial / Brands">Commercial / Brands</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/60 block mb-2">Shoot Date</label>
-                <input 
-                  type="date" 
-                  required
-                  value={bookingForm.date}
-                  onChange={(e) => setBookingForm({ ...bookingForm, date: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
-                />
-              </div>
-            </div>
+                      <div 
+                        onClick={() => setSelectedService('Photography')}
+                        className={`p-6 rounded-2xl border cursor-pointer transition-all ${
+                          selectedService === 'Photography' 
+                            ? 'border-[#00f0ff] bg-[#00f0ff]/10 shadow-[0_0_25px_rgba(0,240,255,0.2)]' 
+                            : 'border-white/10 bg-white/5 hover:border-white/30'
+                        }`}
+                      >
+                        <Camera size={28} className="text-[#00f0ff] mb-3" />
+                        <h4 className="font-bold text-lg text-white">Photoshoot Session</h4>
+                        <p className="text-xs text-white/60 mt-1">Fashion, model portraiture, or automotive photography in Miami.</p>
+                        <div className="text-sm font-mono font-bold text-[#ff007f] mt-4">Base Rate: $450</div>
+                      </div>
+                    </div>
 
-            <div>
-              <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/60 block mb-2">Notes / Shoot Details</label>
-              <textarea 
-                rows={4}
-                placeholder="Tell Ivis about your song, location or shoot vision..."
-                value={bookingForm.notes}
-                onChange={(e) => setBookingForm({ ...bookingForm, notes: e.target.value })}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
-              />
-            </div>
+                    <button
+                      type="button"
+                      onClick={() => setBookingStep(2)}
+                      className="w-full py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                    >
+                      Next: Choose Add-Ons & Gear <ChevronRight size={16} />
+                    </button>
+                  </div>
+                )}
 
-            <button 
-              type="submit"
-              className="w-full py-4 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-[0_0_25px_rgba(255,0,127,0.5)] hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
-            >
-              Submit Request <Send size={14} />
-            </button>
-          </form>
+                {/* STEP 2: ADD-ONS SELECTION */}
+                {bookingStep === 2 && (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xl font-bold text-white uppercase tracking-tight">Step 2: Select Production Add-Ons</h3>
+                      <span className="text-xs font-mono text-[#00f0ff]">Selected: {selectedAddons.length}</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-3">
+                      {BOOKING_ADDONS.map((addon) => {
+                        const active = selectedAddons.includes(addon.name);
+                        return (
+                          <div 
+                            key={addon.id}
+                            onClick={() => toggleAddon(addon.name)}
+                            className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between gap-4 ${
+                              active ? 'border-[#00f0ff] bg-[#00f0ff]/10' : 'border-white/10 bg-white/5 hover:border-white/20'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className={`w-5 h-5 rounded-md border flex items-center justify-center ${
+                                active ? 'border-[#00f0ff] bg-[#00f0ff] text-black' : 'border-white/30'
+                              }`}>
+                                {active && <Check size={14} />}
+                              </div>
+                              <div>
+                                <div className="font-bold text-sm text-white">{addon.name}</div>
+                                <div className="text-xs text-white/50">{addon.desc}</div>
+                              </div>
+                            </div>
+                            <div className="text-xs font-mono font-bold text-[#ff007f]">+${addon.price}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="flex gap-4">
+                      <button
+                        type="button"
+                        onClick={() => setBookingStep(1)}
+                        className="w-1/3 py-4 rounded-xl border border-white/20 text-white/80 font-bold text-xs uppercase tracking-wider"
+                      >
+                        Back
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setBookingStep(3)}
+                        className="w-2/3 py-4 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest shadow-lg flex items-center justify-center gap-2"
+                      >
+                        Next: Client Details (${calculateTotal()}) <ChevronRight size={16} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* STEP 3: CLIENT DETAILS & FINAL SUBMISSION */}
+                {bookingStep === 3 && (
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-bold text-white uppercase tracking-tight">Step 3: Contact & Shoot Date</h3>
+
+                    {/* Live Booking Summary Box */}
+                    <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                      <div className="text-xs font-mono uppercase text-white/50">Summary</div>
+                      <div className="flex justify-between text-sm font-bold text-white">
+                        <span>{selectedService}</span>
+                        <span className="text-[#00f0ff]">${selectedService === 'Music Videos' ? 1200 : 450}</span>
+                      </div>
+                      {selectedAddons.map(addon => (
+                        <div key={addon} className="flex justify-between text-xs text-white/70 pl-2">
+                          <span>+ {addon}</span>
+                          <span className="text-[#ff007f]">+${BOOKING_ADDONS.find(a => a.name === addon)?.price}</span>
+                        </div>
+                      ))}
+                      <div className="pt-2 border-t border-white/10 flex justify-between text-base font-bold text-white">
+                        <span>Total Estimated Investment:</span>
+                        <span className="text-[#00f0ff] font-mono">${calculateTotal()}</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">Your Name</label>
+                        <input 
+                          type="text" 
+                          required
+                          placeholder="Full Name"
+                          value={clientName}
+                          onChange={(e) => setClientName(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">Phone or Email</label>
+                        <input 
+                          type="text" 
+                          required
+                          placeholder="Contact Info"
+                          value={clientContact}
+                          onChange={(e) => setClientContact(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">Shoot Date</label>
+                      <input 
+                        type="date" 
+                        required
+                        value={shootDate}
+                        onChange={(e) => setShootDate(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00f0ff]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/60 block mb-1">Vision / Notes</label>
+                      <textarea 
+                        rows={3}
+                        placeholder="Tell Ivis about your song, location or shoot details..."
+                        value={shootNotes}
+                        onChange={(e) => setShootNotes(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ff007f]"
+                      />
+                    </div>
+
+                    <div className="flex gap-4">
+                      <button
+                        type="button"
+                        onClick={() => setBookingStep(2)}
+                        className="w-1/3 py-4 rounded-xl border border-white/20 text-white/80 font-bold text-xs uppercase tracking-wider"
+                      >
+                        Back
+                      </button>
+                      <button 
+                        type="submit"
+                        className="w-2/3 py-4 bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white font-bold text-xs uppercase tracking-widest rounded-xl shadow-[0_0_25px_rgba(255,0,127,0.5)] hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                      >
+                        Submit Reservation (${calculateTotal()}) <Send size={14} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+              </form>
+            )}
+          </div>
         </div>
       </section>
 
@@ -1259,8 +1627,6 @@ export default function App() {
                     >
                       <option value="Music Videos">Music Videos</option>
                       <option value="Photography">Photography</option>
-                      <option value="Commercials">Commercials</option>
-                      <option value="Events">Events</option>
                     </select>
                   </div>
                   <div>
@@ -1379,7 +1745,7 @@ export default function App() {
           </div>
 
           <a href="https://www.instagram.com/shotbyivis/" target="_blank" rel="noreferrer" className="text-white/60 hover:text-[#ff007f] flex items-center gap-1.5 transition-colors">
-            <InstagramIcon size={16} /> @shotbyivis
+            <InstagramIcon size={16} /> {siteConfig.instagramHandle}
           </a>
         </div>
       </footer>
