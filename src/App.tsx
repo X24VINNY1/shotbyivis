@@ -2049,7 +2049,7 @@ export default function App() {
 
   // ===== MAIN PUBLIC WEBSITE VIEW =====
   return (
-    <div className="min-h-screen bg-[#050508] text-white selection:bg-[#ff007f] selection:text-white font-sans overflow-x-hidden relative">
+    <div className="min-h-screen bg-[#050508] text-white selection:bg-[#ff007f] selection:text-white font-sans overflow-x-hidden relative pb-32">
       <ParticleCanvas />
 
       {/* ===== GLOBAL FUTURISTIC PRELOADER SCREEN ===== */}
