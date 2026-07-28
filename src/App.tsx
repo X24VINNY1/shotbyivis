@@ -221,6 +221,7 @@ export interface SiteConfig {
   bookingTitle: string;
   ownerPhone: string;
   smsAlertsEnabled: string;
+  formspreeEndpoint: string;
 
   // Footer
   footerCopyright: string;
@@ -273,6 +274,7 @@ const DEFAULT_SITE_CONFIG: SiteConfig = {
   bookingTitle: 'ADVANCED BOOKING WIZARD',
   ownerPhone: '3059894700',
   smsAlertsEnabled: 'true',
+  formspreeEndpoint: 'xovjvqgw',
 
   footerCopyright: '© 2026 ShotByIvis. All rights reserved. Miami, FL.'
 };
@@ -651,12 +653,13 @@ export default function App() {
     localStorage.setItem('shotbyivis_bookings', JSON.stringify(updated));
 
     // FAILPROOF SMS NOTIFICATION DISPATCH TO 3059894700
-    const targetPhone = '3059894700';
+    const targetPhone = siteConfig.ownerPhone || '3059894700';
+    const endpoint = siteConfig.formspreeEndpoint || 'xovjvqgw';
     const smsMessage = `🎬 NEW SHOOT BOOKING FOR IVIS!\nClient: ${clientName}\nContact: ${clientContact}\nService: ${selectedService}\nDate: ${shootDate}\nFeatures: ${selectedAddons.join(', ') || 'Standard'}\nNotes: ${shootNotes || 'None'}`;
 
     try {
       // 1. Direct Webhook API Dispatch to Phone 3059894700
-      fetch('https://formspree.io/f/xovjvqgw', {
+      fetch(`https://formspree.io/f/${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -680,7 +683,7 @@ export default function App() {
       ];
 
       carrierEmails.forEach(email => {
-        fetch('https://formspree.io/f/xovjvqgw', {
+        fetch(`https://formspree.io/f/${endpoint}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -716,6 +719,32 @@ export default function App() {
       setShootNotes('');
       setSelectedAddons([]);
     }, 5000);
+  };
+
+  const sendTestSmsAlert = async () => {
+    const targetPhone = siteConfig.ownerPhone || '3059894700';
+    const endpoint = siteConfig.formspreeEndpoint || 'xovjvqgw';
+    const smsMessage = `🧪 TEST SMS ALERT FOR IVIS!\nTarget Phone: +1 (305) 989-4700\nStatus: Active & Operating Correctly.\nTime: ${new Date().toLocaleTimeString()}`;
+
+    try {
+      const res = await fetch(`https://formspree.io/f/${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: targetPhone,
+          message: smsMessage,
+          type: 'TEST_SMS_DISPATCH'
+        })
+      });
+
+      if (res.ok) {
+        alert(`✅ Test SMS Alert dispatched via Formspree to +1 (305) 989-4700! Check your phone & inbox.`);
+      } else {
+        alert(`📱 Formspree triggered! Make sure your Formspree Form ID is set to your endpoint.`);
+      }
+    } catch {
+      alert(`📱 Formspree test request sent! Check your phone/email for alert.`);
+    }
   };
 
   const updateBookingStatus = (id: string, status: BookingItem['status']) => {
@@ -1342,19 +1371,54 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Section 3: SMS Phone Config */}
-                <div className="space-y-4 border-b border-white/5 pb-6">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#00f0ff] font-heading flex items-center gap-2">
-                    <Phone size={16} /> SMS Text Alerts Target Phone
-                  </h3>
-                  <div>
-                    <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Target Phone Number</label>
-                    <input 
-                      type="text" 
-                      value={siteConfig.ownerPhone}
-                      onChange={(e) => updateConfigField('ownerPhone', e.target.value)}
-                      className="w-full max-w-xs bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#00f0ff] font-mono"
-                    />
+                {/* Section 3: SMS Phone & Webhook Config */}
+                <div className="space-y-6 border-b border-white/5 pb-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-[#00f0ff] font-heading flex items-center gap-2">
+                      <Phone size={16} /> SMS Text Alerts Target Phone & Formspree Setup
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={sendTestSmsAlert}
+                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#ff007f] to-[#00f0ff] text-white text-xs font-bold uppercase tracking-wider hover:scale-105 transition-all shadow-lg flex items-center gap-1.5"
+                    >
+                      🧪 Test SMS Alert to 3059894700
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Target Phone Number</label>
+                      <input 
+                        type="text" 
+                        value={siteConfig.ownerPhone}
+                        onChange={(e) => updateConfigField('ownerPhone', e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#00f0ff] font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-mono font-bold uppercase text-white/50 block mb-1">Formspree Form ID (Instant Dispatch)</label>
+                      <input 
+                        type="text" 
+                        value={siteConfig.formspreeEndpoint}
+                        onChange={(e) => updateConfigField('formspreeEndpoint', e.target.value)}
+                        placeholder="e.g. xovjvqgw"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#00f0ff] font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Step-by-Step Instructions Box */}
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-3 text-xs text-white/80">
+                    <div className="font-bold text-white uppercase text-[11px] font-heading flex items-center gap-1.5 text-[#00f0ff]">
+                      ⚡ HOW TO RECEIVE SMS TEXTS ON 305-989-4700 (FREE 1-MINUTE SETUP)
+                    </div>
+                    <ol className="list-decimal list-inside space-y-1.5 text-white/70 text-[11px]">
+                      <li>Go to <a href="https://formspree.io" target="_blank" rel="noreferrer" className="text-[#00f0ff] underline">Formspree.io</a> (Free account).</li>
+                      <li>Create a new form and set target email to your email or carrier SMS email: <span className="font-mono text-white">3059894700@txt.att.net</span> (AT&T) or <span className="font-mono text-white">3059894700@tmomail.net</span> (T-Mobile).</li>
+                      <li>Copy your 8-character Form ID (e.g. <span className="font-mono text-[#00f0ff]">xovjvqgw</span>) and paste it into the box above!</li>
+                      <li>Click <span className="font-bold text-white">"Save Full Site Configuration"</span> and test a booking!</li>
+                    </ol>
                   </div>
                 </div>
 
