@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+:root {
+  --pink: #ff007f;
+  --pink-glow: rgba(255, 0, 127, 0.6);
+  --blue: #00f0ff;
+  --blue-glow: rgba(0, 240, 255, 0.6);
+  --bg-dark: #050508;
+  --bg-card: rgba(15, 15, 25, 0.7);
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: #ffffff;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #050508;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ff007f, #00f0ff);
+  border-radius: 4px;
+}
+
+/* Neon Glow Utilities */
+.neon-text-pink {
+  color: #ff007f;
+  text-shadow: 0 0 10px rgba(255, 0, 127, 0.7), 0 0 20px rgba(255, 0, 127, 0.4);
+}
+
+.neon-text-blue {
+  color: #00f0ff;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.7), 0 0 20px rgba(0, 240, 255, 0.4);
+}
+
+.neon-border-pink {
+  border-color: #ff007f;
+  box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+}
+
+.neon-border-blue {
+  border-color: #00f0ff;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+}
+
+.gradient-text-neon {
+  background: linear-gradient(135deg, #ff007f 0%, #00f0ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Keyframes */
+@keyframes neonPulse {
+  0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 15px rgba(255, 0, 127, 0.6)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 30px rgba(0, 240, 255, 0.8)); }
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(2deg); }
+}
+
+@keyframes spin3D {
+  0% { transform: perspective(1000px) rotateY(0deg) rotateX(5deg); }
+  50% { transform: perspective(1000px) rotateY(180deg) rotateX(-5deg); }
+  100% { transform: perspective(1000px) rotateY(360deg) rotateX(5deg); }
+}
+
+.animate-neon-pulse {
+  animation: neonPulse 3s infinite ease-in-out;
+}
+
+.animate-logo-float {
+  animation: logoFloat 5s infinite ease-in-out;
+}
+
+.animate-3d-logo {
+  animation: spin3D 8s infinite linear;
+  transform-style: preserve-3d;
+}
+
+/* Glassmorphism */
+.glass-panel {
+  background: rgba(12, 12, 22, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-panel-pink {
+  background: rgba(20, 5, 20, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 0, 127, 0.3);
+}
+
+.glass-panel-blue {
+  background: rgba(5, 20, 30, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+}
