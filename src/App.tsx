@@ -518,6 +518,7 @@ export default function App() {
   const [selectedLightboxIndex, setSelectedLightboxIndex] = useState<number | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [syncModalOpen, setSyncModalOpen] = useState(false);
 
   // Edit Post Modal State
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -555,6 +556,31 @@ export default function App() {
   const [switchingStepTarget, setSwitchingStepTarget] = useState<number | null>(null);
 
   useEffect(() => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const syncData = urlParams.get('sync_data');
+      if (syncData) {
+        const decodedStr = decodeURIComponent(atob(syncData));
+        const decoded = JSON.parse(decodedStr);
+        if (decoded.siteConfig) {
+          localStorage.setItem('shotbyivis_site_config', JSON.stringify(decoded.siteConfig));
+          setSiteConfig(decoded.siteConfig);
+        }
+        if (decoded.posts) {
+          localStorage.setItem('shotbyivis_real_posts', JSON.stringify(decoded.posts));
+          setPosts(decoded.posts);
+        }
+        if (decoded.categories) {
+          localStorage.setItem('shotbyivis_categories', JSON.stringify(decoded.categories));
+          setCategories(decoded.categories);
+        }
+        window.history.replaceState({}, document.title, window.location.pathname);
+        alert('⚡ Successfully synced all PC edits to this mobile device!');
+      }
+    } catch (err) {
+      console.error('Sync URL error', err);
+    }
+
     const timer = setTimeout(() => {
       setIsInitialLoading(false);
     }, 1000);
@@ -1507,16 +1533,10 @@ export default function App() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => {
-                      const vKey = 'v5_1_miami_high_sync_global_' + Date.now();
-                      localStorage.setItem('shotbyivis_real_posts', JSON.stringify(posts));
-                      localStorage.setItem('shotbyivis_site_config', JSON.stringify(siteConfig));
-                      localStorage.setItem('shotbyivis_version', vKey);
-                      alert('⚡ Broadcasted current PC state to all mobile devices!');
-                    }}
+                    onClick={() => setSyncModalOpen(true)}
                     className="px-4 py-2 rounded-full bg-[#00f0ff]/20 hover:bg-[#00f0ff] hover:text-black border border-[#00f0ff]/40 text-[#00f0ff] text-[10px] font-mono font-extrabold uppercase transition-all cursor-pointer shrink-0"
                   >
-                    ⚡ Push PC Edits Live
+                    📱 Sync PC Edits to Mobile (QR)
                   </button>
                 </div>
 
@@ -2125,6 +2145,14 @@ export default function App() {
               }`}
             >
               {isLiveEditing ? '⚡ EDITOR ON' : 'Enable Editor'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setSyncModalOpen(true)}
+              className="px-3 sm:px-4 py-1.5 rounded-full bg-[#00f0ff]/20 hover:bg-[#00f0ff] text-[#00f0ff] hover:text-black font-extrabold text-[10px] uppercase tracking-widest border border-[#00f0ff]/40 transition-all flex items-center gap-1 cursor-pointer"
+            >
+              📱 Sync Mobile (QR)
             </button>
 
             {hasUnsavedLiveEdits && (
@@ -3247,6 +3275,80 @@ export default function App() {
                 </button>
               </form>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ===== INSTANT MOBILE SYNC MODAL ===== */}
+      <AnimatePresence>
+        {syncModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4"
+            onClick={() => setSyncModalOpen(false)}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#0a0a0f] border border-[#00f0ff]/40 p-6 sm:p-8 rounded-3xl max-w-lg w-full space-y-6 shadow-[0_0_50px_rgba(0,240,255,0.2)] text-center relative"
+            >
+              <button
+                type="button"
+                onClick={() => setSyncModalOpen(false)}
+                className="absolute top-4 right-4 p-2 text-white/60 hover:text-white rounded-full bg-white/5 cursor-pointer"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="space-y-2">
+                <span className="px-3 py-1 rounded-full bg-[#00f0ff]/20 text-[#00f0ff] border border-[#00f0ff]/40 text-[10px] font-mono font-bold uppercase tracking-widest">
+                  INSTANT CROSS-DEVICE SYNC
+                </span>
+                <h3 className="text-2xl font-black text-white font-heading uppercase tracking-tight">
+                  Sync PC Edits to Mobile Phone
+                </h3>
+                <p className="text-xs text-white/60">
+                  Scan this QR code with your phone camera or copy the sync link to load all PC edits on any mobile device instantly!
+                </p>
+              </div>
+
+              {/* QR CODE DISPLAY */}
+              <div className="p-4 bg-white rounded-2xl inline-block border-4 border-[#00f0ff] shadow-2xl mx-auto">
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
+                    `${window.location.origin}/?sync_data=${btoa(encodeURIComponent(JSON.stringify({ siteConfig, posts, categories })))}`
+                  )}`}
+                  alt="Scan to sync mobile"
+                  className="w-48 h-48 object-contain mx-auto"
+                />
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const syncUrl = `${window.location.origin}/?sync_data=${btoa(encodeURIComponent(JSON.stringify({ siteConfig, posts, categories })))}`;
+                    navigator.clipboard.writeText(syncUrl);
+                    alert('📋 Mobile Sync Link copied to clipboard!');
+                  }}
+                  className="w-full py-3 rounded-xl bg-[#00f0ff]/20 hover:bg-[#00f0ff] text-[#00f0ff] hover:text-black font-extrabold text-xs uppercase tracking-wider border border-[#00f0ff]/40 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  📋 Copy Mobile Sync Link
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const fullCode = `// PASTE INTO src/App.tsx\nconst DEFAULT_SITE_CONFIG = ${JSON.stringify(siteConfig, null, 2)};\n\nconst REAL_INSTAGRAM_POSTS = ${JSON.stringify(posts, null, 2)};`;
+                    navigator.clipboard.writeText(fullCode);
+                    alert('⚡ Exported PC state to clipboard! You can now commit this baseline.');
+                  }}
+                  className="w-full py-3 rounded-xl bg-white/10 hover:bg-white text-white hover:text-black font-bold text-xs uppercase tracking-wider border border-white/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  💾 Export Codebase State
+                </button>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
